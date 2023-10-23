@@ -1,0 +1,280 @@
+{% extends "base/base.html" %}
+{% block content %}
+<div class="main-container">
+    <section>
+      <div class="sidebar">
+        <p>Select Course </p>
+        <div class="searchbar">
+            <input type="text" placeholder="Search" class="search">
+            <button><i class="fa fa-search"></i></button>
+        </div>
+        <div class="courses">
+          {% for course in courses %}
+            <a href="{% url 'home' %}?q={{course.name}}"><div class="course-card"><p>{{ course.name }}</p></div></a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    <div>
+        <div class="content-top">
+          <button class="pushable">
+            <span class="front">
+              Download
+            </span>
+          </button>
+        </div>
+        <div class="content courses">
+            {% if messages %}
+            <ul class="messages noCourse" style="list-style: none; color: red;">
+              {% for message in messages %}
+                  <img src="/static/images/hand.png" alt="">
+                  <li>{{ message }}</li>
+                  {% endfor %}
+              </ul>
+            {% else %}
+            {% for file in files %}
+              <div class="card">
+                  <a href="{% url 'pdfview' %}?q={{file.id}}" style="cursor: pointer;">
+                      <!-- <embed src="/media/{{ file.fileupload }}" alt="" height="100px" width="130px"> -->
+                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
+                      <div class="card-inside">
+                        <p>
+                          <h5>{{ file.title }} | {{ file.courseCode }}</h5>
+                        </p>
+                        <p style="color: black;">{{ file.uploaded }}</p>
+                        <a href="/media/{{ file.fileupload }}" download="{{ file.title }}">Download</a>
+                      </div>
+                    </a>
+                </div> 
+              {% endfor %}
+          </div>
+        {% endif %}
+    </div>
+  </div>
+
+
+  <style>
+    *{
+      animation: 3s linear .1s ease-in;
+    }
+    .content-top {
+        padding-top: 30px;
+        padding-bottom: 0px;
+        text-align: right;
+        width: 99%;
+    }
+    .content-top a{
+        margin-right: 5%;
+    }
+    .card {
+        margin: 10px 20px;
+        max-height: 300px;
+        border-radius: 15px;
+        padding: 20px;
+        padding-left: 10px;
+        width: 350px;
+        border: none;
+        box-shadow: 0px 0px 15px 0px #dfdddd;
+        display: grid;
+        grid-template-columns: 40% 60%;
+        /* background-image: linear-gradient(to top left, black , rgb(255, 140, 0)) */
+        /* cursor: pointer; */
+    }
+    .card-inside{
+      padding-left: 15px;
+    }
+    .noCourse{
+      height: 80%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .navbar-collapse{
+      flex-grow: 0;
+    }
+    .container-fluid{
+      padding-right: 2%;
+    }
+    .form-css{
+      /* margin: 0px auto; */
+      margin-left: 5%;
+    }
+    .content h5{
+      font-size: 18px;
+      font-weight: 600;
+      min-height: 50px;
+      max-height: 50px;
+    }
+    .content p{
+      font-size: 12px;
+    }
+    .content a{
+      font-size: 14px;
+      text-decoration: none;
+      color: rgba(246,129,33,255);
+    }
+    .main-container{
+      display: grid;
+      min-height: 484px;
+      grid-template-columns: 20% 80%;
+    }
+
+    /* sidebar */
+    section{
+      padding: 20px 0px;
+    }
+    .sidebar{
+      border-left: 2px solid #dfdede;
+      height: fit-content;
+      padding: 10px 20px;
+    }
+    section a{
+      display: block;
+      color: black;
+      margin: 5px 0px;
+    }
+    /* sidebar */
+    .searchbar{
+        width: 100%;
+        display: flex;
+        margin-bottom: 20px;
+    }
+    .fa{
+        padding: 0px 10px;
+    }
+    .search{
+        padding: 5px 10px;
+        width: 100%;
+    }
+    .course-card{
+        border: 1px solid #b6b6b6;
+        padding: 10px 20px;
+        width: 100%;
+        border-radius: 10px;
+        display: block;
+        margin: 5px 0px;
+        margin-right: 20px;
+        /* box-shadow: 0px 0px 15px 0px #c7c7c7; */
+    }
+    .course-card p{
+        text-decoration: none;
+        font-weight: 600;
+        margin-bottom: 0px;
+    }
+    .courses{
+        overflow-y: scroll;
+        /* max-height: 40%; */
+        max-height: 427px;
+        padding: 10px;
+        padding-right: 4px;
+        border: 2px solid black;
+        border-radius: 15px;
+    }
+    .content{
+      padding: 10px 10px 50px 10px;
+      display: flex;
+      margin: 20px auto;
+      /* flex-grow: 1; */
+      flex-basis: 25%;
+      flex-wrap: wrap;
+      justify-items: center;
+      align-items: center;
+      justify-content: center;
+      justify-content: space-around;
+      width: 90%;
+      min-height: 462px;
+      max-height: 462px;
+    }
+    /* .courses2{
+      min-height: 462px;
+    } */
+
+
+    /* scroller */
+
+    div ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    div ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px #b6b6b6; 
+        border-radius: 10px;
+        margin: 10% 0%;
+    }
+    
+    /* Handle */
+    div ::-webkit-scrollbar-thumb {
+        background: rgba(246,129,33,255); 
+        border-radius: 10px;
+    }
+
+    /* Handle on hover */
+    div ::-webkit-scrollbar-thumb:hover {
+        background: rgba(246,129,33,255); 
+    }
+    .div ::-webkit-scrollbar-track-piece:end {
+        background: transparent;
+        margin-bottom: 10px; 
+    }
+
+    .div ::-webkit-scrollbar-track-piece:start {
+        background: transparent;
+        margin-top: 10px;
+    }
+
+    /* button css */
+    .front {
+      will-change: transform;
+      transition: transform 250ms;
+    }
+
+    .pushable:hover .front {
+      transform: translateY(-6px);
+    }
+    
+    .pushable:active .front {
+      transform: translateY(-2px);
+    }
+    .pushable {
+      background: hsl(340deg 100% 32%);
+      border: none;
+      border-radius: 12px;
+      margin-right: 4%;
+      padding: 0;
+      cursor: pointer;
+    }
+    .front {
+      display: block;
+      padding: 1px 10px;
+      border-radius: 12px;
+      font-size: 16px;
+      background: hsl(345deg 100% 47%);
+      color: white;
+      transform: translateY(-4px);
+    }
+
+    .pushable:focus:not(:focus-visible) {
+      outline: none;
+    }
+
+    @media screen and ( max-width:1560px ) {
+        .card{
+            margin:10px 0px;
+        }
+    }
+
+    @media screen and ( max-width: 1480px ) {
+        .content{
+            grid-template-columns: 50% 50%;
+        }
+    }
+    @media screen and ( max-width: 750px ) {
+        .main-container{
+          display: block;
+        }
+    }
+  </style>
+
+
+{% endblock content %}

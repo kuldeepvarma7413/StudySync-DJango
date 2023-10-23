@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+{% block content %}
+
+	<style>
+
+		/* Form styling */
+		form {
+			margin: 50px auto;
+			width: 50%;
+			padding: 20px;
+			border: 2px solid black;
+			border-radius: 10px;
+			/* animation: slidein 2s ease-in-out; */
+		}
+
+		label {
+			display: block;
+			margin-top: 10px;
+		}
+
+		input[type="radio"] {
+			margin-right: 10px;
+		}
+
+		input[type="submit"] {
+			margin-top: 20px;
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		input[type="submit"]:hover {
+			background-color: #3e8e41;
+		}
+	</style>
+<body>
+	<form method="POST">
+        {% csrf_token %}
+		<h2>Report a Bug or Suggest a Feature</h2>
+		<label>
+			<input type="radio" name="type" value="bug" checked> Bug
+		</label>
+		<label>
+			<input type="radio" name="type" value="feature"> Feature Suggestion
+		</label>
+		<label>
+			Details:
+			<textarea name="details" rows="5" cols="40"></textarea>
+		</label>
+		<label>
+			Name:
+			<input type="text" name="name">
+		</label>
+        {% if messages %}
+            <ul class="messages" style="list-style: none; color: red;">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+		<input type="submit" value="Submit">
+	</form>
+
+{% endblock content %}
