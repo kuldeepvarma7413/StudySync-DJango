@@ -187,3 +187,8 @@ def pdfview(request):
     syllabus=Syllabus.objects.filter(Q(id__icontains=q))
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
+
+
+# temp views
+def landing(request):
+    return render(request, "base/landing.html")

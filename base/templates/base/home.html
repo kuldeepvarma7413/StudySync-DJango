@@ -5,13 +5,15 @@
       <div class="sidebar">
         <p>Select Course </p>
         <div class="searchbar">
-            <input type="text" placeholder="Search" class="search">
+          <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
             <button><i class="fa fa-search"></i></button>
         </div>
         <div class="courses">
-          {% for course in courses %}
-            <a href="{% url 'home' %}?q={{course.name}}"><div class="course-card"><p>{{ course.name }}</p></div></a>
-          {% endfor %}
+          <ol style="list-style: none;">
+            {% for course in courses %}
+              <a href="{% url 'home' %}?q={{course.name}}"><li class="course-card course-names">{{ course.name }}</li></a>
+            {% endfor %}
+          </ol>
         </div>
       </div>
     </section>
@@ -23,7 +25,7 @@
             </span>
           </button>
         </div>
-        <div class="content courses">
+        <div class="content files">
             {% if messages %}
             <ul class="messages noCourse" style="list-style: none; color: red;">
               {% for message in messages %}
@@ -41,7 +43,7 @@
                         <p>
                           <h5>{{ file.title }} | {{ file.courseCode }}</h5>
                         </p>
-                        <p style="color: black;">{{ file.uploaded }}</p>
+                        <p>{{ file.uploaded }}</p>
                         <a href="/media/{{ file.fileupload }}" download="{{ file.title }}">Download</a>
                       </div>
                     </a>
@@ -51,6 +53,23 @@
         {% endif %}
     </div>
   </div>
+
+  <script>
+    function search_course() { 
+      let input = document.getElementById('searchbar').value 
+      input=input.toUpperCase(); 
+      let x = document.getElementsByClassName('course-names'); 
+        
+      for (i = 0; i < x.length; i++) {  
+          if (!x[i].innerHTML.toUpperCase().includes(input)) { 
+              x[i].style.display="none"; 
+          } 
+          else { 
+              x[i].style.display="list-item";                  
+          } 
+      } 
+  } 
+  </script>
 
 
   <style>
@@ -79,6 +98,15 @@
         grid-template-columns: 40% 60%;
         /* background-image: linear-gradient(to top left, black , rgb(255, 140, 0)) */
         /* cursor: pointer; */
+    }
+    .card:hover{
+      background-color: rgba(246,129,33,255);
+      color: white;
+      transition: ease-in 0.2s;
+      scale: 102%;
+    }
+    .card:hover a, .card:hover p{
+      color: black;
     }
     .card-inside{
       padding-left: 15px;
@@ -156,34 +184,49 @@
         margin-right: 20px;
         /* box-shadow: 0px 0px 15px 0px #c7c7c7; */
     }
+    .course-card:hover{
+      transition: ease 0.2s;
+      color: white;
+      background-color: rgba(246,129,33,255);
+    }
     .course-card p{
         text-decoration: none;
         font-weight: 600;
         margin-bottom: 0px;
     }
+    ol{
+      margin: 0px;
+      padding: 0px;
+    }
     .courses{
         overflow-y: scroll;
         /* max-height: 40%; */
-        max-height: 427px;
+        height: 53.5vh;
         padding: 10px;
         padding-right: 4px;
         border: 2px solid black;
         border-radius: 15px;
     }
+    .files{
+        overflow-y: scroll;
+        /* max-height: 40%; */
+        height: 58vh;
+        border: 2px solid black;
+        border-radius: 15px;
+    }
     .content{
-      padding: 10px 10px 50px 10px;
+      padding: 10px;
       display: flex;
       margin: 20px auto;
       /* flex-grow: 1; */
-      flex-basis: 25%;
+      overflow-x: hidden;
+      /* flex-basis: 25%; */
       flex-wrap: wrap;
       justify-items: center;
       align-items: center;
       justify-content: center;
       justify-content: space-around;
       width: 90%;
-      min-height: 462px;
-      max-height: 462px;
     }
     /* .courses2{
       min-height: 462px;
