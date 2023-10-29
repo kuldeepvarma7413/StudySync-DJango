@@ -38,7 +38,7 @@ def loginPage(request):
     page='login'
 
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('ppt-page')
     else:
         logout(request)
 
@@ -49,7 +49,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('ppt-page')
         else:
             messages.error(request, "Invalid Email Id or password.")
             return redirect('login')
@@ -65,13 +65,13 @@ def logoutUser(request):
 
 
 @login_required(login_url='login')
-def homePage(request):
+def pptPage(request):
     courses=Courses.objects.all()
 
     if request.GET.get('q')==None:
         msgs=["Please select a course."]
         context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/home.html', context)
+        return render(request, 'base/ppt_page.html', context)
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
@@ -79,10 +79,10 @@ def homePage(request):
     if not Files:
         msgs=["No files found."]
         context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/home.html', context)
+        return render(request, 'base/ppt_page.html', context)
 
     context={'courses':courses, 'files':Files}
-    return render(request, 'base/home.html', context)
+    return render(request, 'base/ppt_page.html', context)
 
 
 # work on it
@@ -190,5 +190,5 @@ def pdfview(request):
 
 
 # temp views
-def landing(request):
+def homePage(request):
     return render(request, "base/landing.html")

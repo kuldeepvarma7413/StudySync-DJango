@@ -32,15 +32,12 @@ urlpatterns = [
     path('Error/',views.Errorpage, name="Error"),
     
     path('home',views.homePage, name="home" ),
+    path('ppt-page',views.pptPage, name="ppt" ),
     path('pdfview',views.pdfview, name="pdfview" ),
-    # path('home/{course}/',views.coursepage, name="course" ),
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
 
-
-
-    path('landing/',views.landing ,name = "google"),
 
 ]
 if settings.DEBUG:
