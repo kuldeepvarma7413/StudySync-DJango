@@ -34,10 +34,14 @@ CSRF_TRUSTED_ORIGINS = ['https://your-domain.com', 'https://www.your-domain.com'
 
 
 SITE_ID=2
-SOCIALACCOUNT_LOGIN_ON_GET=True # Allow user to redirect to google login page 
+SOCIALACCOUNT_LOGIN_ON_GET=True
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True# Allow user to redirect to google login page 
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+   'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    'django.contrib.redirects',
     "allauth.socialaccount.providers.google"
     
 ]
@@ -71,6 +76,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    # 'base.middleware.AdminHomepageRedirectMiddleware',
+    
+    
 ]
 
 ROOT_URLCONF = 'studysync.urls'
@@ -159,6 +168,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = "/login"
 LOGOUT_REDIRECT_URL = "/"
 

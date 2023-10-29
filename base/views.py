@@ -16,7 +16,6 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 
 
 # Create your views here.
-
 @login_required
 def google_authentication_view(request):
     try:
@@ -27,13 +26,16 @@ def google_authentication_view(request):
         # For example, you could redirect to an error page
         return HttpResponse(status=201)
     
-def Errorpage(request, exception):
-        return render(request,'Error.html' , status=404)
     
+    
+    
+    
+        
+def Errorpage(request):
+    return redirect('Error')
 
     
-    
-    
+        
 def loginPage(request):
     page='login'
 
@@ -58,36 +60,54 @@ def loginPage(request):
         return render(request, 'base/login.html', context)
 
 
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
 
 
+# def admin_home(request):
+#     if request.user.is_staff:
+#         return()
+#     # Your view logic here
+#     return render(request, 'login.html')
+
+
+
 
 @login_required(login_url='login')
 def homePage(request):
-    courses=Courses.objects.all()
+    page='login'
+    if request.user.is_authenticated and not request.user.is_staff:
+        courses=Courses.objects.all()
 
-    if request.GET.get('q')==None:
-        msgs=["Please select a course."]
-        context={'courses':courses, 'messages':msgs}
+        if request.GET.get('q')==None:
+            msgs=["Please select a course."]
+            context={'courses':courses, 'messages':msgs}
+            return render(request, 'base/home.html', context)
+
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        Files=files.objects.filter(Q(courseCode__icontains=q))
+        
+        if not Files:
+            msgs=["No files found."]
+            context={'courses':courses, 'messages':msgs}
+            return render(request, 'base/home.html', context)
+
+        context={'courses':courses, 'files':Files}
         return render(request, 'base/home.html', context)
-
-    q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    Files=files.objects.filter(Q(courseCode__icontains=q))
-    
-    if not Files:
-        msgs=["No files found."]
-        context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/home.html', context)
-
-    context={'courses':courses, 'files':Files}
-    return render(request, 'base/home.html', context)
+    else:
+        print(True)
+        context={'page':page}
+        return render(request, 'base/login.html', context)
 
 
 # work on it
 
 #register
+
+
+
 
     
 def register(request):
@@ -125,6 +145,7 @@ def register(request):
             if form.is_valid():
                 user = form.save(commit=False)
                 user.email = email
+                user.password=password1
                 form.save()
                 messages.success(request, "Registration successful!")
                 return redirect('login')  
@@ -137,6 +158,9 @@ def register(request):
         form = userForm()
         
         return render(request, 'base/register.html', {'form': form})
+    
+    
+    
     
 def Forgotpassword(request):
     if request.method == 'POST':
@@ -187,3 +211,4 @@ def pdfview(request):
     syllabus=Syllabus.objects.filter(Q(id__icontains=q))
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
+
