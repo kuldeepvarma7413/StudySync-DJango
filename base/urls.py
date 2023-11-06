@@ -32,11 +32,14 @@ urlpatterns = [
     path('Error/',views.Errorpage, name="Error"),
     
     path('home',views.homePage, name="home" ),
-    path('ppt-page',views.pptPage, name="ppt" ),
+    path('ppt-page',views.pptPage, name="ppt-page" ),
     path('pdfview',views.pdfview, name="pdfview" ),
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
+
+    # unavailable pages
+    path('unavailable-app/',views.unavailableAppPage, name="unavailable-app" ),
 
 
 ]

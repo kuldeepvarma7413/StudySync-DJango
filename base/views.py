@@ -192,3 +192,10 @@ def pdfview(request):
 # temp views
 def homePage(request):
     return render(request, "base/landing.html")
+
+
+# unavailable-app
+def unavailableAppPage(request):
+    msgs=["Application in progress"]
+    context={'messages': msgs}
+    return render(request, "base/unavailable.html", context)
