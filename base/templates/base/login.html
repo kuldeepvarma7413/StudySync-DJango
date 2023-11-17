@@ -28,7 +28,7 @@
             <label for="email">Email id</label>
             <input type="email" id="email" name="email" class="email">
     
-            <label for="password">Password</label>
+            <label for="email">Password</label>
             <input type="password" id="password1" name="password1" class="email">
 
     
@@ -56,6 +56,7 @@
 <style>
     /* theme color */
     /* rgba(246,129,33,255) */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
     *{
         padding: 0px;
         margin: 0px;
@@ -91,12 +92,14 @@
         background-color: rgba(246,129,33,255);
     }
     .google-btn{
-        margin: 30px auto;
+        margin: 20px auto;
+        margin-bottom: 30%;
         display: flex;
         align-items: center;
         border: 2px solid rgba(246,129,33,255);
         border-radius: 15px;
         padding: 6px 12px;
+        height: 40px;
     }
     .back-box{
         position: absolute;
@@ -124,6 +127,51 @@
         cursor: pointer;
     }
 
+    .bold-text {
+        font-weight: bold;
+        margin-bottom: 10px;
+        
+    }
+    .image-container{
+        margin-right: 10px;
+        margin-top: 10px;
+    }
+
+
+    @media (max-width:1200px){
+    .back-box p{ 
+        height:50px; 
+    }
+}
+@media (max-width:767px){
+    .btn input{ 
+        height:40px; 
+    }
+}
+
+
+@keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(5px);
+        }
+        50% {
+            transform: translateX(-5px);
+        }
+        75% {
+            transform: translateX(5px);
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    /* Apply the animation to the form on hover */
+    form:hover {
+        animation: shake 0.4s;
+    }
     
 
 

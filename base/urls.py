@@ -23,6 +23,7 @@ from allauth.socialaccount.views import SignupView
 urlpatterns = [
 
     path('',views.homePage, name= "home" ),
+    # path('admin_home/', views.admin_home, name='admin_home'),
 
     path('login/',views.loginPage, name="login" ),
     path('Forgot_Password/',views.Forgotpassword, name="Forgot_Password" ),

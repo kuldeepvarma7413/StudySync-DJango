@@ -16,7 +16,6 @@ from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 
 
 # Create your views here.
-
 @login_required
 def google_authentication_view(request):
     try:
@@ -27,13 +26,16 @@ def google_authentication_view(request):
         # For example, you could redirect to an error page
         return HttpResponse(status=201)
     
-def Errorpage(request, exception):
-        return render(request,'Error.html' , status=404)
     
+    
+    
+    
+        
+def Errorpage(request):
+    return redirect('Error')
 
     
-    
-    
+        
 def loginPage(request):
     page='login'
 
@@ -58,9 +60,18 @@ def loginPage(request):
         return render(request, 'base/login.html', context)
 
 
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+
+# def admin_home(request):
+#     if request.user.is_staff:
+#         return()
+#     # Your view logic here
+#     return render(request, 'login.html')
+
 
 
 
@@ -88,6 +99,9 @@ def pptPage(request):
 # work on it
 
 #register
+
+
+
 
     
 def register(request):
@@ -125,6 +139,7 @@ def register(request):
             if form.is_valid():
                 user = form.save(commit=False)
                 user.email = email
+                user.password=password1
                 form.save()
                 messages.success(request, "Registration successful!")
                 return redirect('login')  
@@ -137,6 +152,9 @@ def register(request):
         form = userForm()
         
         return render(request, 'base/register.html', {'form': form})
+    
+    
+    
     
 def Forgotpassword(request):
     if request.method == 'POST':
@@ -188,6 +206,7 @@ def pdfview(request):
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
 
+<<<<<<< HEAD
 
 # temp views
 def homePage(request):
@@ -199,3 +218,5 @@ def unavailableAppPage(request):
     msgs=["Application in progress"]
     context={'messages': msgs}
     return render(request, "base/unavailable.html", context)
+=======
+>>>>>>> f859343f23c6b9881bc84bd088f9dbd01435160b

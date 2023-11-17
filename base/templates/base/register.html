@@ -30,10 +30,10 @@
             <input type="email" id="email" name="email">
     
             <label for="password">Password</label>
-            <input type="password" id="password1" name="password1">
+            <input type="password" id="password1" name="password1" placeholder="" required>
 
             <label for="password">Confirm Password</label>
-            <input type="password" id="password2" name="password2">
+            <input type="password" id="password2" name="password2" placeholder="" required>
 
             <!-- <p id="message"></p> -->
 
@@ -48,10 +48,12 @@
             <hr style="margin-top: 40px;">
             <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Sign Up with</p>
 
+            
             {% load socialaccount %}
+        
             <button class="google-btn" id="google-sign-in-button">
                 <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text">Sign in with Google</a>
+                <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text" >Sign in with Google</a>
                 
             </button>
 
@@ -170,6 +172,32 @@
         margin-right: 10px;
         margin-top: 10px;
     }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+        25% {
+            transform: translateX(5px);
+        }
+        50% {
+            transform: translateX(-5px);
+        }
+        75% {
+            transform: translateX(5px);
+        }
+        100% {
+            transform: translateX(0);
+        }
+    }
+
+    /* Apply the animation to the form on hover */
+    form:hover {
+        animation: shake 0.4s;
+    }
+
+    
+   
 
 
     /* google copied
