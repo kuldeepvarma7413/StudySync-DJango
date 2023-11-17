@@ -1,4 +1,5 @@
 {% extends "base/base.html" %}
+{% load static %}
 {% block content %}
 <div class="main-container">
     <section>
@@ -29,7 +30,7 @@
             {% if messages %}
             <ul class="messages noCourse" style="list-style: none; color: red;">
               {% for message in messages %}
-                  <img src="/static/images/hand.png" alt="">
+                  <img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
                   <li>{{ message }}</li>
                   {% endfor %}
               </ul>
@@ -113,8 +114,10 @@
     }
     .noCourse{
       height: 80%;
+      padding: 50px 0px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
     }
     .navbar-collapse{
