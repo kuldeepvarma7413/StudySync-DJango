@@ -40,7 +40,7 @@ def loginPage(request):
     page='login'
 
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('ppt-page')
     else:
         logout(request)
 
@@ -51,7 +51,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('ppt-page')
         else:
             messages.error(request, "Invalid Email Id or password.")
             return redirect('login')
@@ -76,30 +76,24 @@ def logoutUser(request):
 
 
 @login_required(login_url='login')
-def homePage(request):
-    page='login'
-    if request.user.is_authenticated and not request.user.is_staff:
-        courses=Courses.objects.all()
+def pptPage(request):
+    courses=Courses.objects.all()
 
-        if request.GET.get('q')==None:
-            msgs=["Please select a course."]
-            context={'courses':courses, 'messages':msgs}
-            return render(request, 'base/home.html', context)
+    if request.GET.get('q')==None:
+        msgs=["Please select a course."]
+        context={'courses':courses, 'messages':msgs}
+        return render(request, 'base/ppt_page.html', context)
 
-        q=request.GET.get('q') if request.GET.get('q')!=None else ''
-        Files=files.objects.filter(Q(courseCode__icontains=q))
-        
-        if not Files:
-            msgs=["No files found."]
-            context={'courses':courses, 'messages':msgs}
-            return render(request, 'base/home.html', context)
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    Files=files.objects.filter(Q(courseCode__icontains=q))
+    
+    if not Files:
+        msgs=["No files found."]
+        context={'courses':courses, 'messages':msgs}
+        return render(request, 'base/ppt_page.html', context)
 
-        context={'courses':courses, 'files':Files}
-        return render(request, 'base/home.html', context)
-    else:
-        print(True)
-        context={'page':page}
-        return render(request, 'base/login.html', context)
+    context={'courses':courses, 'files':Files}
+    return render(request, 'base/ppt_page.html', context)
 
 
 # work on it
@@ -212,3 +206,17 @@ def pdfview(request):
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
 
+<<<<<<< HEAD
+
+# temp views
+def homePage(request):
+    return render(request, "base/landing.html")
+
+
+# unavailable-app
+def unavailableAppPage(request):
+    msgs=["Application in progress"]
+    context={'messages': msgs}
+    return render(request, "base/unavailable.html", context)
+=======
+>>>>>>> f859343f23c6b9881bc84bd088f9dbd01435160b

@@ -38,22 +38,13 @@
             </div>
             <p style="text-align: left;">Don't have an account? <a href="/register">Create New</a></p>
 
-            {% comment %} <hr style="margin-top: 40px;"> {% endcomment %}
-            {% comment %} <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Login with</p>
-
-            <button class="google-btn">
-                <img src="/static/images/google-icon.png" width="15px" style="margin-right: 5px;">
-                <p style="display: inline-block; color: rgba(246,129,33,255);"></p>
-            </button> {% endcomment %}
             <hr style="margin-top: 40px;">
-            <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Sign In with</p>
+            <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Login with</p>
 
-            
             {% load socialaccount %}
-        
             <button class="google-btn" id="google-sign-in-button">
                 <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text" >Sign in with Google</a>
+                <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text">Log in with Google</a>
                 
             </button>
 
@@ -66,7 +57,7 @@
     /* theme color */
     /* rgba(246,129,33,255) */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-     *{
+    *{
         padding: 0px;
         margin: 0px;
     }

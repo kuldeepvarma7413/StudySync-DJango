@@ -1,0 +1,29 @@
+
+
+<!-- start content -->
+<div class="content">
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
+
+    <!-- style -->
+<style>
+    .content{
+        position: absolute;
+        top: 38%;
+        left: 36%;
+        padding: 20px 40px;
+        border-radius: 30px;
+        box-shadow: 0px 0px 28px 3px rgba(246,129,33,255);
+    }
+    footer{
+        position: fixed;
+        bottom: 0;
+    }
+    body{
+        background-color: white;
+    }
+</style>

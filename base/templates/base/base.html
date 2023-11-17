@@ -11,9 +11,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body id="top">
   <header>
     <nav class="navbar navbar-expand-lg head-bg">
             <div class="container-fluid">
@@ -26,9 +28,12 @@
                 <span class="navbar-toggler-icon"></span>
               </button>
               <div class="collapse margin-nav navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <ul class="navbar-nav me-auto mb-2 mb-lg-0" id="menu-item">
+                  <!-- <li class="nav-item">
+                    <a class="nav-link " aria-current="page" href='/home'>Home</a>
+                  </li> -->
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href='/home'>Home</a>
+                    <a class="nav-link active" aria-current="page" href='/ppt-page'>PPT's</a>
                   </li>
                   {% comment %} <li class="nav-item">
                     <a class="nav-link" href="#">CA's</a>
@@ -67,12 +72,13 @@
         </header>
         {% block content %}
 
-        {% endblock %}
+        {% endblock content %}
 
 
     <footer>
         <ul class="nav justify-content-center">
         <li class="nav-item"><a href="/home" class="nav-link px-2 text-muted">Home</a></li>
+        <li class="nav-item"><a href="/ppt-page" class="nav-link px-2 text-muted">PPT's</a></li>
         <li class="nav-item"><a href="features" class="nav-link px-2 text-muted">Features</a></li>
         {% comment %} <li class="nav-item"><a href="#" class="nav-link px-2 text-muted" title="disabled">Pricing</a></li> {% endcomment %}
         <li class="nav-item"><a href="about-us" class="nav-link px-2 text-muted" title="disabled">About</a></li>
@@ -89,10 +95,10 @@
         margin: 0px;
         /* color: white; */
     }
-    body{
-      /* background-image: linear-gradient(to bottom right, black , rgb(255, 140, 0)) */
-      /* background-image: linear-gradient(to bottom right, rgb(208, 118, 44) , rgb(151, 47, 6)) */
-    }
+    /* body{
+      background-image: linear-gradient(to bottom right, black , rgb(255, 140, 0))
+      background-image: linear-gradient(to bottom right, rgb(208, 118, 44) , rgb(151, 47, 6))
+    } */
     a{
       text-decoration: none;
       /* color: orange; */
@@ -116,7 +122,7 @@
     header img{
         border-radius: 20px;
         margin-right: 10px;
-        filter: brightness(0) invert(0);
+        /* filter: brightness(0) invert(0); */
         height: 60px;
         padding: 8px 13px;
         /* margin-right: 150px; */
@@ -133,6 +139,9 @@
         background-color: black;
         color: rgba(246,129,33,255);
     }
+    .nav-link{
+      color: rgba(0, 0,0, 0.65);
+    }
     .navbar-nav li{
         margin: 0px 15px;
     }
@@ -145,11 +154,26 @@
     /* footer */
     footer{
         background-color: black;
-        position: fixed;
-        bottom: 0;
+        /* position: fixed; */
+        /* bottom: 0; */
+        /* margin-top: -100px; */
         width: 100%;
     }
     .text-muted{
         color: rgba(246,129,33,255) !important;
     }
 </style>
+
+<script>
+  var headerItem=document.getElementById('menu-item');
+  var buttons=headerItem.getElementsByClassName("nav-link");
+  for(var i=0; i<buttons.length; i++){
+    buttons[i].addEventListener("click", function(){
+      var current=headerItem.getElementsByClassName("active");
+      if(current.length>0){
+        current[0].className=current[0].className.replace("active", "");
+      }
+      this.className+="active";
+    });
+  }
+</script>
