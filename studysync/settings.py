@@ -54,8 +54,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     'django.contrib.redirects',
-    "allauth.socialaccount.providers.google"
-    
+    "allauth.socialaccount.providers.google",
+    'jquery'    
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

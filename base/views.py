@@ -206,10 +206,9 @@ def pdfview(request):
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
 
-<<<<<<< HEAD
-
 # temp views
 def homePage(request):
+    # logout(request)
     return render(request, "base/landing.html")
 
 
@@ -218,5 +217,3 @@ def unavailableAppPage(request):
     msgs=["Application in progress"]
     context={'messages': msgs}
     return render(request, "base/unavailable.html", context)
-=======
->>>>>>> f859343f23c6b9881bc84bd088f9dbd01435160b

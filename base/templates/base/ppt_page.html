@@ -4,15 +4,16 @@
 <div class="main-container">
     <section>
       <div class="sidebar">
-        <p>Select Course </p>
-        <div class="searchbar">
+        <!-- <p>Select Course </p> -->
+        <!-- <div class="searchbar">
           <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
             <button><i class="fa fa-search"></i></button>
-        </div>
+        </div> -->
         <div class="courses">
+          <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
           <ol style="list-style: none;">
             {% for course in courses %}
-              <a href="{% url 'ppt-page' %}?q={{course.name}}"><li class="course-card course-names">{{ course.name }}</li></a>
+              <a href="{% url 'ppt-page' %}?q={{course.name}}"><li class="course-card course-names"><h5>{{ course.name }}</h5></li></a>
             {% endfor %}
           </ol>
         </div>
@@ -20,13 +21,24 @@
     </section>
     <div>
         <div class="content-top">
-          <button class="pushable">
+          <button class="pushable" onclick="downloadAll()">
             <span class="front">
-              Download
+              Download All
             </span>
           </button>
         </div>
+        <script>
+          // add coursename on top
+          $(document).ready(function(){
+            $('li').on('click', function(){
+              console.log("hii");
+              $('li').removeClass('active');
+              $(this).toggleClass('active');
+            })
+          })
+        </script>
         <div class="content files">
+          <h5 id="coursename">PEA</h5>
             {% if messages %}
             <ul class="messages noCourse" style="list-style: none; color: red;">
               {% for message in messages %}
@@ -45,7 +57,7 @@
                           <h5>{{ file.title }} | {{ file.courseCode }}</h5>
                         </p>
                         <p>{{ file.uploaded }}</p>
-                        <a href="/media/{{ file.fileupload }}" download="{{ file.title }}">Download</a>
+                        <a href="/media/{{ file.fileupload }}" download="{{ file.title }}" class="downloadFile">Download</a>
                       </div>
                     </a>
                 </div> 
@@ -56,6 +68,14 @@
   </div>
 
   <script>
+    
+    function downloadAll(){
+      let files=document.getElementsByClassName('downloadFile');
+      for(var i=0; i<files.length; i++){
+        files[i].click();
+      }
+    }
+
     function search_course() { 
       let input = document.getElementById('searchbar').value 
       input=input.toUpperCase(); 
@@ -77,6 +97,9 @@
     *{
       animation: 3s linear .1s ease-in;
     }
+    body{
+      background-color: white;
+    }
     .content-top {
         padding-top: 30px;
         padding-bottom: 0px;
@@ -87,12 +110,11 @@
         margin-right: 5%;
     }
     .card {
-        margin: 10px 20px;
+        margin: 10px 10px !important;
         max-height: 300px;
         border-radius: 15px;
-        padding: 20px;
-        padding-left: 10px;
-        width: 350px;
+        padding: 10px;
+        width: 330px;
         border: none;
         box-shadow: 0px 0px 15px 0px #dfdddd;
         display: grid;
@@ -108,9 +130,6 @@
     }
     .card:hover a, .card:hover p{
       color: black;
-    }
-    .card-inside{
-      padding-left: 15px;
     }
     .noCourse{
       height: 80%;
@@ -133,8 +152,8 @@
     .content h5{
       font-size: 18px;
       font-weight: 600;
-      min-height: 50px;
-      max-height: 50px;
+      min-height: 40px;
+      /* max-height: 50px; */
     }
     .content p{
       font-size: 12px;
@@ -146,8 +165,22 @@
     }
     .main-container{
       display: grid;
+      padding-top: 55px;
       min-height: 484px;
       grid-template-columns: 20% 80%;
+    }
+    #coursename{
+      display: block;
+      font-size: 20px;
+      color: black;
+      background: rgba(246,129,33,255);
+      width: 100%;
+      text-align: center;
+      font-weight: 600;
+      padding: 5px;
+      margin-top: -16px;
+      position: sticky;
+      top: 0;
     }
 
     /* sidebar */
@@ -158,6 +191,10 @@
       border-left: 2px solid #dfdede;
       height: fit-content;
       padding: 10px 20px;
+    }
+    .sidebar p{
+      padding-bottom: 30px;
+      width: 99%;
     }
     section a{
       display: block;
@@ -174,8 +211,12 @@
         padding: 0px 10px;
     }
     .search{
-        padding: 5px 10px;
-        width: 100%;
+      position: sticky;
+      top: 0px;
+      margin-bottom: 20px;
+      background: white !important;
+      width: 100%;
+      border-radius: 0px !important;
     }
     .course-card{
         border: 1px solid #b6b6b6;
@@ -203,24 +244,27 @@
     }
     .courses{
         overflow-y: scroll;
+        position: relative;
+        margin-top: 55px;
         /* max-height: 40%; */
-        height: 53.5vh;
-        padding: 10px;
-        padding-right: 4px;
-        border: 2px solid black;
+        height: 75vh;
+        padding: 0px 10px 4px 10px;
+        /* border: 2px solid black; */
+        box-shadow: 0px 0px 10px 0px;
         border-radius: 15px;
     }
     .files{
         overflow-y: scroll;
         /* max-height: 40%; */
-        height: 58vh;
-        border: 2px solid black;
+        height: 75vh;
+        /* border: 2px solid black; */
+        box-shadow: 0px 0px 10px 0px;
         border-radius: 15px;
     }
     .content{
-      padding: 10px;
+      /* padding: 10px; */
       display: flex;
-      margin: 20px auto;
+      margin: 10px auto;
       /* flex-grow: 1; */
       overflow-x: hidden;
       /* flex-basis: 25%; */
@@ -228,7 +272,7 @@
       justify-items: center;
       align-items: center;
       justify-content: center;
-      justify-content: space-around;
+      justify-content: center;
       width: 90%;
     }
     /* .courses2{
@@ -239,7 +283,7 @@
     /* scroller */
 
     div ::-webkit-scrollbar {
-        width: 10px;
+        width: 7px;
     }
 
     /* Track */
