@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path , os
+from pathlib import Path , os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     'django.contrib.redirects',
-    "allauth.socialaccount.providers.google"
+    "allauth.socialaccount.providers.google",
+    "mail",
     
 ]
 SOCIALACCOUNT_PROVIDERS = {
@@ -81,6 +82,9 @@ MIDDLEWARE = [
     
     
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 
 ROOT_URLCONF = 'studysync.urls'
 
@@ -170,4 +174,13 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = "/login"
 LOGOUT_REDIRECT_URL = "/"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "mdzaidtalha6393@gmail.com"
+EMAIL_HOST_PASSWORD = "mgbt ydvh eorn aycg"
+ALLOWED_HOSTS = ['*']
 

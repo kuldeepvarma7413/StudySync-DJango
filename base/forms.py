@@ -21,3 +21,16 @@ class userForm(UserCreationForm):
         if commit:
             user.save()
         return user
+    
+    
+    
+class PasswordUpdateForm(forms.Form):
+    new_password = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Enter your new password'}),
+    )
+    
+    confirm_password = forms.CharField(
+        label='Confirm Password',
+        widget=forms.PasswordInput(attrs={'placeholder': 'Confirm your new password'}),
+    )

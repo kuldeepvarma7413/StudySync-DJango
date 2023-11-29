@@ -13,6 +13,33 @@
 			/* animation: slidein 2s ease-in-out; */
 		}
 
+		/* Style for the messages container */
+ul.messages {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Style for individual messages */
+ul.messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Style for success messages */
+ul.messages li.text-success {
+    background-color: #dff0d8; /* Success message background color */
+    color: #3c763d; /* Success message text color */
+}
+
+/* Style for error messages */
+ul.messages li.text-danger {
+    background-color: #f2dede; /* Error message background color */
+    color: #a94442; /* Error message text color */
+}
+
+
 		label {
 			display: block;
 			margin-top: 10px;
@@ -54,13 +81,15 @@
 			Name:
 			<input type="text" name="name">
 		</label>
-        {% if messages %}
-            <ul class="messages" style="list-style: none; color: red;">
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+		{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+				<li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% endif %}">
+					{{ message }}
+				</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
 		<input type="submit" value="Submit">
 	</form>
 

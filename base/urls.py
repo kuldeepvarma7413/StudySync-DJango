@@ -26,11 +26,13 @@ urlpatterns = [
     # path('admin_home/', views.admin_home, name='admin_home'),
 
     path('login/',views.loginPage, name="login" ),
-    path('Forgot_Password/',views.Forgotpassword, name="Forgot_Password" ),
-    path('OTP_Verification/',views.Otpverification, name="OTP_Verification" ),
+    path('Forgot_Password/',views.Forgot_password, name="Forgot_Password" ),
+    path('otp-verification/',views.verify_user_otp, name="otp-verification" ),
+    path('password_verification/',views. update_password_with_otp, name="password_verification" ),
     path('logout/',views.logoutUser, name="logout" ),
     path('register/',views.register, name="register" ),
-    path('Error/',views.Errorpage, name="Error"),
+    path('Error/',views.Errorpage, name="Error" ),
+   
     
     path('home',views.homePage, name="home" ),
     path('pdfview',views.pdfview, name="pdfview" ),

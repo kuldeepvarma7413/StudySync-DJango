@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
@@ -38,3 +39,16 @@ class Report(models.Model):
 
     def __str__(self):
         return self.email
+    
+    
+    
+class User_Email_verification(models.Model):
+    email = models.EmailField(max_length=50)
+    user = models.OneToOneField(User, on_delete=models.CASCADE , related_name='email_verification')
+    auth_token = models.CharField(max_length = 140, blank=True)
+    otp = models.CharField(max_length = 6, blank=True)
+    is_verified = models.BooleanField(default = False)
+    
+    def __str__(self):
+        return self.user.username
+    
