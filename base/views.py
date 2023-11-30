@@ -60,7 +60,7 @@ def loginPage(request):
     page='login'
 
     if request.user.is_authenticated:
-        return redirect('home')
+        return redirect('ppt-page')
     else:
         logout(request)
 
@@ -79,7 +79,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('ppt-page')
         else:
             messages.error(request, "Invalid Email Id or password.")
             return redirect('login')
@@ -104,30 +104,40 @@ def logoutUser(request):
 
 
 @login_required(login_url='login')
+<<<<<<< HEAD
 def homePage(request):
     page='login'
     form = UserCreationForm
     if request.user.is_authenticated and not request.user.is_staff:
         courses=Courses.objects.all()
+=======
+def pptPage(request):
+    courses=Courses.objects.all()
+>>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
 
-        if request.GET.get('q')==None:
-            msgs=["Please select a course."]
-            context={'courses':courses, 'messages':msgs}
-            return render(request, 'base/home.html', context)
+    if request.GET.get('q')==None:
+        msgs=["Please select a course."]
+        context={'courses':courses, 'messages':msgs}
+        return render(request, 'base/ppt_page.html', context)
 
-        q=request.GET.get('q') if request.GET.get('q')!=None else ''
-        Files=files.objects.filter(Q(courseCode__icontains=q))
-        
-        if not Files:
-            msgs=["No files found."]
-            context={'courses':courses, 'messages':msgs}
-            return render(request, 'base/home.html', context)
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    Files=files.objects.filter(Q(courseCode__icontains=q))
+    
+    if not Files:
+        msgs=["No files found."]
+        context={'courses':courses, 'messages':msgs}
+        return render(request, 'base/ppt_page.html', context)
 
+<<<<<<< HEAD
         context={'courses':courses, 'files':Files}
         return render(request, 'base/home.html', context)
     else:
         messages.error(request, "You are not allowed to login until you logout as the admin.")
         return render(request, 'base/login.html', {'form':form})
+=======
+    context={'courses':courses, 'files':Files}
+    return render(request, 'base/ppt_page.html', context)
+>>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
 
 
 # work on it
@@ -222,6 +232,7 @@ def pdfview(request):
     context={"files":Files , "syllabus":Syllabus}
     return render(request, "base/pdfview.html",context)
 
+<<<<<<< HEAD
 
 
 
@@ -375,3 +386,16 @@ def update_password_with_otp(request):
 
 
 
+=======
+# temp views
+def homePage(request):
+    # logout(request)
+    return render(request, "base/landing.html")
+
+
+# unavailable-app
+def unavailableAppPage(request):
+    msgs=["Application in progress"]
+    context={'messages': msgs}
+    return render(request, "base/unavailable.html", context)
+>>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
