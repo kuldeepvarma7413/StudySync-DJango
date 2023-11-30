@@ -102,18 +102,16 @@ def logoutUser(request):
 
 
 
+# /////////////////////////////////////////////////////////////////
+# @login_required(login_url='login')
+# def homePage(request):
+#     page='login'
+#     form = UserCreationForm
+#     if request.user.is_authenticated and not request.user.is_staff:
+#         courses=Courses.objects.all()
 
-@login_required(login_url='login')
-<<<<<<< HEAD
-def homePage(request):
-    page='login'
-    form = UserCreationForm
-    if request.user.is_authenticated and not request.user.is_staff:
-        courses=Courses.objects.all()
-=======
 def pptPage(request):
     courses=Courses.objects.all()
->>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
 
     if request.GET.get('q')==None:
         msgs=["Please select a course."]
@@ -127,17 +125,9 @@ def pptPage(request):
         msgs=["No files found."]
         context={'courses':courses, 'messages':msgs}
         return render(request, 'base/ppt_page.html', context)
-
-<<<<<<< HEAD
-        context={'courses':courses, 'files':Files}
-        return render(request, 'base/home.html', context)
-    else:
-        messages.error(request, "You are not allowed to login until you logout as the admin.")
-        return render(request, 'base/login.html', {'form':form})
-=======
+    
     context={'courses':courses, 'files':Files}
     return render(request, 'base/ppt_page.html', context)
->>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
 
 
 # work on it
@@ -229,10 +219,8 @@ def pdfview(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(id__icontains=q))
     syllabus=Syllabus.objects.filter(Q(id__icontains=q))
-    context={"files":Files , "syllabus":Syllabus}
+    context={"files":Files , "syllabus":syllabus}
     return render(request, "base/pdfview.html",context)
-
-<<<<<<< HEAD
 
 
 
@@ -384,9 +372,6 @@ def update_password_with_otp(request):
     
 
 
-
-
-=======
 # temp views
 def homePage(request):
     # logout(request)
@@ -398,4 +383,3 @@ def unavailableAppPage(request):
     msgs=["Application in progress"]
     context={'messages': msgs}
     return render(request, "base/unavailable.html", context)
->>>>>>> 2e6d27dcaf809e2af51872d852370bb9401aa602
