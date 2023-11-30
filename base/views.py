@@ -60,7 +60,7 @@ def loginPage(request):
     page='login'
 
     if request.user.is_authenticated:
-        return redirect('ppt-page')
+        return redirect('home')
     else:
         logout(request)
 
@@ -79,7 +79,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('ppt-page')
+            return redirect('home')
         else:
             messages.error(request, "Invalid Email Id or password.")
             return redirect('login')
