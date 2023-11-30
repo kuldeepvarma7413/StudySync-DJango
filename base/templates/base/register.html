@@ -10,7 +10,7 @@
     <title>Login | StudySync</title>
 </head>
 <body>
-    <div class="container" style="width: 40%; margin: 150px auto;">
+    <div class="container" style="width: 40%; margin: 150px auto; margin-top: 50px;">
         <p class="back-box box1"></p>
         <p class="back-box box2"></p>
         <form method="POST" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
@@ -18,14 +18,19 @@
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Sign Up</p>
 
             {% if messages %}
-            <ul class="messages" style="list-style: none; color: red;">
+            <ul class="messages">
                 {% for message in messages %}
-                <li>{{ message }}</li>
+                    <li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% endif %}">
+                        {{ message }}
+                    </li>
                 {% endfor %}
             </ul>
             {% endif %}
             <p>{{ formset.errors }} {{ formset.non_field_errors }}</p>
     
+            <label for="username">Username</label>
+            <input type="username" id="username" name="username">
+
             <label for="email">Email id</label>
             <input type="email" id="email" name="email">
     
@@ -172,6 +177,32 @@
         margin-right: 10px;
         margin-top: 10px;
     }
+    /* Style for the messages container */
+ul.messages {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Style for individual messages */
+ul.messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Style for success messages */
+ul.messages li.text-success {
+    background-color: #dff0d8; /* Success message background color */
+    color: #3c763d; /* Success message text color */
+}
+
+/* Style for error messages */
+ul.messages li.text-danger {
+    background-color: #f2dede; /* Error message background color */
+    color: #a94442; /* Error message text color */
+}
+
 
     @keyframes shake {
         0% {

@@ -1,12 +1,15 @@
 {
     "cSpell.words": [
         "allauth",
+        "enterotp",
         "Errorpage",
+        "Forgotpage",
         "Forgotpassword",
         "Otpverification",
         "pdfview",
         "redriect",
         "socialaccount",
         "studysync"
-    ]
+    ],
+    "liveServer.settings.port": 5501
 }
