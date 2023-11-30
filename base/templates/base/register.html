@@ -10,7 +10,7 @@
     <title>Login | StudySync</title>
 </head>
 <body>
-    <div class="container" style="width: 40%; margin: 150px auto;">
+    <div class="container" style="width: 40%; margin: 150px auto; margin-top: 50px;">
         <p class="back-box box1"></p>
         <p class="back-box box2"></p>
         <form method="POST" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
@@ -28,6 +28,9 @@
             {% endif %}
             <p>{{ formset.errors }} {{ formset.non_field_errors }}</p>
     
+            <label for="username">Username</label>
+            <input type="username" id="username" name="username">
+
             <label for="email">Email id</label>
             <input type="email" id="email" name="email">
     

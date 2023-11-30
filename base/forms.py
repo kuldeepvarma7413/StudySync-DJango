@@ -9,11 +9,11 @@ class userForm(UserCreationForm):
     
     class Meta:
         model = User
-        fields = ('email', 'password1', 'password2')
+        fields = ('username','email', 'password1', 'password2')
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.username = self.cleaned_data['email']  # Set the username to the email value
+        user.username = self.cleaned_data['username']  # Set the username to the email value
         user.email = self.cleaned_data['email']
     
     

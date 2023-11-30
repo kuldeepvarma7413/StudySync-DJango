@@ -23,6 +23,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth import update_session_auth_hash
+import re
 
 
 
@@ -45,7 +46,15 @@ def google_authentication_view(request):
 def Errorpage(request):
     return redirect('Error')
 
-    
+
+# checking email validation for checking user entered email or username
+# email regex
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+def checkEmail(emailOrUsername):
+    if (re.fullmatch(regex, emailOrUsername)):
+        return True
+    else:
+        return False
         
 def loginPage(request):
     page='login'
@@ -56,9 +65,17 @@ def loginPage(request):
         logout(request)
 
     if request.method=='POST':
-        email=request.POST['email'].lower()
+        emailOrUsername=request.POST['email'].lower()
         password=request.POST['password1']
-        user = authenticate(request, username=email, password=password)
+        username=""
+        if(checkEmail(emailOrUsername)):
+            # find username
+            curruser=User.objects.filter(Q(email__icontains=emailOrUsername))
+            username=curruser[0]
+        else:
+            username=emailOrUsername
+
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
@@ -124,10 +141,15 @@ def homePage(request):
 def register(request):
     form = userForm()  
     if request.method == 'POST': 
+        username = request.POST.get('username', '').lower()  
         email = request.POST.get('email', '').lower()  
         password1 = request.POST.get('password1', '') 
         password2 = request.POST.get('password2', '') 
 
+        
+        if not username:
+            messages.error(request, "Please fill the username.")
+            return render(request, 'base/register.html', {'form': form})
         
         if not email:
             messages.error(request, "Please fill in the email.")
@@ -154,6 +176,7 @@ def register(request):
             form = userForm(request.POST)
             if form.is_valid():
                 user = form.save(commit=False)
+                user.username=username
                 user.email = email
                 user.password=password1
                 form.save()
