@@ -13,7 +13,7 @@ from .models import Report , User_Email_verification
 from django.urls import reverse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
-import random , smtplib , email.message
+import random , smtplib , email.message , uuid
 from django.conf import settings
 from django.core.mail import EmailMessage , send_mail
 from django.template.loader import render_to_string
@@ -23,6 +23,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import get_object_or_404
 import re
 
 
@@ -234,12 +235,15 @@ def Forgot_password(request):
             return render(request, "base/Forgot_Password.html", {'form': form})          
         otp_token = random.randint(111111,999999)
         user_data = User.objects.filter(email=email)
-        if user_data:
-            request.session['email'] = email
-            request.session['otp_token']=otp_token
-            request.session['otp_generated_time'] = str(timezone.now()) 
+        if user_data.exists():
             for user in user_data:
-                user_verification = User_Email_verification.objects.create(user=user,otp = otp_token)
+                User_Email_verification.objects.filter(user=user).delete()
+                request.session['email'] = email
+                request.session['otp_token']=otp_token
+                request.session['otp_generated_time'] = str(timezone.now()) 
+                auth_token = uuid.uuid4()
+                auth_token_str = str(auth_token)
+                user_verification = User_Email_verification.objects.create(user=user,email=email,otp = otp_token,auth_token=auth_token_str)
                 print(email)
                 print(otp_token)
                 print(user_data)
@@ -294,7 +298,7 @@ def verify_user_otp(request):
                 otp_generated_time = datetime.strptime(otp_generated_time_str, "%Y-%m-%d %H:%M:%S.%f%z")
                 current_time = timezone.now()
                 time_difference = current_time - otp_generated_time
-                expiration_time_in_minutes = 10 
+                expiration_time_in_minutes = 1 
                 if time_difference.total_seconds() > expiration_time_in_minutes * 60:
             
                     messages.error(request, "Session expired. Please try again.")
@@ -319,6 +323,47 @@ def verify_user_otp(request):
 
         return redirect('Forgot_Password')
     
+    
+    
+def resend_email_verification_with_otp(request):
+    if not 'email' in request.session:
+        return redirect('login')
+    else:
+        email = request.session.get('email')
+        otp_token = random.randint(111111, 999999)
+
+        user_data = User.objects.filter(email=email)
+        if user_data.exists():
+            for user in user_data:
+                # Delete previous email and associated records
+                User_Email_verification.objects.filter(user=user).delete()
+                request.session['otp_token']=otp_token
+                request.session['otp_generated_time'] = str(timezone.now()) 
+
+                # Save new OTP and send a new email
+                auth_token = uuid.uuid4()
+                auth_token_str = str(auth_token)
+                user_verification = User_Email_verification.objects.create(user=user, email=email, otp=otp_token, auth_token=auth_token_str)
+
+                html_template = 'base/Email_OTP_Template.html'
+                html_message = render_to_string(html_template, {'otp_token': otp_token })  
+                text_content = strip_tags(html_message)          
+                
+                subject = "Welcome to StudySync"
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email,]
+
+                email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
+                email.attach_alternative(html_message, "text/html")
+                # Send the email
+                email.send()
+
+                messages.success(request, 'Enter the new 6-digit OTP sent to your registered email id.')
+                return render(request, 'base/otp-verification.html', {'form': userForm()})
+        
+        messages.error(request, "Session expired resend the OTP again")
+        return render(request, "base/Forgot_Password.html", {'form': userForm()})
+        
     
 
     
@@ -347,6 +392,12 @@ def update_password_with_otp(request):
                         user.set_password(new_password)
                         user.save()
                         update_session_auth_hash(request, user)
+                        
+                        user_verification = User_Email_verification.objects.filter(user__email=reset_email).first()
+                        if user_verification:
+                            user_verification.delete()
+                        
+                        
                         
                         request.session['otp_verified'] = True
                         

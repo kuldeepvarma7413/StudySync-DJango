@@ -28,6 +28,7 @@ urlpatterns = [
     path('login/',views.loginPage, name="login" ),
     path('Forgot_Password/',views.Forgot_password, name="Forgot_Password" ),
     path('otp-verification/',views.verify_user_otp, name="otp-verification" ),
+    path('resend_otp_verification/', views.resend_email_verification_with_otp, name="resend_otp_verification"), 
     path('password_verification/',views. update_password_with_otp, name="password_verification" ),
     path('logout/',views.logoutUser, name="logout" ),
     path('register/',views.register, name="register" ),
