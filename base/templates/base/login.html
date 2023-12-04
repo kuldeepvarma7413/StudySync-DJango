@@ -40,13 +40,13 @@
             </div>
             <p style="text-align: left;">Don't have an account? <a href="/register">Create New</a></p>
 
-            <hr style="margin-top: 40px;">
+            <hr style="margin-top: 15px;">
             <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Login with</p>
 
             {% load socialaccount %}
             <button class="google-btn" id="google-sign-in-button">
                 <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text">Log in with Google</a>
+                <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: rgba(246,129,33,255);">Log in with Google</a>
                 
             </button>
 
@@ -98,7 +98,7 @@
         margin-bottom: 30%;
         display: flex;
         align-items: center;
-        border: 2px solid rgba(246,129,33,255);
+        box-shadow: 0px 0px 6px black, 0px 0px 10px rgba(246,129,33,255) inset  ;
         border-radius: 15px;
         padding: 6px 12px;
         height: 40px;
@@ -140,44 +140,44 @@
     }
 
     ul.messages {
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-}
+        list-style: none;
+        padding: 10px;
+        margin: 0;
+    }
 
-/* Style for individual messages */
-ul.messages li {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 4px;
-}
+    /* Style for individual messages */
+    ul.messages li {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+    }
 
-/* Style for success messages */
-ul.messages li.text-success {
-    background-color: #dff0d8; /* Success message background color */
-    color: #3c763d; /* Success message text color */
-}
+    /* Style for success messages */
+    ul.messages li.text-success {
+        background-color: #dff0d8; /* Success message background color */
+        color: #3c763d; /* Success message text color */
+    }
 
-/* Style for error messages */
-ul.messages li.text-danger {
-    background-color: #f2dede; /* Error message background color */
-    color: #a94442; /* Error message text color */
-}
+    /* Style for error messages */
+    ul.messages li.text-danger {
+        background-color: #f2dede; /* Error message background color */
+        color: #a94442; /* Error message text color */
+    }
 
 
     @media (max-width:1200px){
-    .back-box p{ 
-        height:50px; 
+        .back-box p{ 
+            height:50px; 
+        }
     }
-}
-@media (max-width:767px){
-    .btn input{ 
-        height:40px; 
+    @media (max-width:767px){
+        .btn input{ 
+            height:40px; 
+        }
     }
-}
 
 
-@keyframes shake {
+    @keyframes shake {
         0% {
             transform: translateX(0);
         }
@@ -196,30 +196,7 @@ ul.messages li.text-danger {
     }
 
     /* Apply the animation to the form on hover */
-    form:hover {
+    .error{
         animation: shake 0.4s;
     }
-    
-
-
-    /* google copied
-    body:hover{
-    animation:  shake 0.2s  ;
-  }
-  
-  @keyframes shake{
-    0%{
-      transform: translateX(0)
-    }
-    25%{
-      transform: translateX(25px);
-    }
-      
-    50%{
-      transform: translateX(-25px);
-    }
-    100%{
-      transform: translateX(0px);
-    }
-  } */
 </style>

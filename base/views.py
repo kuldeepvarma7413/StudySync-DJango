@@ -92,7 +92,7 @@ def loginPage(request):
 
 def logoutUser(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 # def admin_home(request):
@@ -131,13 +131,6 @@ def pptPage(request):
     return render(request, 'base/ppt_page.html', context)
 
 
-# work on it
-
-#register
-
-
-
-
 
 def register(request):
     form = userForm()  
@@ -156,13 +149,15 @@ def register(request):
             messages.error(request, "Please fill in the email.")
             return render(request, 'base/register.html', {'form': form})
     
-            
         elif not password1:
             messages.error(request, "Please fill in the password.")
             return render(request, 'base/register.html', {'form': form})
+
+        # password regex
+        password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$'
         
-        elif password1 != password2:
-            messages.error(request, "Passwords do not match.")
+        if password1 != password2:
+            messages.error(request, "Passwords does'nt match.")
             return render(request, 'base/register.html', {'form': form})
         
         elif len(password1) < 6:
@@ -172,9 +167,16 @@ def register(request):
         elif len(password1) > 15:
             messages.error(request, "Password length must not exceed 15 characters.")
             return render(request, 'base/register.html', {'form': form})
+        elif isCommonPassword(password1):
+            messages.error(request, "Password should not be common like abc or 123.")
+            return render(request, 'base/register.html', {'form': form})
         
         else: 
             form = userForm(request.POST)
+            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+                messages.error(request, "user already exist.")
+                return render(request, 'base/register.html', {'form': form})
+                
             if form.is_valid():
                 user = form.save(commit=False)
                 user.username=username
@@ -190,10 +192,7 @@ def register(request):
         
     else:
         form = userForm()
-        
         return render(request, 'base/register.html', {'form': form})
-
-    
     
     
 @login_required(login_url='login')   
@@ -434,3 +433,16 @@ def unavailableAppPage(request):
     msgs=["Application in progress"]
     context={'messages': msgs}
     return render(request, "base/unavailable.html", context)
+
+
+
+
+
+
+############################################################
+###################### functions ###########################
+############################################################
+
+def isCommonPassword(password):
+    commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
+    return password.lower() in commonPasswords
