@@ -9,72 +9,59 @@
           <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
             <button><i class="fa fa-search"></i></button>
         </div> -->
+        <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
         <div class="courses">
-          <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
-          <ol style="list-style: none;">
-            {% for course in courses %}
-              <a href="{% url 'ppt-page' %}?q={{course.name}}"><li class="course-card course-names"><h5>{{ course.name }}</h5></li></a>
-            {% endfor %}
+          <ol id="course-items" style="list-style: none;">
+           
           </ol>
         </div>
       </div>
     </section>
     <div>
-        <div class="content-top">
-          <button class="pushable" onclick="downloadAll()">
-            <span class="front">
-              Download All
-            </span>
-          </button>
-        </div>
-        <script>
-          // add coursename on top
-          $(document).ready(function(){
-            $('li').on('click', function(){
-              console.log("hii");
-              $('li').removeClass('active');
-              $(this).toggleClass('active');
-            })
-          })
-        </script>
-        <div class="content files">
-          <h5 id="coursename">PEA</h5>
-            {% if messages %}
-            <ul class="messages noCourse" style="list-style: none; color: red;">
-              {% for message in messages %}
-                  <img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
-                  <li>{{ message }}</li>
-                  {% endfor %}
-              </ul>
-            {% else %}
-            {% for file in files %}
-              <div class="card">
-                  <a href="{% url 'pdfview' %}?q={{file.id}}" style="cursor: pointer;">
-                      <!-- <embed src="/media/{{ file.fileupload }}" alt="" height="100px" width="130px"> -->
-                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
-                      <div class="card-inside">
-                        <p>
-                          <h5>{{ file.title }} | {{ file.courseCode }}</h5>
-                        </p>
-                        <p>{{ file.uploaded }}</p>
-                        <a href="/media/{{ file.fileupload }}" download="{{ file.title }}" class="downloadFile">Download</a>
-                      </div>
-                    </a>
-                </div> 
-              {% endfor %}
+      <div class="courseCode-top-container">
+        <h5 style="text-align: center;" id="top-coursecode"></h5>
+      </div>
+        <div id="files-view" class="content courses" style="padding-top: 15px;">
+          <!-- dynamic insert -->
           </div>
-        {% endif %}
     </div>
   </div>
 
   <script>
+  const courseItems=document.getElementById('course-items');
+  const filesView=document.getElementById('files-view');
+  const noFileFound=`<div style="text-align: center; grid-column:2/span 2; grid-row: 2;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
+                    <p>No files Found. Select another one.</p></div>`
+  const fileCard= `<div class="card">
+                  <a href="{% url 'pdfview' %}?q=%FILE_ID%" style="cursor: pointer;">
+                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
+                      <div class="card-inside">
+                        <p>
+                          <h5>%FILE_TITLE%</h5>
+                        </p>
+                        <p>Unit : %FILE_UNIT%</p>
+                        <p>Course Code : %FILE_COURSECODE%</p>
+                        <p>Date Uploaded : %FILE_UPLOADED%</p>
+                        <!-- <a href="/media/%FILE_UPLOADED%" download="%FILE_TITLE%" class="downloadFile">Download</a> -->
+                      </div>
+                    </a>
+                </div> `
+
+    const listItemEl=`<li data-courseId=%COURSE_CODE% class="course-card course-names" id="%COURSE_ID%"><h5>%COURSE_NAME%</h5></li>`;
     
-    function downloadAll(){
-      let files=document.getElementsByClassName('downloadFile');
-      for(var i=0; i<files.length; i++){
-        files[i].click();
-      }
-    }
+    window.addEventListener('load',async()=>{
+      const coursesList=await fetch(`/get-courses`).then(res=>res.json()) ?? [];
+      courseItems.innerHTML='';
+      coursesList.forEach(course=>{
+        courseItems.insertAdjacentHTML('beforeEnd',listItemEl.replace('%COURSE_ID%',course.id).replace('%COURSE_CODE%',course.name).replace('%COURSE_NAME%',course.name));
+      });
+      // default card
+      const defaultCard = document.querySelector(`[data-courseId="${coursesList[0].name}"]`);
+      defaultCard.classList.add('default-card');
+      const defaultClick=document.querySelector('.default-card').click();
+    })
+    
+    
 
     function search_course() { 
       let input = document.getElementById('searchbar').value 
@@ -90,6 +77,35 @@
           } 
       } 
   } 
+
+  // 
+  
+  courseItems.addEventListener('click',async(event)=>{
+    const courseId=event.target.closest('[data-courseId]')?.dataset['courseid'];
+    courseItems.querySelectorAll('li').forEach(li => li.classList.remove('active'));
+    const courseItem=event.target.closest('li');
+    courseItem.classList.add('active');
+    courseItem.scrollIntoView({behaviour:'smooth',display:'block'})
+    // set value on top coursecode
+    const courseCodeTop=document.getElementById("top-coursecode").innerHTML=event.target.innerHTML;
+    // remove filter of search bar
+    const searchbar=document.getElementById('searchbar').value="";
+    search_course();
+    const res= courseId ? await fetch(`/ppt-page?q=${courseId}`).then(res=>res.json()) : [];
+    filesView.innerHTML=''
+    res.forEach(file=>{
+      const card=fileCard.replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
+      .replace('%FILE_UPLOADED%',file.uploaded).replace('%FILE_ID%',file.id).replace('%FILE_COURSECODE%',file.coursecode);
+      filesView.insertAdjacentHTML('beforeEnd',card);
+    });
+
+    if(res.length===0){
+      filesView.insertAdjacentHTML('beforeEnd',noFileFound);
+    }
+    
+  })
+
+
   </script>
 
 
@@ -99,6 +115,7 @@
     }
     body{
       background-color: white;
+      overflow-y: hidden;
     }
     .content-top {
         padding-top: 30px;
@@ -109,12 +126,11 @@
     .content-top a{
         margin-right: 5%;
     }
-    .card {
-        margin: 10px 10px !important;
+    .card a{
         max-height: 300px;
         border-radius: 15px;
         padding: 10px;
-        width: 330px;
+        width: 300px;
         border: none;
         box-shadow: 0px 0px 15px 0px #dfdddd;
         display: grid;
@@ -122,14 +138,9 @@
         /* background-image: linear-gradient(to top left, black , rgb(255, 140, 0)) */
         /* cursor: pointer; */
     }
-    .card:hover{
-      background-color: rgba(246,129,33,255);
-      color: white;
+    .card a:hover img{
+      scale: 105%;
       transition: ease-in 0.2s;
-      scale: 102%;
-    }
-    .card:hover a, .card:hover p{
-      color: black;
     }
     .noCourse{
       height: 80%;
@@ -149,14 +160,26 @@
       /* margin: 0px auto; */
       margin-left: 5%;
     }
-    .content h5{
-      font-size: 18px;
-      font-weight: 600;
-      min-height: 40px;
-      /* max-height: 50px; */
+    .courseCode-top-container{
+      height: 5.5rem;
+      padding: 10px;
+      background-color: rgba(246,129,33,255);
     }
-    .content p{
+    .courseCode-top-container h5{
+      font-size: 2rem;
+    }
+    .content h5{
       font-size: 12px;
+      font-weight: 400;
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* Number of lines to show */
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .content p{
+      font-size: 10px;
     }
     .content a{
       font-size: 14px;
@@ -164,10 +187,11 @@
       color: rgba(246,129,33,255);
     }
     .main-container{
+      position: fixed;
+      top: 72px;
+      width: 100%;
       display: grid;
-      padding-top: 55px;
-      min-height: 484px;
-      grid-template-columns: 20% 80%;
+      grid-template-columns: 15% 85%;
     }
     #coursename{
       display: block;
@@ -184,13 +208,10 @@
     }
 
     /* sidebar */
-    section{
-      padding: 20px 0px;
-    }
     .sidebar{
-      border-left: 2px solid #dfdede;
+      /* border-left: 2px solid #dfdede; */
       height: fit-content;
-      padding: 10px 20px;
+      /* padding: 10px 20px; */
     }
     .sidebar p{
       padding-bottom: 30px;
@@ -205,18 +226,21 @@
     .searchbar{
         width: 100%;
         display: flex;
-        margin-bottom: 20px;
     }
     .fa{
         padding: 0px 10px;
     }
     .search{
       position: sticky;
+      padding: 10px !important;
       top: 0px;
-      margin-bottom: 20px;
       background: white !important;
       width: 100%;
+      height: 5.5rem !important;
+      border: 1px solid !important;
       border-radius: 0px !important;
+      border-color: rgba(246,129,33,255) !important;
+      border-right: 7px solid rgba(246,129,33,255) !important;
     }
     .course-card{
         border: 1px solid #b6b6b6;
@@ -228,7 +252,7 @@
         margin-right: 20px;
         /* box-shadow: 0px 0px 15px 0px #c7c7c7; */
     }
-    .course-card:hover{
+    .active{
       transition: ease 0.2s;
       color: white;
       background-color: rgba(246,129,33,255);
@@ -245,35 +269,17 @@
     .courses{
         overflow-y: scroll;
         position: relative;
-        margin-top: 55px;
-        /* max-height: 40%; */
-        height: 75vh;
+        height: 84vh;
         padding: 0px 10px 4px 10px;
-        /* border: 2px solid black; */
-        box-shadow: 0px 0px 10px 0px;
-        border-radius: 15px;
-    }
-    .files{
-        overflow-y: scroll;
-        /* max-height: 40%; */
-        height: 75vh;
-        /* border: 2px solid black; */
-        box-shadow: 0px 0px 10px 0px;
-        border-radius: 15px;
     }
     .content{
-      /* padding: 10px; */
-      display: flex;
-      margin: 10px auto;
-      /* flex-grow: 1; */
       overflow-x: hidden;
-      /* flex-basis: 25%; */
-      flex-wrap: wrap;
-      justify-items: center;
-      align-items: center;
-      justify-content: center;
-      justify-content: center;
-      width: 90%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-rows: 0fr;
+      gap: 15px;
+      row-gap: 15px;
+      width: 100%;
     }
     /* .courses2{
       min-height: 462px;
@@ -289,14 +295,14 @@
     /* Track */
     div ::-webkit-scrollbar-track {
         box-shadow: inset 0 0 5px #b6b6b6; 
-        border-radius: 10px;
+        /* border-radius: 10px; */
         margin: 10% 0%;
     }
     
     /* Handle */
     div ::-webkit-scrollbar-thumb {
         background: rgba(246,129,33,255); 
-        border-radius: 10px;
+        /* border-radius: 10px; */
     }
 
     /* Handle on hover */
@@ -348,17 +354,6 @@
       outline: none;
     }
 
-    @media screen and ( max-width:1560px ) {
-        .card{
-            margin:10px 0px;
-        }
-    }
-
-    @media screen and ( max-width: 1480px ) {
-        .content{
-            grid-template-columns: 50% 50%;
-        }
-    }
     @media screen and ( max-width: 750px ) {
         .main-container{
           display: block;

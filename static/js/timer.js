@@ -1,7 +1,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     // Set the countdown duration in seconds (adjust as needed)
-    var countdownDuration = 600; // 5 minutes in this example
+    var countdownDuration = 60; // 5 minutes in this example
 
     function updateTimerDisplay(seconds) {
       var minutes = Math.floor(seconds / 60);

@@ -13,7 +13,7 @@ from .models import Report , User_Email_verification
 from django.urls import reverse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
-import random , smtplib , email.message
+import random , smtplib , email.message , uuid
 from django.conf import settings
 from django.core.mail import EmailMessage , send_mail
 from django.template.loader import render_to_string
@@ -23,7 +23,10 @@ from django.http import JsonResponse
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import get_object_or_404
 import re
+import json
+from datetime import date, datetime
 
 
 
@@ -60,7 +63,7 @@ def loginPage(request):
     page='login'
 
     if request.user.is_authenticated:
-        return redirect('ppt-page')
+        return redirect('home')
     else:
         logout(request)
 
@@ -79,7 +82,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect('ppt-page')
+            return redirect('home')
         else:
             messages.error(request, "Invalid Email Id or password.")
             return redirect('login')
@@ -91,7 +94,7 @@ def loginPage(request):
 
 def logoutUser(request):
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 
 # def admin_home(request):
@@ -110,32 +113,23 @@ def logoutUser(request):
 #     if request.user.is_authenticated and not request.user.is_staff:
 #         courses=Courses.objects.all()
 
-def pptPage(request):
+@login_required
+def getCourses(request):
     courses=Courses.objects.all()
+    data=[{'name':course.name, 'title': course.title} for course in courses]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+
+def pptPage(request):
 
     if request.GET.get('q')==None:
-        msgs=["Please select a course."]
-        context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/ppt_page.html', context)
+        return render(request, 'base/ppt_page.html')
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
-    
-    if not Files:
-        msgs=["No files found."]
-        context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/ppt_page.html', context)
-    
-    context={'courses':courses, 'files':Files}
-    return render(request, 'base/ppt_page.html', context)
-
-
-# work on it
-
-#register
-
-
-
+    data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def register(request):
@@ -155,13 +149,15 @@ def register(request):
             messages.error(request, "Please fill in the email.")
             return render(request, 'base/register.html', {'form': form})
     
-            
         elif not password1:
             messages.error(request, "Please fill in the password.")
             return render(request, 'base/register.html', {'form': form})
+
+        # password regex
+        password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$'
         
-        elif password1 != password2:
-            messages.error(request, "Passwords do not match.")
+        if password1 != password2:
+            messages.error(request, "Passwords does'nt match.")
             return render(request, 'base/register.html', {'form': form})
         
         elif len(password1) < 6:
@@ -171,9 +167,16 @@ def register(request):
         elif len(password1) > 15:
             messages.error(request, "Password length must not exceed 15 characters.")
             return render(request, 'base/register.html', {'form': form})
+        elif isCommonPassword(password1):
+            messages.error(request, "Password should not be common like abc or 123.")
+            return render(request, 'base/register.html', {'form': form})
         
         else: 
             form = userForm(request.POST)
+            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+                messages.error(request, "user already exist.")
+                return render(request, 'base/register.html', {'form': form})
+                
             if form.is_valid():
                 user = form.save(commit=False)
                 user.username=username
@@ -189,10 +192,7 @@ def register(request):
         
     else:
         form = userForm()
-        
         return render(request, 'base/register.html', {'form': form})
-
-    
     
     
 @login_required(login_url='login')   
@@ -234,12 +234,15 @@ def Forgot_password(request):
             return render(request, "base/Forgot_Password.html", {'form': form})          
         otp_token = random.randint(111111,999999)
         user_data = User.objects.filter(email=email)
-        if user_data:
-            request.session['email'] = email
-            request.session['otp_token']=otp_token
-            request.session['otp_generated_time'] = str(timezone.now()) 
+        if user_data.exists():
             for user in user_data:
-                user_verification = User_Email_verification.objects.create(user=user,otp = otp_token)
+                User_Email_verification.objects.filter(user=user).delete()
+                request.session['email'] = email
+                request.session['otp_token']=otp_token
+                request.session['otp_generated_time'] = str(timezone.now()) 
+                auth_token = uuid.uuid4()
+                auth_token_str = str(auth_token)
+                user_verification = User_Email_verification.objects.create(user=user,email=email,otp = otp_token,auth_token=auth_token_str)
                 print(email)
                 print(otp_token)
                 print(user_data)
@@ -294,7 +297,7 @@ def verify_user_otp(request):
                 otp_generated_time = datetime.strptime(otp_generated_time_str, "%Y-%m-%d %H:%M:%S.%f%z")
                 current_time = timezone.now()
                 time_difference = current_time - otp_generated_time
-                expiration_time_in_minutes = 10 
+                expiration_time_in_minutes = 1 
                 if time_difference.total_seconds() > expiration_time_in_minutes * 60:
             
                     messages.error(request, "Session expired. Please try again.")
@@ -319,6 +322,47 @@ def verify_user_otp(request):
 
         return redirect('Forgot_Password')
     
+    
+    
+def resend_email_verification_with_otp(request):
+    if not 'email' in request.session:
+        return redirect('login')
+    else:
+        email = request.session.get('email')
+        otp_token = random.randint(111111, 999999)
+
+        user_data = User.objects.filter(email=email)
+        if user_data.exists():
+            for user in user_data:
+                # Delete previous email and associated records
+                User_Email_verification.objects.filter(user=user).delete()
+                request.session['otp_token']=otp_token
+                request.session['otp_generated_time'] = str(timezone.now()) 
+
+                # Save new OTP and send a new email
+                auth_token = uuid.uuid4()
+                auth_token_str = str(auth_token)
+                user_verification = User_Email_verification.objects.create(user=user, email=email, otp=otp_token, auth_token=auth_token_str)
+
+                html_template = 'base/Email_OTP_Template.html'
+                html_message = render_to_string(html_template, {'otp_token': otp_token })  
+                text_content = strip_tags(html_message)          
+                
+                subject = "Welcome to StudySync"
+                email_from = settings.EMAIL_HOST_USER
+                recipient_list = [email,]
+
+                email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list)
+                email.attach_alternative(html_message, "text/html")
+                # Send the email
+                email.send()
+
+                messages.success(request, 'Enter the new 6-digit OTP sent to your registered email id.')
+                return render(request, 'base/otp-verification.html', {'form': userForm()})
+        
+        messages.error(request, "Session expired resend the OTP again")
+        return render(request, "base/Forgot_Password.html", {'form': userForm()})
+        
     
 
     
@@ -347,6 +391,12 @@ def update_password_with_otp(request):
                         user.set_password(new_password)
                         user.save()
                         update_session_auth_hash(request, user)
+                        
+                        user_verification = User_Email_verification.objects.filter(user__email=reset_email).first()
+                        if user_verification:
+                            user_verification.delete()
+                        
+                        
                         
                         request.session['otp_verified'] = True
                         
@@ -383,3 +433,22 @@ def unavailableAppPage(request):
     msgs=["Application in progress"]
     context={'messages': msgs}
     return render(request, "base/unavailable.html", context)
+
+
+
+
+
+
+############################################################
+###################### functions ###########################
+############################################################
+
+def isCommonPassword(password):
+    commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
+    return password.lower() in commonPasswords
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()[:10]
+    raise TypeError ("Type %s not serializable" % type(obj))

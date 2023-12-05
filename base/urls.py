@@ -26,8 +26,9 @@ urlpatterns = [
     # path('admin_home/', views.admin_home, name='admin_home'),
 
     path('login/',views.loginPage, name="login" ),
-    path('Forgot_Password/',views.Forgot_password, name="Forgot_Password" ),
+    path('Forgot_Password/',views.Forgot_password, name="Forgot_Password" ), # type: ignore
     path('otp-verification/',views.verify_user_otp, name="otp-verification" ),
+    path('resend_otp_verification/', views.resend_email_verification_with_otp, name="resend_otp_verification"), 
     path('password_verification/',views. update_password_with_otp, name="password_verification" ),
     path('logout/',views.logoutUser, name="logout" ),
     path('register/',views.register, name="register" ),
@@ -43,6 +44,10 @@ urlpatterns = [
 
     # unavailable pages
     path('unavailable-app/',views.unavailableAppPage, name="unavailable-app" ),
+
+    # frontend requests
+    path('get-courses',views.getCourses, name="get-courses" ),
+
 
 
 ]

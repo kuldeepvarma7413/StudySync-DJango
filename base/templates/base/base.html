@@ -32,7 +32,6 @@
     <!-- script
   ================================================== -->
     <script src="{% static 'js/modernizr.js' %}"></script>
-    <script src="{% static 'js/pace.min.js' %}"></script>
 
     <!-- jQuery -->
     <script
@@ -48,7 +47,7 @@
   <body id="top">
     <header id="header" class="row">
       <div class="header-logo">
-        <a href="">StudySync</a>
+        <a href="home">StudySync</a>
       </div>
 
       <nav id="header-nav-wrap">
@@ -81,7 +80,7 @@
           </li>
         </ul>
         {% if user.is_authenticated %}
-        <a href="logout" title="sign-up" class="button button-primary cta"
+        <a href="logout" title="logout" class="button button-primary cta"
           >Logout</a
         >
         {% else %}
@@ -95,6 +94,11 @@
       <a class="header-menu-toggle" href="#"><span>Menu</span></a>
     </header>
     <!-- /header -->
+    <style>
+      header{
+        top: 0;
+      }
+    </style>
     {% block content %} {% endblock content %}
   </body>
 </html>
