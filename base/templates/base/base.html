@@ -32,7 +32,6 @@
     <!-- script
   ================================================== -->
     <script src="{% static 'js/modernizr.js' %}"></script>
-    <script src="{% static 'js/pace.min.js' %}"></script>
 
     <!-- jQuery -->
     <script
@@ -95,6 +94,11 @@
       <a class="header-menu-toggle" href="#"><span>Menu</span></a>
     </header>
     <!-- /header -->
+    <style>
+      header{
+        top: 0;
+      }
+    </style>
     {% block content %} {% endblock content %}
   </body>
 </html>

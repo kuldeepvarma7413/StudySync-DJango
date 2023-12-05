@@ -25,6 +25,8 @@ from datetime import datetime
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 import re
+import json
+from datetime import date, datetime
 
 
 
@@ -111,25 +113,23 @@ def logoutUser(request):
 #     if request.user.is_authenticated and not request.user.is_staff:
 #         courses=Courses.objects.all()
 
-def pptPage(request):
+@login_required
+def getCourses(request):
     courses=Courses.objects.all()
+    data=[{'name':course.name, 'title': course.title} for course in courses]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+
+def pptPage(request):
 
     if request.GET.get('q')==None:
-        msgs=["Please select a course."]
-        context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/ppt_page.html', context)
+        return render(request, 'base/ppt_page.html')
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
-    
-    if not Files:
-        msgs=["No files found."]
-        context={'courses':courses, 'messages':msgs}
-        return render(request, 'base/ppt_page.html', context)
-    
-    context={'courses':courses, 'files':Files}
-    return render(request, 'base/ppt_page.html', context)
-
+    data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def register(request):
@@ -446,3 +446,9 @@ def unavailableAppPage(request):
 def isCommonPassword(password):
     commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
     return password.lower() in commonPasswords
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()[:10]
+    raise TypeError ("Type %s not serializable" % type(obj))
