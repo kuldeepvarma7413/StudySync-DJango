@@ -1121,7 +1121,7 @@ h1.intro-header::before {
   height: 72px;
   background-color: #111111;
   position: fixed;
-  left: 50%;
+  left: 49.999%;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);

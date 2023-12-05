@@ -7,13 +7,62 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script>
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
-    <title>Login | StudySync</title>
+    <title>Register | StudySync</title>
+    <script>
+        function isCommonPassword(password) {
+            // List of common passwords
+            const commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"];
+
+            // Convert the password to lowercase for case-insensitive comparison
+            const lowercasedPassword = password.toLowerCase();
+            return commonPasswords.includes(lowercasedPassword);
+        }
+
+        function validate(){
+            let password1=document.getElementById('password1').value.trim();
+            let password2=document.getElementById('password2').value.trim();
+
+            // error fields
+            let pwd1Error=document.getElementById("pwd1Error");
+            let pwd2Error=document.getElementById("pwd2Error");
+
+            // fetch form reference for animate while error occurs
+            let formRef=document.getElementById("userForm");
+
+            // password regex
+            let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
+            
+            if( password1.length < 8 ){
+                pwd1Error.innerHTML="Password length must be equal or greater than 8.";
+                formRef.classList.add("error");
+                return false;
+            }else if(isCommonPassword(password1)){
+                pwd1Error.innerHTML="Password should not be common like abc or 123.";
+                formRef.classList.add("error");
+                return false;
+            }else if( password1.length > 15 ){
+                pwd1Error.innerHTML="Password length shouldn't be greater than 15.";
+                formRef.classList.add("error");
+                return false;
+            }else if(password1 != password2){
+                pwd1Error.innerHTML="Password doesn't match";
+                formRef.classList.add("error");
+                return false;
+            }else if( !(regex.test(password1)) ){
+                pwd1Error.innerHTML="Password must contain Capital letter, small letter, symbol and number.";
+                formRef.classList.add("error");
+                return false;
+            }
+            formRef.classList.remove("error");
+            return true;
+        }
+    </script>
 </head>
 <body>
     <div class="container" style="width: 40%; margin: 150px auto; margin-top: 50px;">
         <p class="back-box box1"></p>
         <p class="back-box box2"></p>
-        <form method="POST" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
+        <form method="POST" onsubmit="return validate()" id="userForm" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
             {% csrf_token %}
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Sign Up</p>
 
@@ -36,9 +85,11 @@
     
             <label for="password">Password</label>
             <input type="password" id="password1" name="password1" placeholder="" required>
-
+            <p id="pwd1Error"></p>
+            
             <label for="password">Confirm Password</label>
             <input type="password" id="password2" name="password2" placeholder="" required>
+            <p id="pwd2Error"></p>
 
             <!-- <p id="message"></p> -->
 
@@ -50,50 +101,21 @@
             
             <p style="text-align: left;">Already have an account? <a href="/login">Login</a></p>
 
-            <hr style="margin-top: 40px;">
-            <p style="margin: -11px auto 30px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Sign Up with</p>
+            <hr style="margin-top: 15px;">
+            <p style="margin: -11px auto 10px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Sign Up with</p>
 
             
             {% load socialaccount %}
         
             <button class="google-btn" id="google-sign-in-button">
                 <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: inline-block; color: rgba(246,129,33,255);" class="bold-text" >Sign in with Google</a>
-                
+                <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: inline-block; color: rgba(246,129,33,255);">Sign in with Google</a>      
             </button>
 
         </form>
     </div>
 </body>
 </html>
-<!-- 
-<script>
-    function verifyPassword() {  
-        var pw = document.getElementById("password1").value;  
-        var pw2 = document.getElementById("password2").value;  
-        //check empty password field  
-        if(pw == "") {  
-            document.getElementById("message").innerHTML = "**Fill the password please!";  
-            return false;  
-        }  
-        
-        //minimum password length validation  
-        if(pw.length < 6) {  
-            document.getElementById("message").innerHTML = "**Password length must be atleast 6 characters";  
-            return false;
-        }  
-        
-        //maximum length of password validation  
-        if(pw.length > 15) {  
-            document.getElementById("message").innerHTML = "**Password length must not exceed 15 characters";  
-            return false;  
-        } 
-        if(pw!=pw2){
-            document.getElementById("message").innerHTML = "**Password doesn't match";  
-            return false;
-        }  
-    }  
-</scrip> -->
 
 <style>
     /* theme color */
@@ -137,7 +159,7 @@
         margin-bottom: 30%;
         display: flex;
         align-items: center;
-        border: 2px solid rgba(246,129,33,255);
+        box-shadow: 0px 0px 6px black, 0px 0px 10px rgba(246,129,33,255) inset  ;
         border-radius: 15px;
         padding: 6px 12px;
         height: 40px;
@@ -178,30 +200,36 @@
         margin-top: 10px;
     }
     /* Style for the messages container */
-ul.messages {
-    list-style: none;
-    padding: 10px;
-    margin: 0;
-}
+    ul.messages {
+        list-style: none;
+        padding: 10px;
+        margin: 0;
+    }
 
-/* Style for individual messages */
-ul.messages li {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 4px;
-}
+    /* Style for individual messages */
+    ul.messages li {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+    }
 
-/* Style for success messages */
-ul.messages li.text-success {
-    background-color: #dff0d8; /* Success message background color */
-    color: #3c763d; /* Success message text color */
-}
+    /* Style for success messages */
+    ul.messages li.text-success {
+        background-color: #dff0d8; /* Success message background color */
+        color: #3c763d; /* Success message text color */
+    }
 
-/* Style for error messages */
-ul.messages li.text-danger {
-    background-color: #f2dede; /* Error message background color */
-    color: #a94442; /* Error message text color */
-}
+    /* Style for error messages */
+    ul.messages li.text-danger {
+        background-color: #f2dede; /* Error message background color */
+        color: #a94442; /* Error message text color */
+    }
+    #pwd1Error, #pwd2Error{
+        font-size: 12px;
+        color: red;
+        text-align: left;
+        padding-left: 6px;
+    }
 
 
     @keyframes shake {
@@ -223,32 +251,7 @@ ul.messages li.text-danger {
     }
 
     /* Apply the animation to the form on hover */
-    form:hover {
+    .error{
         animation: shake 0.4s;
     }
-
-    
-   
-
-
-    /* google copied
-    body:hover{
-    animation:  shake 0.2s  ;
-  }
-  
-  @keyframes shake{
-    0%{
-      transform: translateX(0)
-    }
-    25%{
-      transform: translateX(25px);
-    }
-      
-    50%{
-      transform: translateX(-25px);
-    }
-    100%{
-      transform: translateX(0px);
-    }
-  } */
 </style>

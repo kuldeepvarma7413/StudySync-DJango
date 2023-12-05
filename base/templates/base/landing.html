@@ -1,15 +1,9 @@
 {% extends 'base/base.html' %}
 {% load static %}
 {% block content %}
-
-    <!-- header 
-   ================================================== -->
- 
-
-
    <!-- home
    ================================================== -->
-   <section id="home" data-parallax="scroll" data-image-src="{% static 'images/hero-bg.jpg' %}" data-natural-width=3000 data-natural-height=2000>
+   <section id="home" data-parallax="scroll" data-natural-width=3000 data-natural-height=2000>
 
         <div class="overlay"></div>
         <div class="home-content">        
@@ -39,14 +33,14 @@
                 </div>
 
                 <div class="home-image-right">
-                    <img src="{% static 'images/iphone-app-470.png' %}" 
-                        srcset="{% static 'images/iphone-app-470.png' %} 1x, {% static 'images/iphone-app-940.png' %} 2x"  
+                    <img src="{% static 'images/iphone-470.png' %}" 
+                        srcset="{% static 'images/iphone-470.png' %} 1x, {% static 'images/iphone-940.png' %} 2x"  
                         data-aos="fade-up">
                 </div>
             </div>
 
         </div> <!-- end home-content -->
-
+        
         <ul class="home-social-list">
             <li>
                 <a href="#"><i class="fa fa-facebook-square"></i></a>
@@ -192,44 +186,29 @@
 
                     <div class="bgrid step" data-item="1">
                         <h3>Log-in/Sign-Up</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-                        </p> 
+                        <p>"Unlocking your StudySync account is a breeze! Simply enter your email and password, followed by a secure OTP sent to your email. Verify with the 6-digit code, and voilà - you're back to seamless learning on StudySync!"</p> 
                     </div>
 
                     <div class="bgrid step" data-item="2">
                         <h3>Preview</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-                        </p> 
+                        <p>"Dive into StudySync, your academic oasis! Access comprehensive notes, exclusive CA papers. With list of courses and ppts for individual course, and more, elevate your learning journey today!"</p> 
                     </div>               
                
                     <div class="bgrid step" data-item="3">
                         <h3>Download</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-                        </p> 
+                        <p>"Download StudySync effortlessly: Visit our website or app store, click 'Download,' and follow on-screen prompts. Open the app, sign in, and explore a world of enriching academic resources anytime, anywhere. Your journey to educational excellence begins with a simple download!"</p> 
                     </div>
 
                     <div class="bgrid step" data-item="4">
                         <h3>Upload</h3>
-                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. 
-                        </p> 
+                        <p>
+                            "Uploading on StudySync is a seamless process. Navigate to the upload section, choose your file, and click 'Submit.' Our platform supports a variety of file formats, ensuring you can effortlessly share and access a diverse range of educational materials with ease."</p> 
                     </div>  
 
                 </div>           
            </div> <!-- end about-how-content -->
 
         </div> <!-- end about-how -->
-<!-- 
-    android app screens
-        <div class="row about-bottom-image">
-
-           <img src="{% static 'images/app-screens-1200.png' %}" 
-                srcset="{% static 'images/app-screens-600.png' %} 600w, 
-                        {% static 'images/app-screens-1200.png' %} 1200w, 
-                        {% static 'images/app-screens-2800.png' %} 2800w" 
-                sizes="(max-width: 2800px) 100vw, 2800px"
-                alt="App Screenshots" data-aos="fade-up">
-
-        </div>  end about-bottom-image        -->
         
     </section> <!-- end about -->  
    
@@ -299,62 +278,6 @@
         </div> <!-- end pricing-content -->
     </section> <!-- end pricing -->
 
-<!-- 
-    Testimonials Section
-    ==================================================
-    <section id="testimonials">
-
-        <div class="row">
-            <div class="col-twelve">
-                <h1 class="intro-header" data-aos="fade-up">What They Say About Our App.</h1>
-            </div>   		
-        </div>   	
-
-        <div class="row owl-wrap">
-
-            <div id="testimonial-slider"  data-aos="fade-up">
-
-                <div class="slides owl-carousel">
-
-                    <div>
-                        <p>
-                        Your work is going to fill a large part of your life, and the only way to be truly satisfied is
-                        to do what you believe is great work. And the only way to do great work is to love what you do.
-                        If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know when you find it.
-                        </p> 
-
-                        <div class="testimonial-author">
-                                <img src="{% static 'images/avatars/user-02.jpg' %}" alt="Author image">
-                                <div class="author-info">
-                                    Steve Jobs
-                                    <span class="position">CEO, Apple.</span>
-                                </div>
-                        </div>                 
-                    </div> 
-
-                    <div>
-                        <p>
-                        This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet.
-                        Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem
-                        nibh id elit. Duis sed odio sit amet nibh vulputate cursus a sit amet mauris.    
-                        </p>
-
-                        <div class="testimonial-author">
-                                <img src="{% static 'images/avatars/user-03.jpg' %}" alt="Author image">
-                                <div class="author-info">
-                                    John Doe
-                                    <span>CEO, ABC Corp.</span>
-                                </div>
-                        </div>                                         
-                    </div> 
-
-                </div> end slides
-
-            </div> end testimonial-slider         
-            
-        </div> end flex-container
-
-    </section> end testimonials -->
 
     <!-- download
     ================================================== -->
@@ -454,11 +377,11 @@
 
                     <div class="subscribe-form">
                 
-                        <form id="mc-form" class="group" novalidate="true">
+                        <form id="mc-form" onsubmit="return Subscribed()" class="group" novalidate="true">
 
-                            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required=""> 
+                            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required> 
                 
-                            <input type="submit" name="subscribe" value="Send">
+                            <button type="submit" name="subscribe" value="Send">Send</button>
                 
                             <label for="mc-email" class="subscribe-message"></label>
                 
@@ -492,15 +415,144 @@
 
     </footer>
 
-    <!-- <div id="preloader"> 
-    	<div id="loader"></div>
-    </div>   -->
+    <!-- popup html -->
+
+    <div class="modal-wrapper">
+        <div class="modal">
+            <div class="modal-close">X</div>
+            <div class="modal-content">
+                <h2 id="headcontent"></h2>
+                <p id="paracontent"></p>
+            </div>
+        </div>
+    </div>
 
     <style>
+        /* light theme */
+        #home{
+            background-color: #F68121;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23D3CC10' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23FFFBFB'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        /* black theme */
+        /* #home{
+            background-color: black;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23D3CC10' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%black'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+        } */
+        .home-image-right{
+            text-align: center;
+        }
+        .home-image-right img{
+            width: 60%;
+        }
         .row{
-            max-width: 1170px;
+            width: 88%;
+        }
+        .footer-social-list {
+            font-size: 2.5rem;
+            margin-top: 3.5rem;
+            margin-bottom: 3rem;
+        }
+        .footer-subscribe #mc-form input[type="email"] {
+            margin-top: 20px;
+        }
+        .footer-subscribe #mc-form button {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: #ffffff;
+            background: rgba(246,129,33,255);
+            border-color: rgba(246,129,33,255);
+            border-radius: 0 0.5rem 0.5rem 0;
+            padding: 7px 15px;
+            margin-top: 0px;
+        }
+
+        /* popup css */
+        .modal-wrapper{
+            background: rgba(0, 0, 0, 0.508);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            display: none;
+
+        }
+        .modal{
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+            background: wheat;
+            padding: 20px;
+            margin: 35vh auto;
+            border-radius: 5px;
+            position: relative;
+        }
+        .modal a{
+            text-decoration: none;
+            background: crimson;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .modal-close{
+            color: red;
+            border: 1px solid black;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor:pointer;
+            width: 20px;
+            border-radius: 5px;
+        }
+        button{
+            background: crimson;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin: 10px auto;
+            cursor: pointer;
         }
     </style>
+
+    <script>
+        let modal = document.querySelector('.modal-wrapper');
+        let close_btn = document.querySelector('.modal-close');
+        let headContent=document.getElementById("headcontent");
+        let paraContent=document.getElementById("paracontent");
+
+        function display(){
+            modal.style.display = 'block';
+        }
+        function hide(){
+            modal.style.display = 'none';
+        }
+        //  when the user clicks on X button,close the modal
+        close_btn.addEventListener('click',hide);
+
+        // when user clicks anywhere outside the modal, close modal
+        window.addEventListener('click',(event)=>{
+            if(event.target == modal){
+                modal.style.display = 'none';
+            }
+        });
+
+        function Subscribed(){
+            let email=document.getElementById('mc-email').value;
+            if(email.length == 0){
+                paraContent.innerHTML="email can't be empty."
+                display();
+                return false;
+            }else{
+                headContent.innerHTML="Hey there."
+                paraContent.innerHTML="Thank you for subscribing us. You will get notified about upcoming notifications (if email is valid)."
+                display();
+                return true;
+            }            
+        }
+    </script>
 
     <!-- Java Script
     ================================================== -->
