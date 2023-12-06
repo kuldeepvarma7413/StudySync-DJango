@@ -438,6 +438,30 @@ def unavailableAppPage(request):
 
 
 
+
+
+
+
+# for admin access
+def showadmin(request):
+    return render(request, "base/admin_panel.html")
+
+def uploadFileAsAdmin(request):
+    if request.method == 'POST':
+        Title=request.POST.get('title')
+        Coursecode=request.POST.get('courseCode')
+        Unit=request.POST.get('unit')
+        File=request.FILES['file']
+
+        try:
+            fileData=files(title=Title, courseCode=Coursecode, unit=Unit, fileupload=File, uploaded= datetime.now())
+            fileData.save()
+            return HttpResponse(["Uploaded Successfully"], content_type="application/json")
+        except:
+            return HttpResponse(["Error while uploading"], content_type="application/json")
+        
+
+
 ############################################################
 ###################### functions ###########################
 ############################################################

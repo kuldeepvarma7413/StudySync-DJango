@@ -48,6 +48,11 @@ urlpatterns = [
     # frontend requests
     path('get-courses',views.getCourses, name="get-courses" ),
 
+    # admin access
+    path('admin-panel',views.showadmin, name="admin-panel" ),
+    path('upload-file',views.uploadFileAsAdmin, name="upload-file" ),
+
+
 ]
 if settings.DEBUG:
     urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

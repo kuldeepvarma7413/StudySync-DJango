@@ -3,20 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - StudySync</title>
+    <title>File Upload Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #upload-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        input {
+            margin-bottom: 15px;
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <div class="main-container">
-        <aside></aside>
-        <section></section>
+    <div id="upload-form">
+        <h2>File Upload Form</h2>
+        <form id="myForm" action="upload-file" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" class="form-input" required>
+
+            <label for="courseCode">Course Code:</label>
+            <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+
+            <label for="unit">Unit:</label>
+            <input type="text" id="unit" name="unit" class="form-input" required>
+
+            <label for="file">File:</label>
+            <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+
+            <button type="submit">Submit</button>
+        </form>
     </div>
-    
 </body>
 </html>
-
-<style>
-    .main-container{
-        display: grid;
-        grid-template-columns: 20% 80%;
-    }
-</style>
