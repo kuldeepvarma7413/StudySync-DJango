@@ -48,8 +48,6 @@ urlpatterns = [
     # frontend requests
     path('get-courses',views.getCourses, name="get-courses" ),
 
-
-
 ]
 if settings.DEBUG:
     urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
