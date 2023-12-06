@@ -1,0 +1,19 @@
+* {
+    padding: 0px;
+    margin: 0px;
+}
+
+body {
+    height: 100vh;
+}
+
+.pdf-container {
+    display: block;
+    margin-bottom: 20px; /* Adjust margin as needed */
+    clear: both; /* Clear the float to ensure proper stacking */
+}
+
+.pdf-container canvas {
+    display: block;
+    margin: 0 auto; /* Center the canvas horizontally within the container */
+}

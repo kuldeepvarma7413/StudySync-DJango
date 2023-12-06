@@ -218,8 +218,7 @@ def reportBugPage(request):
 def pdfview(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(id__icontains=q))
-    syllabus=Syllabus.objects.filter(Q(id__icontains=q))
-    context={"files":Files , "syllabus":syllabus}
+    context={"files":Files}
     return render(request, "base/pdfview.html",context)
 
 
