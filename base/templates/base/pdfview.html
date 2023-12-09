@@ -56,7 +56,7 @@
                             <embed class="view-pdf-btn" src="data:application/pdf;base64,{{ pdf_content }}" type="application/pdf"></embed>
                         {% endwith %}
                     {% else %}
-                        <embed class="view-pdf-btn" data-pdf-url="/media/{{ file.fileupload }}"></embed>
+                        <embed class="view-pdf-btn" data-pdf-url="/media/{{ file.fileupload.url }}" data-pdf-id="{{ file.fileupload.id }}"></embed>
                     {% endif %}
                 </div>
             {% endfor %}

@@ -2,8 +2,9 @@ $(function () {
     // Get the PDF URL from the data-pdf-url attribute
     const pdfUrl = () => {
         const embed = document.querySelector('.view-pdf-btn');
-        const url = embed ? embed.getAttribute('data-pdf-url') : null;
-        console.log(url); // Check if the URL is correct
+        let url = embed ? embed.getAttribute('data-pdf-url') : null;
+        let id = embed ? embed.getAttribute('data-pdf-id') : null;
+        url=url.split('/media/')[1]+"/media/"+url.split('/media/')[2];
         return url;
     }
 

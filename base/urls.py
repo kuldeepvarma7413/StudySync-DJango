@@ -47,10 +47,14 @@ urlpatterns = [
 
     # frontend requests
     path('get-courses',views.getCourses, name="get-courses" ),
+    path('get-files',views.getFiles, name="get-files" ),
+    # path('add-subscriber',views.addSubscriber, name="add-subscriber" ),
 
     # admin access
     path('admin-panel',views.showadmin, name="admin-panel" ),
-    path('upload-file',views.uploadFileAsAdmin, name="upload-file" ),
+    path('upload-file',views.uploadFileAsAdmin, name="upload-file" ), # type: ignore
+    path('upload-course',views.uploadCourseAsAdmin, name="upload-course" ), # type: ignore
+    path('delete-file',views.deleteFileAsAdmin, name="upload-file" ), # type: ignore
 
 
 ]

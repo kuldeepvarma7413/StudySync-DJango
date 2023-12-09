@@ -408,11 +408,11 @@
 
                     <div class="subscribe-form">
                 
-                        <form id="mc-form" onsubmit="return Subscribed()" class="group" novalidate="true">
+                        <form id="mc-form" class="group">
 
-                            <input type="email" value="" name="EMAIL" class="email" id="mc-email" placeholder="Email Address" required> 
+                            <input type="email" value="" name="email" class="email" id="mc-email" placeholder="Email Address" required> 
                 
-                            <button type="submit" name="subscribe" value="Send">Send</button>
+                            <button type="button" id="subscriber-submit">Send</button>
                 
                             <label for="mc-email" class="subscribe-message"></label>
                 
@@ -570,19 +570,23 @@
             }
         });
 
-        function Subscribed(){
-            let email=document.getElementById('mc-email').value;
-            if(email.length == 0){
-                paraContent.innerHTML="email can't be empty."
-                display();
-                return false;
-            }else{
-                headContent.innerHTML="Hey there."
-                paraContent.innerHTML="Thank you for subscribing us. You will get notified about upcoming notifications (if email is valid)."
-                display();
-                return true;
-            }            
-        }
+        // const subscriberButton= document.getElementById("subscriber-submit");
+
+        // subscriberButton.addEventListener('click', async function subscribe(){
+        //     let Email=document.getElementById('mc-email').value;
+        //     if(Email.length == 0){
+        //         paraContent.innerHTML="email can't be empty."
+        //         display();
+        //         return false;
+        //     }else{
+        //         const res=await fetch("/add-subscriber", {method:"POST"}).then(res=>res.json()) ?? [];
+        //         console.log(res);
+        //         headContent.innerHTML="Hey there."
+        //         paraContent.innerHTML="Thank you for subscribing us. You will get notified about upcoming notifications (if email is valid)."
+        //         display();
+        //         return true;
+        //     }            
+        // })
     </script>
 
     <!-- Java Script
