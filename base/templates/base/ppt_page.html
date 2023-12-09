@@ -97,6 +97,8 @@
       const card=fileCard.replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
       .replace('%FILE_UPLOADED%',file.uploaded).replace('%FILE_ID%',file.id).replace('%FILE_COURSECODE%',file.coursecode);
       filesView.insertAdjacentHTML('beforeEnd',card);
+      console.log(file.uploaded);
+      console.log(file.uploaded.url);
     });
 
     if(res.length===0){

@@ -5,8 +5,9 @@ from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
-from base.models import Courses, files ,Syllabus 
+from base.models import Courses, files ,Syllabus , subscribers
 from .forms import userForm , PasswordUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
 from .models import Report , User_Email_verification
@@ -27,6 +28,8 @@ from django.shortcuts import get_object_or_404
 import re
 import json
 from datetime import date, datetime
+import cloudinary.api
+import cloudinary
 
 
 
@@ -62,8 +65,14 @@ def checkEmail(emailOrUsername):
 def loginPage(request):
     page='login'
 
+    # all admins
+    admins=User.objects.filter(is_staff=True)
+
     if request.user.is_authenticated:
-        return redirect('home')
+        if request.user in admins:
+            return redirect('admin-panel')
+        else:
+            return redirect('home')
     else:
         logout(request)
 
@@ -82,6 +91,8 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
+            if user in admins:
+                return redirect('admin-panel')
             return redirect('home')
         else:
             messages.error(request, "Invalid Email Id or password.")
@@ -119,6 +130,20 @@ def getCourses(request):
     data=[{'name':course.name, 'title': course.title} for course in courses]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+@login_required
+def getFiles(request):
+    Files=files.objects.all()
+    data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+# @csrf_exempt
+# def addSubscriber(request):
+#     print("Entry")
+#     email = request.POST['email']
+#     print("got mail")
+#     subscriber=subscribers(email=email)
+#     subscriber.save()
+#     return HttpResponse([True], content_type="application/json")
 
 
 def pptPage(request):
@@ -131,6 +156,13 @@ def pptPage(request):
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+def deleteFileAsAdmin(request):
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    File=files.objects.filter(Q(id__icontains=q))
+    for file in File:
+        cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
+    File.delete()
+    return HttpResponse(["File deleted"], content_type="application/json")
 
 def register(request):
     form = userForm()  
@@ -454,11 +486,24 @@ def uploadFileAsAdmin(request):
         File=request.FILES['file']
 
         try:
-            fileData=files(title=Title, courseCode=Coursecode, unit=Unit, fileupload=File, uploaded= datetime.now())
-            fileData.save()
-            return HttpResponse(["Uploaded Successfully"], content_type="application/json")
+            fileData=files(title=Title, courseCode=Coursecode, unit=Unit, fileupload=File)
+            data=fileData.save()
+            print(data)
+            return HttpResponse(["File Added."], content_type="application/json")
         except:
-            return HttpResponse(["Error while uploading"], content_type="application/json")
+            return HttpResponse(["Error Occured"], content_type="application/json")
+        
+def uploadCourseAsAdmin(request):
+    if request.method == 'POST':
+        Title=request.POST.get('title')
+        Coursecode=request.POST.get('courseCode')
+
+        try:
+            Course=Courses(title=Title, name=Coursecode)
+            Course.save()
+            return HttpResponse(["Course Added."], content_type="application/json")
+        except:
+            return HttpResponse(["Error Occured"], content_type="application/json")
         
 
 

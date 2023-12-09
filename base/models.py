@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
 
 # Create your models here.
@@ -16,7 +17,8 @@ class files(models.Model):
     title=models.CharField(max_length=100)
     unit=models.CharField(max_length=3)
     uploaded=models.DateTimeField(auto_now_add=True)
-    fileupload=models.FileField(upload_to="media/",max_length=250,null=True,default=None)
+    fileupload=models.FileField(upload_to='raw/', blank=True, storage=RawMediaCloudinaryStorage())
+    # fileupload=models.FileField(upload_to="media/",max_length=250,null=True,default=None)
     
     
 def __str__(self):
@@ -29,8 +31,10 @@ class Syllabus(models.Model):
     title=models.CharField(max_length=100)
     fileupload=models.FileField(upload_to="media/",max_length=250,null=True,default=None)
     
+class subscribers(models.Model):
+    email=models.CharField(max_length=320)
     
-#creating a generic event table
+#reports
 
 class Report(models.Model):
     reportType=models.CharField(max_length=20)

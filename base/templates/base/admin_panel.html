@@ -12,7 +12,6 @@
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
             height: 100vh;
         }
 
@@ -22,7 +21,8 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 400px;
-            text-align: center;
+            text-align: left;
+            align-items: center;
         }
 
         input {
@@ -31,41 +31,177 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        label{
+            margin-bottom: 15px;
+            align-self: center;
+        }
 
-        button {
-            background-color: #4caf50;
+        button, #button{
+            background-color: rgba(246,129,33,255);
             color: #fff;
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            height: fit-content;
         }
 
-        button:hover {
-            background-color: #45a049;
+        #myForm div{
+            display: grid;
+            grid-template-columns: 25% 70%;
+        }
+        /* right side */
+            
+        #file-list {
+            height: 100vh;
+            width: 50%;
+            background-color: #f8f8f8;
+            float: right;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #files-container {
+            max-height: 80%;
+            overflow-y: auto;
+            margin: 0px auto ;
+        }
+        #files-container>li{
+            padding: 0px 10px;
+            align-items: center;
+            display: grid;
+            grid-template-columns: 42% 10% 15% 20% 5%;
+        }
+        #files-container>li:hover{
+            background-color: rgb(250 165 95);
+        }
+        #file-list>li{
+            background-color: rgba(246,129,33,255);
+            /* border: 1px solid rgba(246,129,33,255); */
+            padding: 0px 10px;
+            font-weight: 600;
+            align-items: center;
+            display: grid;
+            grid-template-columns: 42% 10% 15% 20% 5%;
+        }
+        #button{
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            text-decoration: none;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            #file-list {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
+    <a id="button" href="logout">Logout</a>
     <div id="upload-form">
-        <h2>File Upload Form</h2>
+        <h2>Add File</h2>
         <form id="myForm" action="upload-file" enctype="multipart/form-data" method="post">
             {% csrf_token %}
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title" class="form-input" required>
+            <div>
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" class="form-input" required>
+            </div>
+            
+            <div>
+                <label for="courseCode">Course Code:</label>
+                <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+            </div>
+            
+            <div>
+                <label for="unit">Unit:</label>
+                <input type="text" id="unit" name="unit" class="form-input" required>
+            </div>
+            
+            <div>
+                <label for="file">File:</label>
+                <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+            </div>
 
-            <label for="courseCode">Course Code:</label>
-            <input type="text" id="courseCode" name="courseCode" class="form-input" required>
-
-            <label for="unit">Unit:</label>
-            <input type="text" id="unit" name="unit" class="form-input" required>
-
-            <label for="file">File:</label>
-            <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+            <button type="submit">Submit</button>
+        </form>
+        <h2>Add Course</h2>
+        <form id="myForm2" action="upload-course" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" class="form-input" required>
+            </div>
+            
+            <div>
+                <label for="courseCode">Course Code:</label>
+                <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+            </div>
 
             <button type="submit">Submit</button>
         </form>
     </div>
+    <!-- right view -->
+    <div id="file-list">
+        <h2>Delete File</h2>
+        <input type="text" id="search" placeholder="Search by title" oninput="filterFiles()">
+        <li>
+            <p>Title</p>
+            <p>Unit</p>
+            <p>Course Code</p>
+            <p>Upload Date</p>
+            <p>Action</p>
+        </li>
+        <div id="files-container">
+        </div>
+    </div>
+
+    <script>
+        // files output html format
+        const listItemEl=`<li class="files">
+            <p>%FILE_TITLE%</p>
+            <p>%FILE_UNIT%</p>
+            <p>%FILE_COURSECODE%</p>
+            <p>%FILE_UPLOADED%</p>
+            <a href="%URL%" id="%FILE_ID%" type="submit">Delete</a>
+            </li>`;
+            
+        // fetch filess
+        const fileItems=document.getElementById('files-container');
+        window.addEventListener('load',async()=>{
+            const coursesList=await fetch(`/get-files`).then(res=>res.json()) ?? [];
+            fileItems.innerHTML+='';
+            coursesList.forEach(file=>{
+                fileItems.insertAdjacentHTML('beforeEnd',listItemEl.replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
+      .replace('%FILE_UPLOADED%',file.uploaded).replaceAll('%FILE_COURSECODE%',file.coursecode).replace("%URL%",`delete-file?q=${file.id}`))
+            });
+
+            if(coursesList.length===0){
+                noFileFound="No files found.";
+                fileItems.insertAdjacentHTML('beforeEnd',noFileFound);
+            }
+        })
+
+        // Function to filter files based on search input
+        
+    function filterFiles() { 
+      let input = document.getElementById('search').value
+      input=input.toLowerCase()  
+      let x = document.getElementsByClassName('files'); 
+        
+      for (i = 0; i < x.length; i++) {  
+          const item=!x[i].innerHTML.toLowerCase().includes(input);
+          if (item) { 
+              x[i].style.display="none"; 
+          } 
+          else { 
+              x[i].style.display="grid";                  
+          } 
+      }}
+    </script>
 </body>
 </html>

@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path , os 
+from pathlib import Path
+import os
+import cloudinary_storage
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -55,7 +58,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     'django.contrib.redirects',
     "allauth.socialaccount.providers.google",
-    "mail"   
+    "mail",
+    'cloudinary_storage',
+    'cloudinary'
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -183,3 +188,14 @@ EMAIL_HOST_USER = "mdzaidtalha6393@gmail.com"
 EMAIL_HOST_PASSWORD = "mgbt ydvh eorn aycg"
 ALLOWED_HOSTS = ['*']
 
+
+# cloudinary storage configration
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dylmvpvn7',
+    'API_KEY': '913441945363269',
+    'API_SECRET': '-bhQOD7EDDRaxLR3Kxq_xnN5LM4'
+}
+
+MEDIA_URL = '/media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
+# CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
