@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
-from base.models import Courses, files ,Syllabus , subscribers
+from base.models import Courses, files ,Syllabus , subscribers , Profile
 from .forms import userForm , PasswordUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
 from .models import Report , User_Email_verification
@@ -22,7 +22,7 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.http import JsonResponse
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime , timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 import re
@@ -63,10 +63,10 @@ def checkEmail(emailOrUsername):
         return False
         
 def loginPage(request):
-    page='login'
+    page = 'login'
 
     # all admins
-    admins=User.objects.filter(is_staff=True)
+    admins = User.objects.filter(is_staff=True)
 
     if request.user.is_authenticated:
         if request.user in admins:
@@ -76,30 +76,47 @@ def loginPage(request):
     else:
         logout(request)
 
-    if request.method=='POST':
-        emailOrUsername=request.POST['email'].lower()
-        password=request.POST['password1']
-        username=""
-        if(checkEmail(emailOrUsername)):
-            # find username
-            curruser=User.objects.filter(Q(email__icontains=emailOrUsername))
-            username=curruser[0]
-        else:
-            username=emailOrUsername
+    if request.method == 'POST':
+        email_or_username = request.POST['email'].lower()
+        password = request.POST['password1']
 
-        user = authenticate(request, username=username, password=password)
+        if checkEmail(email_or_username):
+            # find username
+            user = User.objects.filter(email__iexact=email_or_username).first()
+        else:
+            user = User.objects.filter(username__iexact=email_or_username).first()
 
         if user is not None:
-            login(request, user)
-            if user in admins:
-                return redirect('admin-panel')
-            return redirect('home')
+            user = authenticate(request, username=user.username, password=password)
+            profile_obj = Profile.objects.filter(user=user).first()
+
+            if user is not None:
+                if user in admins:
+                    # Admins (staff) don't have profiles, so no need to check is_verified
+                    login(request, user)
+                    return redirect('admin-panel')
+
+                # For non-admin users, check the profile for verification
+                if profile_obj is not None and not profile_obj.is_verified:
+                    resend_link = reverse('resend_email_verification', args=[user.id])
+                    messages.error(request, f'Profile is not verified check your mail or Click resend to send the verification email. <a href="{resend_link}"> Resend</a>')
+                    
+    
+                    
+                    return redirect('login')
+
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.error(request, "Invalid password please enter correct password.")
+                return redirect('login')
         else:
-            messages.error(request, "Invalid Email Id or password.")
+            messages.error(request, "User not found.")
             return redirect('login')
-    else: 
-        context={'page':page}
-        return render(request, 'base/login.html', context)
+
+    context = {'page': page}
+    return render(request, 'base/login.html', context)
+
 
 
 
@@ -164,6 +181,8 @@ def deleteFileAsAdmin(request):
     File.delete()
     return HttpResponse(["File deleted"], content_type="application/json")
 
+
+
 def register(request):
     form = userForm()  
     if request.method == 'POST': 
@@ -215,16 +234,128 @@ def register(request):
                 user.email = email
                 user.password=password1
                 form.save()
+                auth_token = str(uuid.uuid4())
+                request.session['auth_token']=auth_token
+                profile_obj = Profile.objects.create(user = user, auth_token=auth_token)
+                profile_obj.save()
+                send_mail_after_registration(email , auth_token)
                 messages.success(request, "Registration successful!")
-                return redirect('login')  
+                return redirect('Email_send')  
 
             else:
                 messages.error(request, "An error occurred during registration.")
-            return render(request, 'base/register.html', {'form': form})
+                return render(request, 'base/register.html', {'form': form})
         
     else:
         form = userForm()
         return render(request, 'base/register.html', {'form': form})
+    
+    
+def send_mail_after_registration(email , token):
+    
+    verification_link = f"http://127.0.0.1:8000/verify_mail_after_registration/{token}/"  
+    html_template = 'base/Email_verification.html'
+    html_message = render_to_string(html_template, {'token': token, 'verification_link': verification_link})  
+    text_content = strip_tags(html_message)          
+    subject = "Welcome to StudySync"
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = [email,]
+    email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list )
+    email.attach_alternative(html_message, "text/html")            # Send the email
+    email.send()
+    
+def verify_mail_after_registration(request, auth_token):
+    profile_obj = Profile.objects.filter(auth_token=auth_token).first()
+
+    if profile_obj:
+        if profile_obj.is_verified:
+            messages.success(request, 'Your Account is already verified')
+            return redirect('login')
+
+        # Check if the verification link has expired
+        current_time = timezone.now()
+        time_difference = current_time - profile_obj.created_at  # Assuming you have a 'created_at' field in your Profile model
+        if time_difference > timedelta(minutes=15):
+            messages.error(request, 'The verification link has expired. Please request a new one.')
+            return redirect('login')
+        else:
+            profile_obj.is_verified = True
+            new_token = str(request.session.get('new_token', ''))
+            request.session['auth_token'] = True
+            request.session['new_token'] = True
+            profile_obj.save()
+            messages.success(request, 'Your account has been verified.')
+            return redirect('Email_success')
+    else:
+        # User exists but does not have a profile, resend the verification email
+        user = User.objects.filter(profile__auth_token=auth_token).first()
+
+        if user:
+            send_mail_after_registration(user.email, auth_token)
+            messages.success(request, 'Verification email has been resent. Check your mail.')
+            return redirect('login')
+        else:
+            return render(request, 'base/Error.html')
+
+
+
+def resend_email_verification(request , user_id):
+    user = get_object_or_404(User, id=user_id)
+    profile_obj = Profile.objects.filter(user=user_id).first()
+
+    if profile_obj is not None and not profile_obj.is_verified:
+        # Generate a new verification token and send the verification email
+        new_token = str(uuid.uuid4())  # Implement a function to generate a new token
+        profile_obj. auth_token = new_token
+        request.session['new_token']=new_token
+        profile_obj.created_at = timezone.now()
+        profile_obj.save()
+
+        send_mail_after_registration(user.email, new_token)
+
+        messages.success(request, 'Verification email resent. Check your mail.')
+        return redirect('Email_send')
+    else:
+        messages.info(request, 'Your profile is already verified.')
+
+    return redirect('home')
+
+
+
+def email_template_after_mail(request):
+    new_token = str(request.session.get('new_token', ''))
+    auth_token = str(request.session.get('auth_token', ''))
+
+    if new_token or auth_token:
+        # Uncomment the following line if you want to print the auth_token
+        # print(auth_token)
+
+        if 'auth_token' in request.session:
+            del request.session['auth_token']
+
+        if 'new_token' in request.session:
+            del request.session['new_token']
+
+        return render(request, 'base/Email_send.html')
+    else:
+        return render(request, 'base/Error.html')
+        
+
+def email_verification_successful(request):
+    new_token = str(request.session.get('new_token', ''))
+    auth_token = str(request.session.get('auth_token', ''))
+    
+    if new_token or auth_token:
+        # print(auth_token)
+        if 'auth_token' in request.session or 'new_token' in request.session:
+            del request.session['auth_token']
+            del request.session['new_token']
+            
+        return render(request, 'base/Email_success.html')
+    else:
+        return render(request, 'base/Error.html')
+
+    
     
     
 @login_required(login_url='login')   
@@ -241,6 +372,7 @@ def reportBugPage(request):
         messages.success(request,'Thank you for helping us in development.')
         return redirect('/report-bug')
     return render(request, 'base/ReportBug.html')
+
 
 
 
@@ -456,6 +588,11 @@ def update_password_with_otp(request):
 # temp views
 def homePage(request):
     # logout(request)
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user.is_authenticated:
+        if request.user in admins:
+            return redirect('admin-panel')
     return render(request, "base/landing.html")
 
 
@@ -475,8 +612,14 @@ def unavailableAppPage(request):
 
 
 # for admin access
+@login_required(login_url='login')
 def showadmin(request):
-    return render(request, "base/admin_panel.html")
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user.is_authenticated:
+        if request.user in admins:
+            return render(request,'base/admin_panel.html')
+    return redirect(request, "base/Error.html")
 
 def uploadFileAsAdmin(request):
     if request.method == 'POST':
@@ -492,6 +635,8 @@ def uploadFileAsAdmin(request):
             return HttpResponse(["File Added."], content_type="application/json")
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
+        
+        
         
 def uploadCourseAsAdmin(request):
     if request.method == 'POST':

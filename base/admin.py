@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import Courses
 from .models import files
 # from .models import Syllabus
-from .models import Report, subscribers
+from .models import Report, subscribers , Profile
 from .models import User_Email_verification
 
 
@@ -14,3 +14,4 @@ admin.site.register(files)
 admin.site.register(Report)
 admin.site.register(subscribers)
 admin.site.register(User_Email_verification)
+admin.site.register(Profile)
