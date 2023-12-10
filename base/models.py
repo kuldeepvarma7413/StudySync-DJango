@@ -5,6 +5,8 @@ from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
 # Create your models here.
 
+
+
 class Courses(models.Model):
     name=models.CharField(max_length=20)
     title=models.CharField(max_length=100)
@@ -56,4 +58,14 @@ class User_Email_verification(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    auth_token = models.CharField(max_length = 140, blank=True)
+    is_verified = models.BooleanField(default = False)
+    created_at =models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.user.username
+    
     

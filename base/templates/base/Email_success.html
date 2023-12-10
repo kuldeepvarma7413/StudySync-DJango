@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div class="container" style="width: 40%; margin: 150px auto;">
+            <p class="back-box box1"></p>
+            <p class="back-box box2"></p>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            <div class="card-container">
+                <h3 class="card-title animate__animated animate__fadeIn">Hurray your mail is verified
+                    <div class="card-text animate__animated animate__fadeIn">Please login</div>
+                    <button type="submit" class="btn" onclick="successForm()">Login</button>
+                    <script>
+                        function successForm() {
+                            window.location.href = "/login"; 
+                        } 
+                        
+                    </script>
+                </h3>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    </body>
+</html>
+<style>
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .card-container {
+        text-align: center; /* Center align content */
+    }
+
+    .card-title {
+        border: 2px solid #f39c12; /* Set border color to orange */
+        padding: 30px; /* Increased padding for a larger card */
+        border-radius: 15px; /* Optional: for rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: add a subtle box shadow */
+        color: #000; /* Set text color to black */
+    }
+
+    .card-text {
+        color: #000; /* Set text color to black */
+        margin-top: 20px; /* Add some space between title and text */
+    }
+
+    .back-box{
+        position: absolute;
+        width: 450px;
+        height: 450px;
+        z-index: -1;
+        box-shadow: 0px 0px 30px;
+        transform: rotate(45deg);
+        overflow: hidden;
+        border-radius: 100px;
+        /* rotate: deg(90); */
+        background-image: linear-gradient(to right, rgba(246,129,33,255),rgba(246,110,33,255));
+    }
+
+    .box1{
+        top: 290px;
+        transform: rotate(35deg);
+        left: -120px;
+    }
+
+    .box2{
+        top: -50px;
+        transform: rotate(35deg);
+        right: -100px;
+    }
+    .btn{
+        font-weight: 700;
+        padding: 8px 30px;
+        margin: 10px 0px;
+        border-radius: 15px;
+        border: 1px solid rgba(246,129,33,255);
+        background-color: rgba(246,129,33,255);
+    }
+    ul.messages {
+        list-style: none;
+        padding: 10px;
+        margin: 0;
+    }
+
+    /* Style for individual messages */
+    ul.messages li {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+    }
+
+    /* Style for success messages */
+    ul.messages li.text-success {
+        background-color: #dff0d8; /* Success message background color */
+        color: #3c763d; /* Success message text color */
+    }
+
+    /* Style for error messages */
+    ul.messages li.text-danger {
+        background-color: #f2dede; /* Error message background color */
+        color: #a94442; /* Error message text color */
+    }
+</style>
