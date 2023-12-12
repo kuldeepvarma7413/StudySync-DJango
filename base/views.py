@@ -42,7 +42,7 @@ def google_authentication_view(request):
     except OAuth2Error:
         # Handle any OAuth2 errors as needed
         # For example, you could redirect to an error page
-        return HttpResponse(status=201)
+        return render(request, 'base/Error.html')
     
     
     
@@ -238,7 +238,7 @@ def register(request):
                 request.session['auth_token']=auth_token
                 profile_obj = Profile.objects.create(user = user, auth_token=auth_token)
                 profile_obj.save()
-                send_mail_after_registration(email , auth_token)
+                send_mail_after_registration(email , username, auth_token)
                 messages.success(request, "Registration successful!")
                 return redirect('Email_send')  
 
@@ -251,11 +251,11 @@ def register(request):
         return render(request, 'base/register.html', {'form': form})
     
     
-def send_mail_after_registration(email , token):
+def send_mail_after_registration(email , username, token):
     
     verification_link = f"http://127.0.0.1:8000/verify_mail_after_registration/{token}/"  
     html_template = 'base/Email_verification.html'
-    html_message = render_to_string(html_template, {'token': token, 'verification_link': verification_link})  
+    html_message = render_to_string(html_template, {'token': token, 'verification_link': verification_link, 'username': username})  
     text_content = strip_tags(html_message)          
     subject = "Welcome to StudySync"
     email_from = settings.EMAIL_HOST_USER
@@ -263,6 +263,7 @@ def send_mail_after_registration(email , token):
     email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list )
     email.attach_alternative(html_message, "text/html")            # Send the email
     email.send()
+    
     
 def verify_mail_after_registration(request, auth_token):
     profile_obj = Profile.objects.filter(auth_token=auth_token).first()
@@ -275,7 +276,7 @@ def verify_mail_after_registration(request, auth_token):
         # Check if the verification link has expired
         current_time = timezone.now()
         time_difference = current_time - profile_obj.created_at  # Assuming you have a 'created_at' field in your Profile model
-        if time_difference > timedelta(minutes=15):
+        if time_difference > timedelta(minutes=15 ):
             messages.error(request, 'The verification link has expired. Please request a new one.')
             return redirect('login')
         else:
@@ -311,7 +312,7 @@ def resend_email_verification(request , user_id):
         profile_obj.created_at = timezone.now()
         profile_obj.save()
 
-        send_mail_after_registration(user.email, new_token)
+        send_mail_after_registration(user.email,user.username, new_token)
 
         messages.success(request, 'Verification email resent. Check your mail.')
         return redirect('Email_send')
@@ -619,7 +620,7 @@ def showadmin(request):
     if request.user.is_authenticated:
         if request.user in admins:
             return render(request,'base/admin_panel.html')
-    return redirect(request, "base/Error.html")
+    return render(request, "base/Error.html")
 
 def uploadFileAsAdmin(request):
     if request.method == 'POST':
