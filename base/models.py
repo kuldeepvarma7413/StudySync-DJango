@@ -20,7 +20,14 @@ class files(models.Model):
     unit=models.CharField(max_length=3)
     uploaded=models.DateTimeField(auto_now_add=True)
     fileupload=models.FileField(upload_to='raw/', blank=True, storage=RawMediaCloudinaryStorage())
-    # fileupload=models.FileField(upload_to="media/",max_length=250,null=True,default=None)
+    
+class cafiles(models.Model):
+    courseCode=models.CharField(max_length=20)
+    teachername=models.CharField(max_length=100)
+    canumber=models.IntegerField()
+    cadate=models.DateTimeField()
+    uploaded=models.DateTimeField(auto_now_add=True)
+    file=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
     
     
 def __str__(self):

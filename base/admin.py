@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Courses
+from .models import Courses, cafiles
 from .models import files
 # from .models import Syllabus
 from .models import Report, subscribers , Profile
@@ -15,3 +15,4 @@ admin.site.register(Report)
 admin.site.register(subscribers)
 admin.site.register(User_Email_verification)
 admin.site.register(Profile)
+admin.site.register(cafiles)

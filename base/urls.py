@@ -40,7 +40,9 @@ urlpatterns = [
     
     path('home',views.homePage, name="home" ),
     path('ppt-page',views.pptPage, name="ppt-page" ),
+    path('ca-page',views.CaPage, name="ca-page" ),
     path('pdfview',views.pdfview, name="pdfview" ),
+    path('caview',views.caview, name="caview" ),
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
@@ -52,6 +54,7 @@ urlpatterns = [
     path('get-courses',views.getCourses, name="get-courses" ),
     path('get-files',views.getFiles, name="get-files" ),
     path('subscriber',views.addSubscriber, name="subscriber" ),
+
 
     # admin access
     path('admin-panel',views.showadmin, name="admin-panel" ),

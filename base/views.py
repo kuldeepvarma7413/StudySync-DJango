@@ -10,7 +10,7 @@ from django.contrib.auth.forms import UserCreationForm
 from base.models import Courses, files ,Syllabus , subscribers , Profile
 from .forms import userForm , PasswordUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import Report , User_Email_verification
+from .models import Report , User_Email_verification, cafiles
 from django.urls import reverse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
@@ -182,6 +182,16 @@ def pptPage(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def CaPage(request):
+    if request.GET.get('q')==None:
+        return render(request, 'base/ca-page.html')
+
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    Files=cafiles.objects.filter(Q(courseCode__icontains=q))
+    data=[{'canumber':file.canumber, 'id':file.id,'cadate':json_serial(file.cadate), 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'teacher': file.teachername} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 @login_required(login_url='login')
@@ -395,6 +405,13 @@ def reportBugPage(request):
 def pdfview(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(id__icontains=q))
+    context={"files":Files}
+    return render(request, "base/pdfview.html",context)
+
+@login_required(login_url='login')
+def caview(request):
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    Files=cafiles.objects.filter(Q(id__icontains=q))
     context={"files":Files}
     return render(request, "base/pdfview.html",context)
 

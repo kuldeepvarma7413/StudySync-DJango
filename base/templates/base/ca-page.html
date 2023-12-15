@@ -1,0 +1,242 @@
+{% extends "base/base.html" %} {% load static %} {% block content %}
+
+<title>CA PDF Files</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    background-color: #fff;
+  }
+
+  #container {
+    position: fixed;
+    top: 72px;
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  #ca-section {
+    background-color: rgba(246, 129, 33, 1);
+    /* background-color: #eee; */
+    color: #fff;
+    width: 70%;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  #upload-section {
+    background-color: #eee;
+    width: 30%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* .card {
+    width: 300px;
+    height: 100px;
+    margin: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+    overflow: hidden;
+  } */
+
+  .card a{
+        max-height: 300px;
+        border-radius: 15px;
+        padding: 10px;
+        width: 300px;
+        border: none;
+        box-shadow: 0px 0px 15px 0px #dfdddd;
+        background-color: white;
+        display: grid;
+        grid-template-columns: 40% 60%;
+        /* background-image: linear-gradient(to top left, black , rgb(255, 140, 0)) */
+        /* cursor: pointer; */
+    }
+    .card a:hover img{
+      scale: 105%;
+      transition: ease-in 0.2s;
+    }
+    #ca-view a {
+    font-size: 14px;
+    text-decoration: none;
+    color: rgba(246,129,33,255);
+}
+#ca-view {
+    overflow-x: hidden;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-rows: 0fr;
+    gap: 15px;
+    row-gap: 15px;
+    width: 100%;
+}
+#ca-view p {
+    font-size: 10px;
+}
+
+  #upload-form {
+    max-width: 300px;
+    margin: auto;
+  }
+
+  input,
+  select,
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: rgba(246, 129, 33, 1);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: rgba(246, 129, 33, 0.8);
+  }
+  .topbar,
+  .topbar1 {
+    background-color: rgba(246, 129, 33, 1);
+    color: #fff;
+    padding: 10px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .topbar1 {
+    width: 40%;
+  }
+</style>
+
+<div id="container">
+  <!-- Section One: CA PDF Files -->
+  <div id="ca-section">
+    <div class="topbar">
+      <div>CA Files</div>
+      <div class="topbar1">
+        <select id="allcourses1">
+          <!-- dynamic courses -->
+        </select>
+        <button id="searchCourse">Search</button>
+      </div>
+    </div>
+    <div id="ca-view">
+        <!-- dynamic files -->
+    </div>
+  </div>
+
+  <!-- Section Two: Upload CA PDF Files -->
+  <div id="upload-section">
+    <form id="upload-form" action="upload-ca" method="post">
+        {% csrf_token %}
+      <label for="coursecode">Course Code:</label>
+      <select id="allcourses2" name="course" required>
+        <!-- dynamic courses -->
+      </select>
+
+      <label for="teachername">Teacher Name:</label>
+      <input type="text" id="teachername" name="teachername" required />
+
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="file">Files:</label>
+      <input type="file" id="files" name="file" required />
+
+      <label for="ca-no">CA Number:</label>
+      <select id="ca-no" name="ca-no" required>
+        <option value="1">CA 1</option>
+        <option value="2">CA 2</option>
+        <option value="3">CA 3</option>
+      </select>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+  <script>
+    // fetching all courses
+    window.addEventListener("load", async () => {
+      const searchCourseCodeField1 = document.getElementById("allcourses1");
+      const searchCourseCodeField2 = document.getElementById("allcourses2");
+      const courseLabel1 = `<option value="%OPTION%">%OPTION%</option>`;
+      const courseLabel2 = `<option value="%OPTION%">%OPTION% : %TITLE%</option>`;
+
+      const courses =
+        (await fetch("/get-courses").then((res) => res.json())) ?? [];
+      searchCourseCodeField1.innerHTML = "";
+      searchCourseCodeField2.innerHTML = "";
+      courses.forEach((course) => {
+        searchCourseCodeField1.insertAdjacentHTML(
+          "beforeEnd",
+          courseLabel1.replaceAll("%OPTION%", course.name)
+        );
+        searchCourseCodeField2.insertAdjacentHTML(
+          "beforeEnd",
+          courseLabel2
+            .replaceAll("%OPTION%", course.name)
+            .replaceAll("%TITLE%", course.title)
+        );
+      });
+    });
+
+    // ca file cards
+    const fileCard = `<div class="card">
+                  <a href="{% url 'caview' %}?q=%FILE_ID%" style="cursor: pointer;">
+                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
+                      <div class="card-inside">
+                        <p>
+                          <h5>%FILE_TITLE%</h5>
+                        </p>
+                        <p>Unit : %FILE_UNIT%</p>
+                        <p>Course Code : %FILE_COURSECODE%</p>
+                        <p>Date Uploaded : %FILE_UPLOADED%</p>
+                        <!-- <a href="/media/%FILE_UPLOADED%" download="%FILE_TITLE%" class="downloadFile">Download</a> -->
+                      </div>
+                    </a>
+                </div> `;
+
+    const noFileFound = `<div style="text-align: center;position: absolute;
+    top: 40%;
+    left: 30%;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
+                    <p>No files Found. Select another one.</p></div>`;
+
+    const search = document.getElementById("searchCourse");
+    const caView = document.getElementById("ca-view");
+    search.addEventListener("click", async (event) => {
+      const courseId = document.getElementById("allcourses1").value;
+      const res = courseId
+        ? await fetch(`/ca-page?q=${courseId}`).then((res) => res.json())
+        : [];
+      caView.innerHTML = "";
+      res.forEach((file) => {
+        const card = fileCard
+          .replace("%FILE_TITLE%", file.title)
+          .replace("%FILE_UNIT%", file.unit)
+          .replace("%FILE_UPLOADED%", file.uploaded)
+          .replace("%FILE_ID%", file.id)
+          .replace("%FILE_COURSECODE%", file.coursecode);
+        caView.insertAdjacentHTML("beforeEnd", card);
+      });
+
+      if (res.length === 0) {
+        caView.insertAdjacentHTML("beforeEnd", noFileFound);
+      }
+    });
+
+  </script>
+</div>
+
+<!-- <script src="% static '/js/cas.js' %" type="script"></script> -->
+
+{% endblock content %}
