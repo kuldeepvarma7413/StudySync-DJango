@@ -142,28 +142,38 @@ def logoutUser(request):
 #     if request.user.is_authenticated and not request.user.is_staff:
 #         courses=Courses.objects.all()
 
-@login_required
+@login_required(login_url='login')
 def getCourses(request):
     courses=Courses.objects.all()
     data=[{'name':course.name, 'title': course.title} for course in courses]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
-@login_required
+@login_required(login_url='login')
 def getFiles(request):
     Files=files.objects.all()
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+
+
 # @csrf_exempt
-# def addSubscriber(request):
-#     print("Entry")
-#     email = request.POST['email']
-#     print("got mail")
-#     subscriber=subscribers(email=email)
-#     subscriber.save()
-#     return HttpResponse([True], content_type="application/json")
+def addSubscriber(request):
+    email = request.POST.get('email')
+
+    # Check if the email is already subscribed
+    if subscribers.objects.filter(email=email).exists():
+        response_data = {'success': False, 'message': 'You are already subscribed!'}
+    else:
+        # If not subscribed, save the subscriber
+        subscriber = subscribers(email=email)
+        subscriber.save()
+        response_data = {'success': True, 'message': 'Thanks for subscribing!'}
+
+    print("Response:", response_data)
+    return JsonResponse(response_data)
 
 
+@login_required(login_url='login')
 def pptPage(request):
 
     if request.GET.get('q')==None:
@@ -174,6 +184,7 @@ def pptPage(request):
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+@login_required(login_url='login')
 def deleteFileAsAdmin(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     File=files.objects.filter(Q(id__icontains=q))
@@ -260,7 +271,7 @@ def send_mail_after_registration(email , username, token):
     text_content = strip_tags(html_message)          
     subject = "Welcome to StudySync"
     email_from = settings.EMAIL_HOST_USER
-    recipient_list = [email,]
+    recipient_list = [email]
     email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list )
     email.attach_alternative(html_message, "text/html")            # Send the email
     email.send()
@@ -418,7 +429,7 @@ def Forgot_password(request):
                 
                 subject = "Welcome to StudySync"
                 email_from = settings.EMAIL_HOST_USER
-                recipient_list = [email,]
+                recipient_list = [email]
                 email = EmailMultiAlternatives(subject, text_content, email_from, recipient_list )
                 email.attach_alternative(html_message, "text/html")
                 # Send the email

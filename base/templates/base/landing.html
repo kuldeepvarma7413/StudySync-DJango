@@ -408,15 +408,19 @@
 
                     <div class="subscribe-form">
                 
-                        <form id="mc-form" class="group">
+                        <form id="mc-form" class="group" action="{% url 'subscriber' %}" method="POST">
+                            {% csrf_token %}
 
                             <input type="email" value="" name="email" class="email" id="mc-email" placeholder="Email Address" required> 
                 
-                            <button type="button" id="subscriber-submit">Send</button>
+                            <button type="button" id="subscriber-submit" href="{% url 'subscriber' %}">Send</button>
                 
                             <label for="mc-email" class="subscribe-message"></label>
                 
                         </form>
+                        <script>
+                            var BASE_URL = "{% url 'subscriber' %}";
+                        </script>
 
                     </div>	      		
                             
@@ -594,6 +598,7 @@
     <script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
     <script src="{% static 'js/plugins.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/subscriber-script.js' %}"></script>
 
     <!-- particles --><!-- scripts -->
     <script src="{% static 'js/particles.js' %}"></script>

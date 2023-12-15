@@ -37,7 +37,6 @@ urlpatterns = [
     path('Email_success/', views.email_verification_successful, name= "Email_success"),
     path('resend_email_verification/<int:user_id>/', views.resend_email_verification, name='resend_email_verification'),
     path('Error/',views.Errorpage, name="Error" ),
-   
     
     path('home',views.homePage, name="home" ),
     path('ppt-page',views.pptPage, name="ppt-page" ),
@@ -52,7 +51,7 @@ urlpatterns = [
     # frontend requests
     path('get-courses',views.getCourses, name="get-courses" ),
     path('get-files',views.getFiles, name="get-files" ),
-    # path('add-subscriber',views.addSubscriber, name="add-subscriber" ),
+    path('subscriber',views.addSubscriber, name="subscriber" ),
 
     # admin access
     path('admin-panel',views.showadmin, name="admin-panel" ),
