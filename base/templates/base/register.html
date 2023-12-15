@@ -33,23 +33,28 @@
             let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
             
             if( password1.length < 8 ){
-                pwd1Error.innerHTML="Password length must be equal or greater than 8.";
+                pwd1Error.innerHTML="<span style='color: red;'>Password length must be equal or greater than 8.</span>";
+                pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
                 return false;
             }else if(isCommonPassword(password1)){
-                pwd1Error.innerHTML="Password should not be common like abc or 123.";
+                pwd1Error.innerHTML="<span style='color: red;'>Password should not be common like abc or 123.</span>";
+                pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
                 return false;
             }else if( password1.length > 15 ){
-                pwd1Error.innerHTML="Password length shouldn't be greater than 15.";
+                pwd1Error.innerHTML="<span style='color: red;'>Password length shouldn't be greater than 15.</span>";
+                pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
                 return false;
             }else if(password1 != password2){
-                pwd1Error.innerHTML="Password doesn't match";
+                pwd1Error.innerHTML="<span style='color: red;'>Password doesn't match </span>";
+                pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
                 return false;
             }else if( !(regex.test(password1)) ){
-                pwd1Error.innerHTML="Password must contain Capital letter, small letter, symbol and number.";
+                pwd1Error.innerHTML="<span style='color: red;'>Password must contain Capital letter, small letter, symbol and number.</span>";
+                pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
                 return false;
             }
@@ -79,10 +84,10 @@
             <p>{{ formset.errors }} {{ formset.non_field_errors }}</p>
     
             <label for="username">Username</label>
-            <input type="username" id="username" name="username">
+            <input type="username" id="username" name="username" placeholder="" required>
 
             <label for="email">Email id</label>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" placeholder="" required>
     
             <label for="password">Password</label>
             <input type="password" id="password1" name="password1" placeholder="" required>

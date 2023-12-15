@@ -25,6 +25,7 @@ from django.utils import timezone
 from datetime import datetime , timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.hashers import check_password
 import re
 import json
 from datetime import date, datetime
@@ -211,8 +212,8 @@ def register(request):
             messages.error(request, "Passwords does'nt match.")
             return render(request, 'base/register.html', {'form': form})
         
-        elif len(password1) < 6:
-            messages.error(request, "Password length must be at least 6 characters.")
+        elif len(password1) < 8:
+            messages.error(request, "Password length must be at least 8 characters.")
             return render(request, 'base/register.html', {'form': form})
         
         elif len(password1) > 15:
@@ -520,9 +521,12 @@ def resend_email_verification_with_otp(request):
                 email.attach_alternative(html_message, "text/html")
                 # Send the email
                 email.send()
-
-                messages.success(request, 'Enter the new 6-digit OTP sent to your registered email id.')
-                return render(request, 'base/otp-verification.html', {'form': userForm()})
+                
+                if email.send() == True:
+                    messages.success(request, 'Enter the new 6-digit OTP sent to your registered email id.')
+                    return render(request, 'base/otp-verification.html', {'form': userForm()})
+                else:
+                    return render(request, 'base/Error.html')
         
         messages.error(request, "Session expired resend the OTP again")
         return render(request, "base/Forgot_Password.html", {'form': userForm()})
@@ -538,9 +542,42 @@ def update_password_with_otp(request):
     
     if 'email' not in request.session:
         return redirect('login')
+    
 
     if request.method == 'POST':
         form = PasswordUpdateForm(request.POST)
+        password1 = request.POST.get('new_password', '') 
+        password2 = request.POST.get('confirm_password', '') 
+        
+        
+        email = request.session.get('email')
+        user = User.objects.filter(email=email).first()
+        
+        if user and check_password(password1, user.password):
+            messages.error(request, 'New password must be different from the old one.')
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        elif not password1:
+            messages.error(request, "Please fill in the password.")
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        elif password1 != password2:
+            messages.error(request, "Passwords does'nt match.")
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        elif len(password1) < 8:
+            messages.error(request, "Password length must be at least 8 characters.")
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        elif len(password1) > 15:
+            messages.error(request, "Password length must not exceed 15 characters.")
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        elif isCommonPassword(password1):
+            messages.error(request, "Password should not be common like abc or 123.")
+            return render(request, 'base/password_verification.html', {'form': form})
+        
+        
         if form.is_valid():
             new_password = form.cleaned_data['new_password']
             confirm_password = form.cleaned_data['confirm_password']
