@@ -62,6 +62,8 @@ urlpatterns = [
     path('upload-course',views.uploadCourseAsAdmin, name="upload-course" ), # type: ignore
     path('delete-file',views.deleteFileAsAdmin, name="upload-file" ), # type: ignore
 
+    # user access
+    path('upload-ca',views.uploadCaAsUser, name="upload-ca" ), # type: ignore
 
 ]
 if settings.DEBUG:

@@ -701,6 +701,21 @@ def uploadFileAsAdmin(request):
             return HttpResponse(["File Added."], content_type="application/json")
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
+
+def uploadCaAsUser(request):
+    if request.method == 'POST':
+        Coursecode=request.POST.get('courseCode')
+        teachername=request.POST.get('teachername')
+        canumber=request.POST.get('canumber')
+        cadate=request.POST.get('cadate')
+        File=request.FILES['file']
+
+        try:
+            fileData=cafiles(courseCode=Coursecode, teachername=teachername, canumber=canumber, cadate=cadate, file=File)
+            data=fileData.save()
+            return HttpResponse(["File Added."], content_type="application/json")
+        except:
+            return HttpResponse(["Error Occured"], content_type="application/json")
         
         
         
