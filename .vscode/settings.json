@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
         "allauth",
+        "allcourses",
+        "cadate",
+        "cafiles",
+        "canumber",
         "cloudinary",
         "Coursecode",
         "csrfmiddlewaretoken",
@@ -16,7 +20,8 @@
         "redriect",
         "showadmin",
         "socialaccount",
-        "studysync"
+        "studysync",
+        "teachername"
     ],
     "liveServer.settings.port": 5501,
     "python.analysis.autoImportCompletions": true,

@@ -184,6 +184,7 @@ def pptPage(request):
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+
 @login_required(login_url='login')
 def CaPage(request):
     if request.GET.get('q')==None:
@@ -193,6 +194,7 @@ def CaPage(request):
     Files=cafiles.objects.filter(Q(courseCode__icontains=q))
     data=[{'canumber':file.canumber, 'id':file.id,'cadate':json_serial(file.cadate), 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'teacher': file.teachername} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 @login_required(login_url='login')
 def deleteFileAsAdmin(request):
@@ -701,22 +703,33 @@ def uploadFileAsAdmin(request):
             return HttpResponse(["File Added."], content_type="application/json")
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
+        
+        
 
 def uploadCaAsUser(request):
     if request.method == 'POST':
-        Coursecode=request.POST.get('courseCode')
-        teachername=request.POST.get('teachername')
-        canumber=request.POST.get('canumber')
-        cadate=request.POST.get('cadate')
-        File=request.FILES['file']
+        Coursecode = request.POST.get('courseCode')
+        teachername = request.POST.get('teachername')
+        canumber = request.POST.get('ca-no')
+        cadate = request.POST.get('cadate')
+        File = request.FILES.get('files_ca')
+
+        # Print keys to see what's in request.FILES
+        print("Keys in request.FILES:", request.FILES.keys())
 
         try:
-            fileData=cafiles(courseCode=Coursecode, teachername=teachername, canumber=canumber, cadate=cadate, file=File)
-            data=fileData.save()
-            return HttpResponse(["File Added."], content_type="application/json")
-        except:
-            return HttpResponse(["Error Occured"], content_type="application/json")
-        
+            if File:
+                fileData = cafiles(courseCode=Coursecode, teachername=teachername, canumber=canumber, cadate=cadate, files_ca=File)
+                data = fileData.save()
+                return HttpResponse(["File Added."], content_type="application/json")
+            else:
+                print(File.errors)
+                return HttpResponse(["File not found in the request."], content_type="application/json")
+
+        except Exception as e:
+            print("Error:", e)
+            return HttpResponse(["Error Occurred"], content_type="application/json")
+
         
         
 def uploadCourseAsAdmin(request):

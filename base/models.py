@@ -27,7 +27,7 @@ class cafiles(models.Model):
     canumber=models.IntegerField()
     cadate=models.DateTimeField()
     uploaded=models.DateTimeField(auto_now_add=True)
-    file=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
+    files_ca=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
     
     
 def __str__(self):

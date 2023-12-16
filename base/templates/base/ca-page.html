@@ -138,10 +138,10 @@
 
   <!-- Section Two: Upload CA PDF Files -->
   <div id="upload-section">
-    <form id="upload-form" action="upload-ca" method="post">
+    <form id="upload-form" action="upload-ca" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
       <label for="coursecode">Course Code:</label>
-      <select id="allcourses2" name="course" required>
+      <select id="allcourses2" name="courseCode" required>
         <!-- dynamic courses -->
       </select>
 
@@ -149,10 +149,10 @@
       <input type="text" id="teachername" name="teachername" required />
 
       <label for="date">Date:</label>
-      <input type="date" id="date" name="date" required />
+      <input type="date" id="date" name="cadate" required />
 
       <label for="file">Files:</label>
-      <input type="file" id="files" name="file" required />
+      <input type="file" id="files" name="files_ca" required />
 
       <label for="ca-no">CA Number:</label>
       <select id="ca-no" name="ca-no" required>
