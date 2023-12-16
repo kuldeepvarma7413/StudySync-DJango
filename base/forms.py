@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import cafiles
 
 class userForm(UserCreationForm):
     email = forms.EmailField(max_length=254)
@@ -34,3 +35,9 @@ class PasswordUpdateForm(forms.Form):
         label='Confirm Password',
         widget=forms.PasswordInput(attrs={'placeholder': 'Confirm your new password'}),
     )
+
+
+# class CaFilesForm(forms.ModelForm):
+#     class Meta:
+#         model = cafiles
+#         fields = ['courseCode', 'teachername', 'canumber', 'cadate', 'files_ca']
