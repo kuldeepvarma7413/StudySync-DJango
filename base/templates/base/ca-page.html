@@ -192,16 +192,16 @@
 
     // ca file cards
     const fileCard = `<div class="card">
-                  <a href="{% url 'caview' %}?q=%FILE_ID%" style="cursor: pointer;">
+                  <a href="{% url 'caview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;">
                         <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
                       <div class="card-inside">
                         <p>
-                          <h5>%FILE_TITLE%</h5>
+                          <h5>CA %CA_NUMBER% | %CA_UPLOAD_DATE%</h5>
                         </p>
-                        <p>Unit : %FILE_UNIT%</p>
-                        <p>Course Code : %FILE_COURSECODE%</p>
-                        <p>Date Uploaded : %FILE_UPLOADED%</p>
-                        <!-- <a href="/media/%FILE_UPLOADED%" download="%FILE_TITLE%" class="downloadFile">Download</a> -->
+                        <p>Teacher : %CA_TEACHER%</p>
+                        <p>Course Code : %CA_COURSECODE%</p>
+                        <p>Date Uploaded : %CA_UPLOAD_DATE%</p>
+                        <!-- <a href="/media/%CA_UPLOAD_DATE%" download="%CA_NUMBER%" class="downloadFile">Download</a> -->
                       </div>
                     </a>
                 </div> `;
@@ -221,11 +221,12 @@
       caView.innerHTML = "";
       res.forEach((file) => {
         const card = fileCard
-          .replace("%FILE_TITLE%", file.title)
-          .replace("%FILE_UNIT%", file.unit)
-          .replace("%FILE_UPLOADED%", file.uploaded)
-          .replace("%FILE_ID%", file.id)
-          .replace("%FILE_COURSECODE%", file.coursecode);
+          .replace("%CA_NUMBER%", file.canumber)
+          .replace("%CA_DATE%", file.cadate)
+          .replace("%CA_UPLOAD_DATE%", file.uploaded)
+          .replace("%CA_TEACHER%", file.teachername)
+          .replace("%CA_ID%", file.id)
+          .replace("%CA_COURSECODE%", file.coursecode);
         caView.insertAdjacentHTML("beforeEnd", card);
       });
 
