@@ -26,9 +26,16 @@ from datetime import datetime , timedelta
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
-import re
-import json
+from django.core.files.base import ContentFile
+from django.db import IntegrityError , transaction
+from PyPDF2 import PdfFileMerger , PdfMerger
+from django.core.files.uploadedfile import InMemoryUploadedFile , TemporaryUploadedFile
 from datetime import date, datetime
+from io import BytesIO
+from PIL import Image
+import img2pdf
+import re , os
+import json 
 import cloudinary.api
 import cloudinary
 
@@ -672,13 +679,6 @@ def unavailableAppPage(request):
 
 
 
-
-
-
-
-
-
-
 # for admin access
 @login_required(login_url='login')
 def showadmin(request):
@@ -688,6 +688,8 @@ def showadmin(request):
         if request.user in admins:
             return render(request,'base/admin_panel.html')
     return render(request, "base/Error.html")
+
+
 
 def uploadFileAsAdmin(request):
     if request.method == 'POST':
@@ -708,27 +710,86 @@ def uploadFileAsAdmin(request):
 
 def uploadCaAsUser(request):
     if request.method == 'POST':
+        user = request.user
         Coursecode = request.POST.get('courseCode')
         teachername = request.POST.get('teachername')
         canumber = request.POST.get('ca-no')
         cadate = request.POST.get('cadate')
-        File = request.FILES.get('files_ca')
+        files = request.FILES.getlist('files_ca')
 
-        # Print keys to see what's in request.FILES
-        print("Keys in request.FILES:", request.FILES.keys())
+        print("Files in request.FILES:", files)
 
         try:
-            if File:
-                fileData = cafiles(courseCode=Coursecode, teachername=teachername, canumber=canumber, cadate=cadate, files_ca=File)
-                data = fileData.save()
-                return HttpResponse(["File Added."], content_type="application/json")
-            else:
-                print(File.errors)
-                return HttpResponse(["File not found in the request."], content_type="application/json")
+            for file in files:
+                file_extension = os.path.splitext(file.name)[1].lower()
+
+                if file_extension in ('.jpg', '.jpeg', '.png'):
+                    pdf_content = convert_images_to_pdf([file.read() for file in files])
+                    cadate = timezone.make_aware(datetime.strptime(cadate, '%Y-%m-%d'))
+
+                    with transaction.atomic():
+                        existing_record = cafiles.objects.select_for_update().filter(user=user, cadate=cadate).first()
+
+                        if existing_record:
+                            existing_record.teachername = teachername
+                            existing_record.files_ca.delete()  
+                            existing_record.files_ca.save('merged_file.pdf', ContentFile(pdf_content), save=True)
+
+                            return HttpResponse(["Files Updated."], content_type="application/json")
+                        else:
+                            file_data = cafiles(
+                                user=user,
+                                courseCode=Coursecode,
+                                teachername=teachername,
+                                canumber=canumber,
+                                cadate=cadate,
+                            )
+                            pdf_buffer = BytesIO(pdf_content)
+                            file_data.files_ca.save('merged_file.pdf', ContentFile(pdf_buffer.getvalue()), save=True)
+
+                            return HttpResponse(["Files Added."], content_type="application/json")
+
+                elif file_extension in ('.pdf'):
+                    # function to Merge PDF files into a single PDF
+                    pdf_content = merge_pdf_files(files)
+                    file_data = cafiles(user=user,courseCode=Coursecode,teachername=teachername,canumber=canumber,cadate=cadate,)
+                    file_data.save()
+
+                    file_data.files_ca.save('merged_file.pdf', ContentFile(pdf_content), save=True)
+
+                    return HttpResponse(["File Added."], content_type="application/json")
+
+            return HttpResponse(["Files not found in the request."], content_type="application/json")
 
         except Exception as e:
-            print("Error:", e)
-            return HttpResponse(["Error Occurred"], content_type="application/json")
+            return HttpResponse([f"Error Occurred: {str(e)}"], content_type="application/json")
+
+        
+        
+        
+def convert_images_to_pdf(images):
+    pdf_buffer = BytesIO()
+    pdf_buffer.write(img2pdf.convert(images))
+    return pdf_buffer.getvalue()
+
+
+def merge_pdf_files(files_list):
+    pdf_merger = PdfMerger()
+
+    for file in files_list:
+        if isinstance(file, InMemoryUploadedFile):
+            pdf_merger.append(BytesIO(file.read()))
+        elif isinstance(file, TemporaryUploadedFile):
+            with open(file.temporary_file_path(), 'rb') as tmp_file:
+                pdf_merger.append(tmp_file)
+        else:
+            pdf_merger.append(file.files_ca)  # Use the correct attribute name
+
+    merged_pdf_content = BytesIO()
+    pdf_merger.write(merged_pdf_content)
+
+    return merged_pdf_content.getvalue()
+
 
         
         
