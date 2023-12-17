@@ -53,6 +53,7 @@ urlpatterns = [
     # frontend requests
     path('get-courses',views.getCourses, name="get-courses" ),
     path('get-files',views.getFiles, name="get-files" ),
+    path('get-cafiles',views.getCaFiles, name="get-cafiles" ),
     path('subscriber',views.addSubscriber, name="subscriber" ),
 
 
@@ -61,6 +62,7 @@ urlpatterns = [
     path('upload-file',views.uploadFileAsAdmin, name="upload-file" ), # type: ignore
     path('upload-course',views.uploadCourseAsAdmin, name="upload-course" ), # type: ignore
     path('delete-file',views.deleteFileAsAdmin, name="upload-file" ), # type: ignore
+    path('delete-cafile',views.deleteCaFileAsAdmin, name="upload-cafile" ), # type: ignore
 
     # user access
     path('upload-ca',views.uploadCaAsUser, name="upload-ca" ), # type: ignore

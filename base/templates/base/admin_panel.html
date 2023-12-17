@@ -173,6 +173,7 @@
         </div>
         <div id="files-container">
         </div>
+
         <h2>Ca Files</h2>
         <input type="text" id="search1" placeholder="Search by title" oninput="filterCaFiles()">
         <div class="cafiles">
@@ -187,7 +188,6 @@
         </div>
         <div id="cafiles-container">
         </div>
-    </div>
 
     <script>
         // files output html format
@@ -261,8 +261,8 @@
             const coursesList=await fetch(`/get-cafiles`).then(res=>res.json()) ?? [];
             cafileItems.innerHTML+='';
             coursesList.forEach(file=>{
-                cafileItems.insertAdjacentHTML('beforeEnd',listItemEl.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teacher)
-      .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%FILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%URL%",`delete-ca?q=${file.id}`))
+                cafileItems.insertAdjacentHTML('beforeEnd',listItemCa.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername)
+      .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%URL%",`delete-cafile?q=${file.id}`))
             });
 
             if(coursesList.length===0){

@@ -3,8 +3,10 @@
         "allauth",
         "allcourses",
         "cadate",
+        "CAFILE",
         "cafiles",
         "canumber",
+        "caview",
         "cloudinary",
         "Coursecode",
         "csrfmiddlewaretoken",
@@ -21,7 +23,8 @@
         "showadmin",
         "socialaccount",
         "studysync",
-        "teachername"
+        "teachername",
+        "topbar"
     ],
     "liveServer.settings.port": 5501,
     "python.analysis.autoImportCompletions": true,

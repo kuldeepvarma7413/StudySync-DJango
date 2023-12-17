@@ -31,6 +31,7 @@ from django.db import IntegrityError , transaction
 from PyPDF2 import PdfFileMerger , PdfMerger
 from django.core.files.uploadedfile import InMemoryUploadedFile , TemporaryUploadedFile
 from datetime import date, datetime
+from django.forms.models import model_to_dict
 from io import BytesIO
 from PIL import Image
 import img2pdf
@@ -162,6 +163,30 @@ def getFiles(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
+@login_required(login_url='login')
+def getCaFiles(request):
+    # Files = cafiles.objects.all()
+    #return the files which are not verified
+    Files=cafiles.objects.filter(isverified=False)
+    data = []
+
+    for file in Files:
+        user_dict = model_to_dict(file.user, fields=['username']) if file.user else {}
+        file_data = {
+            'id': file.id,
+            'uploaded': json_serial(file.uploaded),
+            'courseCode': file.courseCode,
+            'teachername': file.teachername,
+            'cadate': json_serial(file.cadate),
+            'user': user_dict,
+            'canumber': file.canumber,
+            
+        }
+        data.append(file_data)
+
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
 
 # @csrf_exempt
 def addSubscriber(request):
@@ -209,6 +234,16 @@ def deleteFileAsAdmin(request):
     File=files.objects.filter(Q(id__icontains=q))
     for file in File:
         cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
+    File.delete()
+    return HttpResponse(["File deleted"], content_type="application/json")
+
+
+@login_required(login_url='login')
+def deleteCaFileAsAdmin(request):
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    File=cafiles.objects.filter(Q(id__icontains=q))
+    for file in File:
+        cloudinary.api.delete_resources(file.files_ca, resource_type="raw", type="upload")
     File.delete()
     return HttpResponse(["File deleted"], content_type="application/json")
 
@@ -705,6 +740,7 @@ def uploadFileAsAdmin(request):
             return HttpResponse(["File Added."], content_type="application/json")
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
+        
         
         
 
