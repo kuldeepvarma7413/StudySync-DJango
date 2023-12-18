@@ -33,7 +33,7 @@
   const noFileFound=`<div style="text-align: center; grid-column:2/span 2; grid-row: 2;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
                     <p>No files Found. Select another one.</p></div>`
   const fileCard= `<div class="card">
-                  <a href="{% url 'pdfview' %}?q=%FILE_ID%" style="cursor: pointer;">
+                  <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;">
                         <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
                       <div class="card-inside">
                         <p>
