@@ -165,9 +165,8 @@ def getFiles(request):
 
 @login_required(login_url='login')
 def getCaFiles(request):
-    # Files = cafiles.objects.all()
-    #return the files which are not verified
-    Files=cafiles.objects.filter(isverified=False)
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    Files=cafiles.objects.filter(isverified=q)
     data = []
 
     for file in Files:
@@ -201,7 +200,6 @@ def addSubscriber(request):
         subscriber.save()
         response_data = {'success': True, 'message': 'Thanks for subscribing!'}
 
-    print("Response:", response_data)
     return JsonResponse(response_data)
 
 
@@ -223,8 +221,8 @@ def CaPage(request):
         return render(request, 'base/ca-page.html')
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    Files=cafiles.objects.filter(Q(courseCode__icontains=q))
-    data=[{'canumber':file.canumber, 'id':file.id,'cadate':json_serial(file.cadate), 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'teacher': file.teachername} for file in Files]
+    Files=cafiles.objects.filter(Q(courseCode__icontains=q)).filter(isverified=True)
+    data=[{'canumber':file.canumber, 'id':file.id,'cadate':json_serial(file.cadate), 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'teachername': file.teachername} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -243,9 +241,19 @@ def deleteCaFileAsAdmin(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     File=cafiles.objects.filter(Q(id__icontains=q))
     for file in File:
-        cloudinary.api.delete_resources(file.files_ca, resource_type="raw", type="upload")
+        cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
     File.delete()
     return HttpResponse(["File deleted"], content_type="application/json")
+
+@login_required(login_url='login')
+def ApproveCaFileAsAdmin(request):
+    q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    File=cafiles.objects.filter(Q(id__icontains=q))
+    for file in File:
+        file.isverified=True
+        file.save()
+        return HttpResponse(["File approved"], content_type="application/json")
+    return HttpResponse(["Error while File approve."], content_type="application/json")
 
 
 
@@ -394,8 +402,6 @@ def email_template_after_mail(request):
     auth_token = str(request.session.get('auth_token', ''))
 
     if new_token or auth_token:
-        # Uncomment the following line if you want to print the auth_token
-        # print(auth_token)
 
         if 'auth_token' in request.session:
             del request.session['auth_token']
@@ -413,7 +419,6 @@ def email_verification_successful(request):
     auth_token = str(request.session.get('auth_token', ''))
     
     if new_token or auth_token:
-        # print(auth_token)
         if 'auth_token' in request.session or 'new_token' in request.session:
             del request.session['auth_token']
             del request.session['new_token']
@@ -448,18 +453,14 @@ def reportBugPage(request):
 @login_required(login_url='login')
 def pdfview(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
+    q,type =q.split('?t=')
+    if type=="ca":
+        Files=cafiles.objects.filter(Q(id__icontains=q))
+        context={"files":Files}
+        return render(request, "base/pdfview.html", context)
     Files=files.objects.filter(Q(id__icontains=q))
     context={"files":Files}
     return render(request, "base/pdfview.html",context)
-
-@login_required(login_url='login')
-def caview(request):
-    q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    Files=cafiles.objects.filter(Q(id__icontains=q))
-    context={"files":Files}
-    return render(request, "base/pdfview.html",context)
-
-
 
 def Forgot_password(request):
     form = userForm()
@@ -480,9 +481,6 @@ def Forgot_password(request):
                 auth_token = uuid.uuid4()
                 auth_token_str = str(auth_token)
                 user_verification = User_Email_verification.objects.create(user=user,email=email,otp = otp_token,auth_token=auth_token_str)
-                print(email)
-                print(otp_token)
-                print(user_data)
                 html_template = 'base/Email_OTP_Template.html'
                 html_message = render_to_string(html_template, {'otp_token': otp_token })  
                 text_content = strip_tags(html_message)          
@@ -495,19 +493,15 @@ def Forgot_password(request):
                 email.attach_alternative(html_message, "text/html")
                 # Send the email
                 email.send()
-                
 
                 messages.success(request , 'Enter the 6 digit OTP send on your Registered Email id')
                 return render(request, 'base/otp-verification.html', {'form': form})
-            
                 
         else:
             messages.error(request, "Email Not Found Create account!!!")
             return render(request, "base/Forgot_Password.html", {'form': form})
         
     else:
-        print(request.method)
-        
         return render(request, "base/Forgot_Password.html", {'form': form})
     
     
@@ -736,7 +730,6 @@ def uploadFileAsAdmin(request):
         try:
             fileData=files(title=Title, courseCode=Coursecode, unit=Unit, fileupload=File)
             data=fileData.save()
-            print(data)
             return HttpResponse(["File Added."], content_type="application/json")
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
@@ -751,9 +744,7 @@ def uploadCaAsUser(request):
         teachername = request.POST.get('teachername')
         canumber = request.POST.get('ca-no')
         cadate = request.POST.get('cadate')
-        files = request.FILES.getlist('files_ca')
-
-        print("Files in request.FILES:", files)
+        files = request.FILES.getlist('fileupload')
 
         try:
             for file in files:
@@ -768,8 +759,8 @@ def uploadCaAsUser(request):
 
                         if existing_record:
                             existing_record.teachername = teachername
-                            existing_record.files_ca.delete()  
-                            existing_record.files_ca.save('merged_file.pdf', ContentFile(pdf_content), save=True)
+                            existing_record.fileupload.delete()  
+                            existing_record.fileupload.save('merged_file.pdf', ContentFile(pdf_content), save=True)
 
                             return HttpResponse(["Files Updated."], content_type="application/json")
                         else:
@@ -781,7 +772,7 @@ def uploadCaAsUser(request):
                                 cadate=cadate,
                             )
                             pdf_buffer = BytesIO(pdf_content)
-                            file_data.files_ca.save('merged_file.pdf', ContentFile(pdf_buffer.getvalue()), save=True)
+                            file_data.fileupload.save('merged_file.pdf', ContentFile(pdf_buffer.getvalue()), save=True)
 
                             return HttpResponse(["Files Added."], content_type="application/json")
 
@@ -791,7 +782,7 @@ def uploadCaAsUser(request):
                     file_data = cafiles(user=user,courseCode=Coursecode,teachername=teachername,canumber=canumber,cadate=cadate,)
                     file_data.save()
 
-                    file_data.files_ca.save('merged_file.pdf', ContentFile(pdf_content), save=True)
+                    file_data.fileupload.save('merged_file.pdf', ContentFile(pdf_content), save=True)
 
                     return HttpResponse(["File Added."], content_type="application/json")
 
@@ -819,7 +810,7 @@ def merge_pdf_files(files_list):
             with open(file.temporary_file_path(), 'rb') as tmp_file:
                 pdf_merger.append(tmp_file)
         else:
-            pdf_merger.append(file.files_ca)  # Use the correct attribute name
+            pdf_merger.append(file.fileupload)  # Use the correct attribute name
 
     merged_pdf_content = BytesIO()
     pdf_merger.write(merged_pdf_content)

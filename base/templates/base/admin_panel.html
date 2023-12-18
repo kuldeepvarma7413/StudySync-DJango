@@ -68,11 +68,16 @@
             overflow-y: auto;
             margin: 0px auto ;
         }
-        #files-container>li{
+        #files-container>li, #cafiles-container>li{
             padding: 0px 10px;
             align-items: center;
             display: grid;
+        }
+        #files-container>li{
             grid-template-columns: 42% 10% 15% 20% 5%;
+        }
+        #cafiles-container>li{
+            grid-template-columns: 10% 25% 10% 15% 15% 12% 12%;
         }
         #files-container>li:hover{
             background-color: rgb(250 165 95);
@@ -104,6 +109,9 @@
             top: 20px;
             right: 30px;
             text-decoration: none;
+        }
+        .nofilefound{
+            text-align: center;
         }
 
         /* Responsive styles */
@@ -175,7 +183,13 @@
         </div>
 
         <h2>Ca Files</h2>
-        <input type="text" id="search1" placeholder="Search by title" oninput="filterCaFiles()">
+        <div style="display: flex;">
+            <input type="text" id="search1" placeholder="Search by title" oninput="filterCaFiles()">
+            <select name="filterCaFilesBySelect" class="filterCaFilesBySelect" style="margin-bottom: 15px; width: 20%; padding: 10px; box-sizing: border-box;">
+                <option value="0" selected>Not Verified</option>
+                <option value="1">Verified</option>
+            </select>
+        </div>
         <div class="cafiles">
             <li>
                 <p>CA no.</p>
@@ -198,6 +212,7 @@
             <p>%FILE_UPLOADED%</p>
             <a href="%URL%" id="%FILE_ID%" type="submit">Delete</a>
             </li>`;
+        const noFileFound=`<p class="nofilefound">No files found.</p>`;
             
             // fetch filess
         const fileItems=document.getElementById('files-container');
@@ -210,7 +225,6 @@
             });
 
             if(coursesList.length===0){
-                noFileFound="No files found.";
                 fileItems.insertAdjacentHTML('beforeEnd',noFileFound);
             }
         })
@@ -231,6 +245,8 @@
                 x[i].style.display="grid";                  
             } 
         }}
+
+        //filter ca files
         function filterCaFiles() { 
             let input = document.getElementById('search1').value
             input=input.toLowerCase()  
@@ -245,28 +261,65 @@
               x[i].style.display="grid";                  
             } 
         }}
-        // files output html format
-        const listItemCa=`<li class="cafiles">
+        // cafiles
+        // template for not verified files
+        const listItemCa0=`<li class="cafiles">
             <p>%CA_NO%</p>
-            <p>%TEACHER%</p>
+            <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;">
+                <p>%TEACHER%</p>
+            </a>
             <p>%CAFILE_COURSECODE%</p>
             <p>%CAFILE_UPLOAD_DATE%</p>
             <p>%CAFILE_DATE%</p>
-            <a href="%URL%" id="%FILE_ID%" type="submit">Approve</a>
-            <a href="%URL%" id="%FILE_ID%" type="submit">Delete</a>
+            <a href="%APPROVEURL%" id="%FILE_ID%" class="approvebtn" type="submit">Approve</a>
+            <a href="%DELETEURL%" id="%FILE_ID%" type="submit">Delete</a>
+            </li>`;
+
+            // template for verified files
+        const listItemCa1=`<li class="cafiles">
+            <p>%CA_NO%</p>
+            <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;">
+                <p>%TEACHER%</p>
+            </a>
+            <p>%CAFILE_COURSECODE%</p>
+            <p>%CAFILE_UPLOAD_DATE%</p>
+            <p>%CAFILE_DATE%</p>
+            <a href="%DELETEURL%" id="%FILE_ID%" type="submit">Delete</a>
             </li>`;
             
         const cafileItems=document.getElementById('cafiles-container');
         window.addEventListener('load',async()=>{
-            const coursesList=await fetch(`/get-cafiles`).then(res=>res.json()) ?? [];
+            const coursesList=await fetch(`/get-cafiles?q=0`).then(res=>res.json()) ?? [];
             cafileItems.innerHTML+='';
             coursesList.forEach(file=>{
-                cafileItems.insertAdjacentHTML('beforeEnd',listItemCa.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername)
-      .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%URL%",`delete-cafile?q=${file.id}`))
+                cafileItems.insertAdjacentHTML('beforeEnd',listItemCa0.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replace("%CA_ID%", file.id)
+      .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%DELETEURL%",`delete-cafile?q=${file.id}`).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
             });
 
             if(coursesList.length===0){
-                noFileFound="No files found.";
+                cafileItems.insertAdjacentHTML('beforeEnd',noFileFound);
+            }
+        })
+
+        // fetch cafiles onchange of select box value
+        const selectbox=document.querySelector('.filterCaFilesBySelect')
+        console.log(selectbox.value)
+        selectbox.addEventListener('change',async()=>{
+            const coursesList=await fetch(`/get-cafiles?q=${selectbox.value}`).then(res=>res.json()) ?? [];
+            cafileItems.innerHTML='';
+            if(selectbox.value == 1){
+                coursesList.forEach(file=>{
+                    cafileItems.insertAdjacentHTML('beforeEnd',listItemCa1.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replace("%CA_ID%", file.id)
+          .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%DELETEURL%",`delete-cafile?q=${file.id}`).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
+                });
+            }else{
+                coursesList.forEach(file=>{
+                    cafileItems.insertAdjacentHTML('beforeEnd',listItemCa0.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replace("%CA_ID%", file.id)
+          .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%DELETEURL%",`delete-cafile?q=${file.id}`).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
+                });
+            }
+
+            if(coursesList.length===0){
                 cafileItems.insertAdjacentHTML('beforeEnd',noFileFound);
             }
         })
