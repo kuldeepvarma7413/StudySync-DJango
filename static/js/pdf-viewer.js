@@ -3,7 +3,7 @@ $(function () {
     const pdfUrl = () => {
         const embed = document.querySelector('.view-pdf-btn');
         let url = embed ? embed.getAttribute('data-pdf-url') : null;
-        let id = embed ? embed.getAttribute('data-pdf-id') : null;
+        // let id = embed ? embed.getAttribute('data-pdf-id') : null;
         url=url.split('/media/')[1]+"/media/"+url.split('/media/')[2];
         return url;
     }

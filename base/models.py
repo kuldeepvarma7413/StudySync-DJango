@@ -22,13 +22,13 @@ class files(models.Model):
     fileupload=models.FileField(upload_to='raw/', blank=True, storage=RawMediaCloudinaryStorage())
     
 class cafiles(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) 
     courseCode=models.CharField(max_length=20)
+    fileupload=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
     teachername=models.CharField(max_length=100)
     canumber=models.IntegerField()
-    cadate=models.DateTimeField(auto_now_add=True)
+    cadate=models.DateTimeField()
     uploaded=models.DateTimeField(auto_now_add=True)
-    files_ca=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
     isverified = models.BooleanField(default = False)
     
     
