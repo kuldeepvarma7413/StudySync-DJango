@@ -21,6 +21,10 @@ class files(models.Model):
     uploaded=models.DateTimeField(auto_now_add=True)
     fileupload=models.FileField(upload_to='raw/', blank=True, storage=RawMediaCloudinaryStorage())
     
+    def __str__(self):
+            return self.courseCode
+
+    
 class cafiles(models.Model):
     courseCode=models.CharField(max_length=20)
     fileupload=models.FileField(upload_to='raw/ca/', blank=True, storage=RawMediaCloudinaryStorage())
@@ -44,6 +48,10 @@ class Syllabus(models.Model):
     
 class subscribers(models.Model):
     email=models.CharField(max_length=320)
+    
+    def __str__(self):
+            return self.email
+
     
 #reports
 
