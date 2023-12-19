@@ -1,18 +1,14 @@
 $(function () {
-    // Get the PDF URL from the data-pdf-url attribute
     const pdfUrl = () => {
         const embed = document.querySelector('.view-pdf-btn');
         let url = embed ? embed.getAttribute('data-pdf-url') : null;
-        // let id = embed ? embed.getAttribute('data-pdf-id') : null;
-        url=url.split('/media/')[1]+"/media/"+url.split('/media/')[2];
+        url = url.split('/media/')[1] + "/media/" + url.split('/media/')[2];
         return url;
     }
 
-    // Initialize PDF viewer
     const initPDFViewer = (pdfUrl) => {
-        $("#pdfViewerDiv").html("");
+        $(".pdf-container").html("");
 
-        // create watermark
         let watermark = document.createElement("p");
         let watermark1 = document.createElement("p");
         let watermark2 = document.createElement("p");
@@ -28,47 +24,72 @@ $(function () {
         watermark1.style.left="250px";
         watermark2.style.top="306px";
         watermark2.style.left="650px";
-       
-
 
         pdfjsLib.getDocument(pdfUrl).promise.then(pdfDoc => {
-            let pages = pdfDoc.numPages; // Use pdfDoc.numPages instead of pdfDoc._pdfInfo.numPages
+            let pages = pdfDoc.numPages;
 
             for (let i = 1; i <= pages; i++) {
                 pdfDoc.getPage(i).then(page => {
                     let pdfCanvas = document.createElement("canvas");
                     let context = pdfCanvas.getContext("2d");
-                    let pageViewPort = page.getViewport({ scale: 1 });
+                    let scale = 2; // Adjust the scale as needed
 
-                    pdfCanvas.width = pageViewPort.width; // Adjust as needed
+                    let pageViewPort = page.getViewport({ scale });
+
+                    pdfCanvas.width = pageViewPort.width;
                     pdfCanvas.height = pageViewPort.height;
 
-                    // Adjust the style to display pages vertically
                     pdfCanvas.style.display = "block";
                     pdfCanvas.style.margin = "10px auto";
-                    pdfCanvas.style.height = pageViewPort.height + "px"; // Fixed height for each page
-                    $("#pdfViewerDiv").append(pdfCanvas);
+                    pdfCanvas.style.width = "80%"; // Adjust width as needed
+
+                    $(".pdf-container").append(pdfCanvas);
 
                     page.render({
                         canvasContext: context,
                         viewport: pageViewPort
-                    })
+                    });
                 }).catch(pageErr => {
                     console.log(pageErr);
-                })
+                });
             }
         }).catch(pdfErr => {
             console.log(pdfErr);
-        })
-        // add watermark
+        });
+
         $("body").append(watermark);
-        $("body").append(watermark1);
-        $("body").append(watermark2);
     }
 
-    // Call the PDF viewer initialization
     const url = pdfUrl();
     if (url) {
         initPDFViewer(url);
     }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+// let watermark = document.createElement("p");
+//         let watermark1 = document.createElement("p");
+//         let watermark2 = document.createElement("p");
+//         watermark.classList.add("watermark"); 
+//         watermark1.classList.add("watermark"); 
+//         watermark2.classList.add("watermark"); 
+//         watermark.textContent="StudySync StudySync StudySync ";
+//         watermark1.textContent="StudySync StudySync StudySync ";
+//         watermark2.textContent="StudySync StudySync StudySync ";
+//         watermark.style.top="-103px";
+//         watermark.style.left="0px";
+//         watermark1.style.top="183px";
+//         watermark1.style.left="250px";
+//         watermark2.style.top="306px";
+//         watermark2.style.left="650px";
