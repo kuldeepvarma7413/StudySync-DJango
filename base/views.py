@@ -238,12 +238,15 @@ def deleteFileAsAdmin(request):
 
 @login_required(login_url='login')
 def deleteCaFileAsAdmin(request):
-    q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    File=cafiles.objects.filter(Q(id__icontains=q))
-    for file in File:
-        cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
-    File.delete()
-    return HttpResponse(["File deleted"], content_type="application/json")
+    if request.method=='POST':
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        File=cafiles.objects.filter(Q(id__icontains=q))
+        for file in File:
+            cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
+        File.delete()
+        return HttpResponse(["File deleted"], content_type="application/json")
+    else:
+        return HttpResponse(["Unauthorized access"], content_type="application/json")
 
 @login_required(login_url='login')
 def ApproveCaFileAsAdmin(request):
