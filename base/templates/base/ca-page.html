@@ -142,6 +142,7 @@
         {% csrf_token %}
       <label for="coursecode">Course Code:</label>
       <select id="allcourses2" name="courseCode" required>
+        <option value="">Select Course</option>
         <!-- dynamic courses -->
       </select>
 
@@ -175,7 +176,7 @@
       const courses =
         (await fetch("/get-courses").then((res) => res.json())) ?? [];
       searchCourseCodeField1.innerHTML = "";
-      searchCourseCodeField2.innerHTML = "";
+      searchCourseCodeField2.innerHTML += "";
       courses.forEach((course) => {
         searchCourseCodeField1.insertAdjacentHTML(
           "beforeEnd",
