@@ -449,10 +449,6 @@ def reportBugPage(request):
     return render(request, 'base/ReportBug.html')
 
 
-
-
-
-
 @login_required(login_url='login')
 def pdfview(request):
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
@@ -461,9 +457,14 @@ def pdfview(request):
         Files=cafiles.objects.filter(Q(id__icontains=q))
         context={"files":Files}
         return render(request, "base/pdfview.html", context)
-    Files=files.objects.filter(Q(id__icontains=q))
-    context={"files":Files}
-    return render(request, "base/pdfview.html",context)
+    else:
+        Files=files.objects.filter(Q(id__icontains=q))
+        context={"files":Files}
+        return render(request, "base/pdfview.html",context)
+    
+@login_required
+def CompilerPage(request):
+    return render(request, "base/compiler_page.html")
 
 def Forgot_password(request):
     form = userForm()
@@ -796,6 +797,60 @@ def uploadCaAsUser(request):
 
         
         
+
+
+        
+        
+def uploadCourseAsAdmin(request):
+    if request.method == 'POST':
+        Title=request.POST.get('title')
+        Coursecode=request.POST.get('courseCode')
+
+        try:
+            Course=Courses(title=Title, name=Coursecode)
+            Course.save()
+            return HttpResponse(["Course Added."], content_type="application/json")
+        except:
+            return HttpResponse(["Error Occured"], content_type="application/json")
+        
+
+
+
+
+##################### admin analysis ######################
+
+@login_required
+def noofusers(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user.is_authenticated:
+        if request.user in admins:
+            users=User.objects.all()
+            Files=files.objects.all()
+            Cafiles=cafiles.objects.all()
+            data=[{'usercount':users.count(), 'coursefilescount': Files.count(), 'cafilescount': Cafiles.count()}]
+            print(data)
+            return HttpResponse(json.dumps(data), content_type="application/json")
+
+        else:
+            return HttpResponse(["Unauthorized access"], content_type="application/json")
+    return HttpResponse(["Unauthorized access"], content_type="application/json")
+
+
+############################################################
+###################### functions ###########################
+############################################################
+
+def isCommonPassword(password):
+    commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
+    return password.lower() in commonPasswords
+
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()[:10]
+    raise TypeError ("Type %s not serializable" % type(obj))
         
 def convert_images_to_pdf(images):
     pdf_buffer = BytesIO()
@@ -819,34 +874,3 @@ def merge_pdf_files(files_list):
     pdf_merger.write(merged_pdf_content)
 
     return merged_pdf_content.getvalue()
-
-
-        
-        
-def uploadCourseAsAdmin(request):
-    if request.method == 'POST':
-        Title=request.POST.get('title')
-        Coursecode=request.POST.get('courseCode')
-
-        try:
-            Course=Courses(title=Title, name=Coursecode)
-            Course.save()
-            return HttpResponse(["Course Added."], content_type="application/json")
-        except:
-            return HttpResponse(["Error Occured"], content_type="application/json")
-        
-
-
-############################################################
-###################### functions ###########################
-############################################################
-
-def isCommonPassword(password):
-    commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
-    return password.lower() in commonPasswords
-
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
-    if isinstance(obj, (datetime, date)):
-        return obj.isoformat()[:10]
-    raise TypeError ("Type %s not serializable" % type(obj))

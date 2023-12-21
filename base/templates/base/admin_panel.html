@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - StudySync</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
      <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
@@ -30,11 +31,12 @@
         #upload-form {
             background-color: #fff;
             padding: 20px;
+            display: grid;
+            grid-template-columns: 50% 50%;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
+            width: 100%;
             text-align: left;
-            align-items: center;
         }
 
         input {
@@ -61,7 +63,8 @@
             height: fit-content;
         }
 
-        #myForm div{
+        #myForm div, #myForm2 div{
+
             display: grid;
             grid-template-columns: 25% 70%;
         }
@@ -69,7 +72,7 @@
             
         #file-list {
             height: 100vh;
-            width: 50%;
+            width: 100%;
             background-color: #f8f8f8;
             float: right;
             overflow-y: auto;
@@ -124,7 +127,7 @@
             height: 20vh;
         }
         #button{
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 30px;
             text-decoration: none;
@@ -150,96 +153,135 @@
                 width: 100%;
             }
         }
+        .analysis{
+            width: 320px;
+        }
+        .analysis div{
+            width: 100%;
+            margin: 0px auto;
+            padding: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            background: darkorange;
+            align-items: center;
+        }
+        .analysis div p, .analysis div span {
+            padding: 5px;
+        }
+        /* .analysis div span{
+            float: right;
+        } */
     </style>
 </head>
 <body>
     <a id="button" href="logout">Logout</a>
-    <div id="upload-form">
-        <h2>Add File</h2>
-        <form id="myForm" action="upload-file" enctype="multipart/form-data" method="post">
-            {% csrf_token %}
-            <div>
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" class="form-input" required>
-            </div>
-            
-            <div>
-                <label for="courseCode">Course Code:</label>
-                <input type="text" id="courseCode" name="courseCode" class="form-input" required>
-            </div>
-            
-            <div>
-                <label for="unit">Unit:</label>
-                <input type="text" id="unit" name="unit" class="form-input" required>
-            </div>
-            
-            <div>
-                <label for="file">File:</label>
-                <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
-            </div>
+    <div class="analysis">
+        <div>
+            <p>Users</p>
+            <span id="userslength"></span>
+        </div>
+        <div>
+            <p>Course Files</p>
+            <span id="coursefileslength">
 
-            <button type="submit">Submit</button>
-        </form>
-        <h2>Add Course</h2>
-        <form id="myForm2" action="upload-course" enctype="multipart/form-data" method="post">
-            {% csrf_token %}
-            <div>
-                <label for="title">Title:</label>
-                <input type="text" id="title" name="title" class="form-input" required>
-            </div>
-            
-            <div>
-                <label for="courseCode">Course Code:</label>
-                <input type="text" id="courseCode" name="courseCode" class="form-input" required>
-            </div>
+            </span>
+        </div>
+        <div>
+            <p>Ca Files</p>
+            <span id="cafileslength">
 
-            <button type="submit">Submit</button>
-        </form>
+            </span>
+        </div>
     </div>
-    <!-- right view -->
-    <div id="file-list">
-        <h2>Course Files</h2>
-        <input type="text" id="search" placeholder="Search by title" oninput="filterFiles()">
-        <div class="coursefiles">
-            <li>
-                <div style="display: flex;">
-                    <input type="checkbox" class="checkallcoursefiles">
-                    <a id="coursedelete" style="visibility: hidden;"><img src="{% static 'images/icons/trash.png' %}" width="15px" height="15px" alt=""></a>
+    <div style="width: 100%;">
+        <div id="upload-form">
+            <form id="myForm" action="upload-file" enctype="multipart/form-data" method="post">
+                <h2>Add File</h2>
+                {% csrf_token %}
+                <div>
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" class="form-input" required>
                 </div>
-                <p>Title</p>
-                <p>Unit</p>
-                <p>Course Code</p>
-                <p>Upload Date</p>
-                <p>Action</p>
-            </li>
-        </div>
-        <div id="files-container">
-        </div>
-
-        <h2>Ca Files</h2>
-        <div style="display: flex;">
-            <input type="text" id="search1" placeholder="Search by title" oninput="filterCaFiles()">
-            <select name="filterCaFilesBySelect" class="filterCaFilesBySelect" >
-                <option value="0" selected>Not Verified</option>
-                <option value="1">Verified</option>
-            </select>
-        </div>
-        <div class="cafiles">
-            <li>
-                <div style="display: flex;">
-                    <input type="checkbox" class="checkallcafiles">
-                    <a id="cadelete" style="visibility: hidden;"><img src="{% static 'images/icons/trash.png' %}" width="15px" height="15px" alt=""></a>
+                
+                <div>
+                    <label for="courseCode">Course Code:</label>
+                    <input type="text" id="courseCode" name="courseCode" class="form-input" required>
                 </div>
-                <p>CA no.</p>
-                <p>Teacher</p>
-                <p>Course Code</p>
-                <p>Upload Date</p>
-                <p>Ca Date</p>
-                <p>Actions</p>
-            </li>
+                
+                <div>
+                    <label for="unit">Unit:</label>
+                    <input type="text" id="unit" name="unit" class="form-input" required>
+                </div>
+                
+                <div>
+                    <label for="file">File:</label>
+                    <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+                </div>
+    
+                <button type="submit">Submit</button>
+            </form>
+            <form id="myForm2" action="upload-course" enctype="multipart/form-data" method="post">
+                <h2>Add Course</h2>
+                {% csrf_token %}
+                <div>
+                    <label for="title">Title:</label>
+                    <input type="text" id="title" name="title" class="form-input" required>
+                </div>
+                
+                <div>
+                    <label for="courseCode">Course Code:</label>
+                    <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+                </div>
+    
+                <button type="submit">Submit</button>
+            </form>
         </div>
-        <div id="cafiles-container">
-        </div>
+        <!-- right view -->
+        <div id="file-list">
+            <h2>Course Files</h2>
+            <input type="text" id="search" placeholder="Search by title" oninput="filterFiles()">
+            <div class="coursefiles">
+                <li>
+                    <div style="display: flex;">
+                        <input type="checkbox" class="checkallcoursefiles">
+                        <a id="coursedelete" style="visibility: hidden;"><img src="{% static 'images/icons/trash.png' %}" width="15px" height="15px" alt=""></a>
+                    </div>
+                    <p>Title</p>
+                    <p>Unit</p>
+                    <p>Course Code</p>
+                    <p>Upload Date</p>
+                    <p>Action</p>
+                </li>
+            </div>
+            <div id="files-container">
+            </div>
+    
+            <h2>Ca Files</h2>
+            <div style="display: flex;">
+                <input type="text" id="search1" placeholder="Search by title" oninput="filterCaFiles()">
+                <select name="filterCaFilesBySelect" class="filterCaFilesBySelect" >
+                    <option value="0" selected>Not Verified</option>
+                    <option value="1">Verified</option>
+                </select>
+            </div>
+            <div class="cafiles">
+                <li>
+                    <div style="display: flex;">
+                        <input type="checkbox" class="checkallcafiles">
+                        <a id="cadelete" style="visibility: hidden;"><img src="{% static 'images/icons/trash.png' %}" width="15px" height="15px" alt=""></a>
+                    </div>
+                    <p>CA no.</p>
+                    <p>Teacher</p>
+                    <p>Course Code</p>
+                    <p>Upload Date</p>
+                    <p>Ca Date</p>
+                    <p>Actions</p>
+                </li>
+            </div>
+            <div id="cafiles-container">
+            </div>
+    </div>
         <script>
             // check all course files
             const coursefilecontainercheckbox = document.querySelector(".checkallcoursefiles");
@@ -284,30 +326,29 @@
                             for(var j=0; j<deletebuttons.length; j++){
                                 deletebuttons[j].click();
                             }
+                            // snackbar
+                            document.innerHTML="all files deleted";
                         }
                     }
                 }
             })
             // delete all checked cafiles using post request
-            // const cadeletebutton = document.getElementById("cadelete");
-            // cadeletebutton.addEventListener('click',async ()=>{
-            //     if(confirm("Are you sure to delete selected CA files?")){
-            //         const listitems=document.getElementsByClassName('cafiles');
-            //         for(var i=0; i<listitems.length; i++){
-            //             if(listitems[i].querySelector('input').checked==true){
-            //                 const deletebuttons=listitems[i].querySelectorAll('.cadeletebtn');
-            //                 for(var j=0; j<deletebuttons.length; j++){
-            //                     const id=deletebuttons[j].id;
-            //                     var result = id? await fetch(`/delete-cafile?q=${id}`,{
-            //                         method: 'POST'
-            //                     }).then(res=>res.json()):[];
-            //                     // deletebuttons[j].click();
-            //                 }
-            //                 document.innerHTML="all files deleted";
-            //             }
-            //         }
-            //     }
-            // })
+            const cadeletebutton = document.getElementById("cadelete");
+            cadeletebutton.addEventListener('click',async ()=>{
+                if(confirm("Are you sure to delete selected CA files?")){
+                    const listitems=document.getElementsByClassName('cafiles');
+                    for(var i=0; i<listitems.length; i++){
+                        if(listitems[i].querySelector('input').checked==true){
+                            const deletebuttons=listitems[i].querySelectorAll('.cadeletebtn');
+                            for(var j=0; j<deletebuttons.length; j++){
+                                deletebuttons[j].click();
+                            }
+                            // snackbar
+                            document.innerHTML="all cafiles deleted";
+                        }
+                    }
+                }
+            })
         </script>
 
     <script>
@@ -319,7 +360,7 @@
             <p>%FILE_COURSECODE%</p>
             <p>%FILE_UPLOADED%</p>
             <div class="actions">
-                <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
                 <a href="%URL%" id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
             </div>
             </li>`;
@@ -338,6 +379,12 @@
             if(coursesList.length===0){
                 fileItems.insertAdjacentHTML('beforeEnd',noFileFound);
             }
+
+            // fetch analysis
+            const analysisdata=await fetch(`/get-analysis`).then(res=>res.json()) ?? [];
+            document.getElementById("userslength").innerHTML=analysisdata[0]['usercount'];
+            document.getElementById("coursefileslength").innerHTML=analysisdata[0]['coursefilescount'];
+            document.getElementById("cafileslength").innerHTML=analysisdata[0]['cafilescount'];
         })
         
         // Function to filter files based on search input
@@ -447,6 +494,10 @@
         //         console.log("button clicked");
         //     })
         // })
+        // const id=deletebuttons[j].id;
+        //                         var result = id? await fetch(`/delete-cafile?q=${id}`,{
+        //                             method: 'POST'
+        //                         }).then(res=>res.json()):[];
         
     </script>
 </body>

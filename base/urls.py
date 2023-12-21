@@ -42,7 +42,7 @@ urlpatterns = [
     path('ppt-page',views.pptPage, name="ppt-page" ),
     path('ca-page',views.CaPage, name="ca-page" ),
     path('pdfview',views.pdfview, name="pdfview" ),
-    # path('caview',views.caview, name="caview" ),
+    path('compiler',views.CompilerPage, name="compiler" ),
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
@@ -64,6 +64,10 @@ urlpatterns = [
     path('delete-file',views.deleteFileAsAdmin, name="upload-file" ), # type: ignore
     path('delete-cafile',views.deleteCaFileAsAdmin, name="upload-cafile" ), # type: ignore
     path('approve-cafile',views.ApproveCaFileAsAdmin, name="approve-cafile" ), # type: ignore
+
+    # admin analysis
+    path('get-analysis/',views.noofusers, name="get-analysis" ), # type: ignore
+
 
     # user access
     path('upload-ca',views.uploadCaAsUser, name="upload-ca" ), # type: ignore

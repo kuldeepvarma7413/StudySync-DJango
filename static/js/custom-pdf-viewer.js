@@ -1,7 +1,9 @@
 $(function () {
     const pdfUrl = () => {
         const embed = document.querySelector('.view-pdf-btn');
+        console.log(embed)
         let url = embed ? embed.getAttribute('data-pdf-url') : null;
+        console.log(url)
         url = url.split('/media/')[1] + "/media/" + url.split('/media/')[2];
         return url;
     }

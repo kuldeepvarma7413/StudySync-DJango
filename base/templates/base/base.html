@@ -53,6 +53,9 @@
       <nav id="header-nav-wrap">
         <ul class="header-main-nav">
           {% if user.is_authenticated %}
+          <li>
+            <a href="/compiler" title="practice" class="subnavbtn">Compiler</a>
+          </li>
           <li class="current">
             <a href="/ppt-page" title="ppts">PPT</a>
           </li>
