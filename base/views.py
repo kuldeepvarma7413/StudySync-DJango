@@ -16,6 +16,7 @@ from allauth.socialaccount import app_settings
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 import random , smtplib , email.message , uuid
 from django.conf import settings
+from platformdirs import user_runtime_dir
 from django.core.mail import EmailMessage , send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -154,8 +155,9 @@ def logoutUser(request):
 @login_required(login_url='login')
 def getCourses(request):
     courses=Courses.objects.all()
-    data=[{'name':course.name, 'title': course.title} for course in courses]
+    data=[{'name':course.name, 'title': course.title, 'id':course.id} for course in courses]
     return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 @login_required(login_url='login')
 def getFiles(request):
@@ -188,20 +190,26 @@ def getCaFiles(request):
 
 
 
-# @csrf_exempt
 def addSubscriber(request):
-    email = request.POST.get('email')
+    email=request.GET.get('q') if request.GET.get('q')!=None else ''
 
     # Check if the email is already subscribed
-    if subscribers.objects.filter(email=email).exists():
-        response_data = {'success': False, 'message': 'You are already subscribed!'}
-    else:
-        # If not subscribed, save the subscriber
-        subscriber = subscribers(email=email)
-        subscriber.save()
-        response_data = {'success': True, 'message': 'Thanks for subscribing!'}
+    try:
+        if subscribers.objects.filter(email=email).exists():
 
-    return JsonResponse(response_data)
+            data=[{'response':"You are already subscribed", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        else:
+            # If not subscribed, save the subscriber
+            subscriber = subscribers(email=email)
+            subscriber.save()
+            
+            data=[{'response':"Thanks for Subscribing", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    except:
+        data=[{'response':"Error Occured, try again", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 
 @login_required(login_url='login')
@@ -229,12 +237,31 @@ def CaPage(request):
 
 @login_required(login_url='login')
 def deleteFileAsAdmin(request):
-    q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    File=files.objects.filter(Q(id__icontains=q))
-    for file in File:
-        cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
-    File.delete()
-    return HttpResponse(["File deleted"], content_type="application/json")
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        q,type=q.split('?t=')
+        if type=="ca":
+            File=cafiles.objects.filter(Q(id__icontains=q))
+            for file in File:
+                cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
+            File.delete()
+            data=[{'response':"CA File deleted", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+
+        else:
+            File=files.objects.filter(Q(id__icontains=q))
+            for file in File:
+                cloudinary.api.delete_resources(file.fileupload, resource_type="raw", type="upload")
+            File.delete()
+            data=[{'response':"Course File deleted", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 
 @login_required(login_url='login')
@@ -251,14 +278,23 @@ def deleteCaFileAsAdmin(request):
 
 @login_required(login_url='login')
 def ApproveCaFileAsAdmin(request):
-    q=request.GET.get('q') if request.GET.get('q')!=None else ''
-    File=cafiles.objects.filter(Q(id__icontains=q))
-    for file in File:
-        file.isverified=True
-        file.save()
-        return HttpResponse(["File approved"], content_type="application/json")
-    return HttpResponse(["Error while File approve."], content_type="application/json")
-
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+    if request.user in admins:
+        try:
+            q=request.GET.get('q') if request.GET.get('q')!=None else ''
+            File=cafiles.objects.filter(Q(id__icontains=q))
+            for file in File:
+                file.isverified=True
+                file.save()
+                data=[{'response':"File Approved", 'result':'success'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def register(request):
@@ -909,31 +945,31 @@ def showadmin(request):
 
 def uploadFileAsAdmin(request):
     if request.method == 'POST':
-        Title=request.POST.get('title')
-        Coursecode=request.POST.get('courseCode')
-        Unit=request.POST.get('unit')
-        File=request.FILES['file']
-
         try:
+            Title=request.POST.get('title')
+            Coursecode=request.POST.get('courseCode')
+            Unit=request.POST.get('unit')
+            File=request.FILES['file']
             fileData=files(title=Title, courseCode=Coursecode, unit=Unit, fileupload=File)
-            data=fileData.save()
-            return HttpResponse(["File Added."], content_type="application/json")
+            fileData.save()
+            data=[{'response':"File Added", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
         except:
-            return HttpResponse(["Error Occured"], content_type="application/json")
-        
-        
+            data=[{'response':"Error Occured, try again", 'result':'fail'}]    
+            return HttpResponse(json.dumps(data), content_type="application/json")        
+             
         
 
 def uploadCaAsUser(request):
     if request.method == 'POST':
-        user = request.user
-        Coursecode = request.POST.get('courseCode')
-        teachername = request.POST.get('teachername')
-        canumber = request.POST.get('ca-no')
-        cadate = request.POST.get('cadate')
-        files = request.FILES.getlist('fileupload')
-
         try:
+            user = request.user
+            Coursecode = request.POST.get('courseCode')
+            teachername = request.POST.get('teachername')
+            canumber = request.POST.get('ca-no')
+            cadate = request.POST.get('cadate')
+            files = request.FILES.getlist('fileupload')
+
             for file in files:
                 file_extension = os.path.splitext(file.name)[1].lower()
 
@@ -949,7 +985,8 @@ def uploadCaAsUser(request):
                             existing_record.fileupload.delete()  
                             existing_record.fileupload.save('merged_file.pdf', ContentFile(pdf_content), save=True)
 
-                            return HttpResponse(["Files Updated."], content_type="application/json")
+                            data=[{'response':"File Updated", 'result':'success'}]
+                            return HttpResponse(json.dumps(data), content_type="application/json")
                         else:
                             file_data = cafiles(
                                 user=user,
@@ -961,7 +998,8 @@ def uploadCaAsUser(request):
                             pdf_buffer = BytesIO(pdf_content)
                             file_data.fileupload.save('merged_file.pdf', ContentFile(pdf_buffer.getvalue()), save=True)
 
-                            return HttpResponse(["Files Added."], content_type="application/json")
+                            data=[{'response':"File Added", 'result':'success'}]
+                            return HttpResponse(json.dumps(data), content_type="application/json")
 
                 elif file_extension in ('.pdf'):
                     # function to Merge PDF files into a single PDF
@@ -971,33 +1009,92 @@ def uploadCaAsUser(request):
 
                     file_data.fileupload.save('merged_file.pdf', ContentFile(pdf_content), save=True)
 
-                    return HttpResponse(["File Added."], content_type="application/json")
+                    data=[{'response':"File Added", 'result':'success'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
 
-            return HttpResponse(["Files not found in the request."], content_type="application/json")
+            data=[{'response':"File not found in the request", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
 
         except Exception as e:
-            return HttpResponse([f"Error Occurred: {str(e)}"], content_type="application/json")
-
-        
-        
-
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
 
         
         
 def uploadCourseAsAdmin(request):
     if request.method == 'POST':
-        Title=request.POST.get('title')
-        Coursecode=request.POST.get('courseCode')
-
         try:
+            Title=request.POST.get('title')
+            Coursecode=request.POST.get('courseCode')
+
             Course=Courses(title=Title, name=Coursecode)
             Course.save()
-            return HttpResponse(["Course Added."], content_type="application/json")
+            data=[{'response':"Course Added", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
         except:
-            return HttpResponse(["Error Occured"], content_type="application/json")
-        
-        
-        
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def deleteReportAsAdmin(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        try:
+            Reports=Report.objects.filter(Q(id__icontains=q))
+            for report in Reports:
+                report.delete()
+            data=[{'response':"Report deleted", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error in Report Deletion", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+    
+@login_required(login_url='login')
+def deleteSubscriberAsAdmin(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        try:
+            Subscribers=subscribers.objects.filter(Q(id__icontains=q))
+            for subscriber in Subscribers:
+                subscriber.delete()
+            data=[{'response':"Subscriber deleted", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error in Subscriber Deletion", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def deleteCourseAsAdmin(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        q=request.GET.get('q') if request.GET.get('q')!=None else ''
+        try:
+            courses=Courses.objects.filter(Q(id__icontains=q))
+            for course in courses:
+                course.delete()
+            data=[{'response':"Course deleted", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error in Course Deletion", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
         
 
 
@@ -1005,23 +1102,90 @@ def uploadCourseAsAdmin(request):
 
 ##################### admin analysis ######################
 
-@login_required
+@login_required(login_url='login')
 def noofusers(request):
     # all admins
     admins = User.objects.filter(is_staff=True)
 
     if request.user.is_authenticated:
         if request.user in admins:
-            users=User.objects.all()
-            Files=files.objects.all()
-            Cafiles=cafiles.objects.all()
-            data=[{'usercount':users.count(), 'coursefilescount': Files.count(), 'cafilescount': Cafiles.count()}]
-            print(data)
+            try:
+                users=User.objects.all()
+                Files=files.objects.all()
+                Cafiles=cafiles.objects.all()
+                Reports=Report.objects.all()
+                Subscribers=subscribers.objects.all()
+                data=[{'usercount':users.count(), 'coursefilescount': Files.count(), 'cafilescount': Cafiles.count(), 'reportscount': Reports.count(), 'subscriberscount': Subscribers.count()}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            except:
+                data=[{'response':"Unauthorized Access", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+def is_Verified(username):
+    profiles=Profile.objects.all()
+    for profile in profiles:
+        if str(profile.user) == str(username):
+            return True
+    return False
+
+
+@login_required(login_url='login')
+def returnReports(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        try:
+            reports=Report.objects.all()
+            data=[{'email':report.email, 'name':report.name, 'id': report.id, 'type': report.reportType, 'content': report.detail} for report in reports]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Unauthorized Access", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def returnSubscribers(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        try:
+            Subscribers=subscribers.objects.all()
+            data=[{'email':subscribe.email, 'id': subscribe.id} for subscribe in Subscribers]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Unauthorized Access", 'result':'fail'}]
             return HttpResponse(json.dumps(data), content_type="application/json")
 
-        else:
-            return HttpResponse(["Unauthorized access"], content_type="application/json")
-    return HttpResponse(["Unauthorized access"], content_type="application/json")
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def returnUsers(request):
+    # all admins
+    admins = User.objects.filter(is_staff=True)
+
+    if request.user in admins:
+        try:
+            users=User.objects.all()
+            data=[{'username':user.username, 'email': user.email, 'firstname': user.first_name, 'lastname': user.last_name,'isverified':is_Verified(user.username) , 'lastlogin': json_serial(user.last_login), 'id':user.id} for user in users]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Unauthorized Access", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+
+    else:
+        data=[{'response':"Unauthorized Access", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+
+
 
 
 ############################################################
