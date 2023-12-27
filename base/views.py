@@ -34,9 +34,10 @@ from datetime import date, datetime
 from django.forms.models import model_to_dict
 from io import BytesIO
 from PIL import Image
+from io import StringIO
 import img2pdf
-import re , os
-import json 
+import re , os , sys , contextlib
+import json , subprocess
 import cloudinary.api
 import cloudinary
 
@@ -462,9 +463,191 @@ def pdfview(request):
         context={"files":Files}
         return render(request, "base/pdfview.html",context)
     
+    
+    
 @login_required
 def CompilerPage(request):
-    return render(request, "base/compiler_page.html")
+    if request.method == 'POST':
+        code = request.POST.get('code', '') 
+        input_data = request.POST.get('input_data', '')
+        language = request.POST.get('language', '')
+        inputs = input_data.split('\n')
+        
+        if language == 'Python':
+            if not input_data:
+                process = subprocess.Popen(
+                    ['python', '-c', code],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                    
+                )
+                
+                
+                output, error = process.communicate(input='\n'.join(inputs))
+                
+                result = {
+                    'result': output,
+                    'error': error
+                }
+                
+                return JsonResponse(result)
+            else:
+                process = subprocess.Popen(
+                    ['python', '-c', code],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                
+                output, error = process.communicate(input='\n'.join(inputs))
+                
+                result = {
+                    'result': output,
+                    'error': error
+                }
+                
+                return JsonResponse(result)
+        elif language == 'Java': 
+            class_name = extract_java_class_name(code)
+            
+            classpath = os.path.join('java_editor_files', 'compiled_java_classes')
+            
+            os.makedirs(classpath, exist_ok=True)
+            
+            
+            java_file_path = os.path.join(classpath, f'{class_name}.java')
+            with open(java_file_path, 'w') as java_file:
+                java_file.write(code)
+                
+            compile_command = [r"C:\Program Files\Java\jdk-19\bin\javac.exe", '-d', classpath, java_file_path]
+            compile_process = subprocess.Popen(
+                compile_command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            compile_output, compile_error = compile_process.communicate()
+            
+            if compile_process.returncode == 0:
+                
+                execute_command = [r"C:\Program Files\Java\jdk-19\bin\java.exe", '-cp', classpath, class_name]
+                execute_process = subprocess.Popen(
+                    execute_command,
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                execute_output, execute_error = execute_process.communicate(input='\n'.join(inputs))
+                
+                
+                os.remove(java_file_path)
+                
+                result = {
+                    'result': execute_output,
+                    'error': execute_error
+                }
+                
+                return JsonResponse(result)
+            
+            else:
+                
+                result = {
+                    'result': '',
+                    'error': compile_error
+                }
+                
+                return JsonResponse(result)
+            
+        elif language == 'C++':
+            
+            executable_dir = r'C:\Users\PREDATOR\Desktop\StudySync\Cpp_editor_files'
+            os.makedirs(executable_dir, exist_ok=True)
+            
+            executable_path = os.path.join(executable_dir, 'executable')
+            
+            process = subprocess.Popen(
+                ['g++', '-x', 'c++', '-o', executable_path, '-'],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+            
+            execute_output, execute_error = '', ''
+            
+            try:
+                
+                process.stdin.write(code)
+                process.stdin.close()
+                compile_output, compile_error = process.communicate()
+
+                if compile_error:
+                    raise Exception(compile_error)
+                
+                execute_process = subprocess.Popen(
+                    [executable_path],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    text=True
+                )
+                if input_data:
+                    inputs = input_data.split('\n')
+                    
+                    for line in inputs:
+                        
+                        execute_process.stdin.write(line + '\n')
+                        execute_process.stdin.flush()
+                    
+                    execute_process.stdin.close()
+                    
+                    
+                    execute_output, execute_error = execute_process.communicate()
+                else:
+                    
+                    execute_process.stdin.write('0\n')
+                    execute_process.stdin.close()
+                    
+                    execute_output, execute_error = execute_process.communicate()
+
+            except Exception as e:
+                execute_error = str(e)
+
+            result = {
+                'result': execute_output,
+                'error': execute_error
+            }
+
+            return JsonResponse(result)
+            
+    else:
+        return render(request, "base/compiler_page.html")
+    
+    
+    
+    
+def extract_java_class_name(java_code):
+    if 'public static void main' in java_code:
+        class_name_match_with_public = re.search(r'public\s+class\s+(\w+)', java_code)
+        class_name_match_with_class = re.search(r'class\s+(\w+)', java_code)
+        
+        if class_name_match_with_public:
+            class_name = class_name_match_with_public.group(1)
+            return class_name
+        elif class_name_match_with_class:
+            class_name = class_name_match_with_class.group(1)
+            return class_name
+        else:
+            return 'Main'
+    else:
+        return 'DefaultClassName'
+
+
+
 
 def Forgot_password(request):
     form = userForm()
@@ -813,6 +996,9 @@ def uploadCourseAsAdmin(request):
         except:
             return HttpResponse(["Error Occured"], content_type="application/json")
         
+        
+        
+        
 
 
 
@@ -874,3 +1060,5 @@ def merge_pdf_files(files_list):
     pdf_merger.write(merged_pdf_content)
 
     return merged_pdf_content.getvalue()
+
+
