@@ -42,7 +42,7 @@ urlpatterns = [
     path('ppt-page',views.pptPage, name="ppt-page" ),
     path('ca-page',views.CaPage, name="ca-page" ),
     path('pdfview',views.pdfview, name="pdfview" ),
-    path('compiler',views.CompilerPage, name="compiler" ),
+    path('compiler',views.CompilerPage, name="compiler" ), # type: ignore
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
@@ -62,11 +62,16 @@ urlpatterns = [
     path('upload-file',views.uploadFileAsAdmin, name="upload-file" ), # type: ignore
     path('upload-course',views.uploadCourseAsAdmin, name="upload-course" ), # type: ignore
     path('delete-file',views.deleteFileAsAdmin, name="upload-file" ), # type: ignore
-    path('delete-cafile',views.deleteCaFileAsAdmin, name="upload-cafile" ), # type: ignore
     path('approve-cafile',views.ApproveCaFileAsAdmin, name="approve-cafile" ), # type: ignore
+    path('delete-course',views.deleteCourseAsAdmin, name="delete-course" ), # type: ignore
+    path('delete-subscriber',views.deleteSubscriberAsAdmin, name="delete-subscriber" ), # type: ignore
+    path('delete-report',views.deleteReportAsAdmin, name="delete-report" ), # type: ignore
 
     # admin analysis
     path('get-analysis/',views.noofusers, name="get-analysis" ), # type: ignore
+    path('get-users/',views.returnUsers, name="get-users" ), # type: ignore
+    path('get-subscribers/',views.returnSubscribers, name="get-subscribers" ), # type: ignore
+    path('get-reports/',views.returnReports, name="get-reports" ), # type: ignore
 
 
     # user access

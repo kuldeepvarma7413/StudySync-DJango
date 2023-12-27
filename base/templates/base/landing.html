@@ -416,6 +416,35 @@
                             <button type="button" id="subscriber-submit" href="{% url 'subscriber' %}">Send</button>
                 
                             <label for="mc-email" class="subscribe-message"></label>
+
+                            <script>
+                                function isEmail(email){
+                                    var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                                    return email.match(validRegex)
+                                }
+                                const addsubscriberbtn=document.getElementById('subscriber-submit');
+                                addsubscriberbtn.addEventListener('click', async function(){
+                                    const Email=document.getElementById('mc-email').value;
+                                    if(Email.length==0)
+                                        showFailSnackbar("Please fill in email", 'fail');
+                                    else if(!(isEmail(Email))){
+                                        showFailSnackbar("Please enter a valid email","fail");
+                                    }else{
+                                        const res=await fetch('subscriber?q='+Email, {method:'POST', 
+                                            headers: {
+                                            'Accept': 'application/json',
+                                            'Content-Type': 'application/json; charset=UTF-8',
+                                            'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                                        if (res[0].res=="fail"){
+                                            showFailSnackbar(res[0].response, res[0].result);
+                                        }else{
+                                            showSuccessSnackbar(res[0].response,res[0].result);
+                                            document.getElementById('mc-email').value=""
+                                        }
+                                    }
+                                })
+
+                            </script>
                 
                         </form>
                         <script>
@@ -449,6 +478,11 @@
       </div>
 
     </footer>
+    <!-- snackbar -->
+    <!-- The actual snackbar -->
+    <div id="snackbar">
+        <span id="snackbar-text"></span>
+    </div>
 
     <!-- popup html -->
 
@@ -574,23 +608,6 @@
             }
         });
 
-        // const subscriberButton= document.getElementById("subscriber-submit");
-
-        // subscriberButton.addEventListener('click', async function subscribe(){
-        //     let Email=document.getElementById('mc-email').value;
-        //     if(Email.length == 0){
-        //         paraContent.innerHTML="email can't be empty."
-        //         display();
-        //         return false;
-        //     }else{
-        //         const res=await fetch("/add-subscriber", {method:"POST"}).then(res=>res.json()) ?? [];
-        //         console.log(res);
-        //         headContent.innerHTML="Hey there."
-        //         paraContent.innerHTML="Thank you for subscribing us. You will get notified about upcoming notifications (if email is valid)."
-        //         display();
-        //         return true;
-        //     }            
-        // })
     </script>
 
     <!-- Java Script
@@ -598,7 +615,6 @@
     <script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
     <script src="{% static 'js/plugins.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/subscriber-script.js' %}"></script>
 
     <!-- particles --><!-- scripts -->
     <script src="{% static 'js/particles.js' %}"></script>
