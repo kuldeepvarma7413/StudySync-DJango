@@ -1,228 +1,279 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/lib/codemirror.css">
-    <link rel="stylesheet" href="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/theme/dracula.css">
-    <link rel="stylesheet" href="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/theme/monokai.css">
-    <link rel="stylesheet" href="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/theme/eclipse.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/lib/codemirror.js"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/mode/clike/clike.js"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/mode/python/python.js"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/addon/edit/closebrackets.js"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/mode/django/django.js"></script>
-    <script src="/static/compiler-editor-lib/codemirror/codemirror-5.65.16/addon/comment/comment.js"></script>
+    <title>Code Editor</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
+    <link rel="stylesheet" href="/static/ace-builds-master/ace-builds-master/css/ace.css">
+    <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.min.js"></script>
+    <style type="text/css" media="screen">
+        #editor-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+            height: 100vh;
+        }
+        #header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.705); 
+            color: white; 
+            width: 820px; 
+            margin-bottom: 10px; 
+            margin: 5px;
+        }
 
+        #languageSelect {
+            margin-right: 30px;
+            color: white; 
+            background-color: rgb(234, 144, 17); 
+            border: 1px solid white; 
+        }
 
-    
-    <style>
-        body {
-            background-color: #ffffff; 
-            color: #ffffff; 
+        #runButton {
+            margin-top: 10px;
+            color: white; 
+            background-color: orange; 
+            border: none; 
+            padding: 5px 10px; 
+            cursor: pointer; 
+        }
+
+        #editor {
+            width: 820px;
+            flex: 1;
+        }
+
+        #output {
+            width: 820px; 
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid lightcoral; 
+            /* background-color: #f4e8d0; */
+            /* color: #3d2c1a;  */
+        }
+        #input {
+            width: 820px;
+            height: 100px;
+            margin-top: 10px;
+            border: 1px solid lightcoral;
+            display: none;
         }
     </style>
-
-    
 </head>
+<body>
 
-<div class="row m-3">
-    <div class="col">
-        <div class="col-auto w-25">
-            <div class="dropdown">
-                <a class="btn btn-secondary " href="#" role="button" id="dropdownThemeLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span id="themeIcon" class="me-2"><i class="bi bi-check2"></i></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high" viewBox="0 0 16 16">
-                            <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-                        </svg>
-                    Change Theme
-                </a>
-                <div class="dropdown-menu" aria-labelledby="dropdownThemeLink">
-                    <button class="dropdown-item" onclick="changeTheme('eclipse')">Light</button>
-                    <button class="dropdown-item" onclick="changeTheme('monokai')">Dark</button>
-                </div>
-            </div>
+<form id="codeForm" onsubmit="submitForm(); return false;" method="post">
+    <div id="editor-container">
+        <div id="header-bar">
+            <select id="languageSelect" onchange="changeLanguage()">
+                <option value="java">Java</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+            </select>
+            <button type="button" class="btn btn-info" onclick="toggleStdin()" style="background-color: rgba(246, 129, 33, 1);">
+            <span id="stdinButtonText">Stdin</span>
+        </button>
+
+            <select id="themeSelect" onchange="changeTheme()">
+                <option value="monokai">Monokai</option>
+                <option value="github">Github</option>
+                <option value="solarized_dark">Solarized Dark</option>
+            </select>
+
+            <button type="button" class="btn btn-success" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
+                <span id="buttonText">Run Code </span>
+                <span id="loading" class="spinner-border spinner-border-sm text-light" role="status" style="display: none;">
+                    <span class="visually-hidden">Loading...</span>
+                </span>
+
+            </button>
         </div>
-        <form id="codeForm" onsubmit="return runCode()" method="post" action="{% url 'compiler' %}">
-            {% csrf_token %}
-        <div class="d-flex justify-content-between mb-2 bg-dark rounded p-2">
-            <div class="col-auto w-25">
-                <label class="visually-hidden" for="inlineFormSelectPref">Language</label>
-                <select class="form-select" id="inlineFormSelectPref">
-                    <!-- <option selected>----Languages----</option> -->
-                    <option value="Java">Java</option>
-                    <option value="C++">C++</option>
-                    <option value="Python">Python</option>
-                </select>
-            </div>
-            <div>
-                <button type="button" class="btn btn-success" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
-                    <span id="buttonText">Run Code </span>
-                    <span id="loading" class="spinner-border spinner-border-sm text-light" role="status" style="display: none;">
-                        <span class="visually-hidden">Loading...</span>
-                    </span>
 
-                </button>
-            </div>
-        </div>
-        <textarea type="text" id="editor" class="form-control" aria-label="Code Editor"></textarea>    
-</form>
-</div>
-    <div class="col d-flex flex-column rounded bg-dark px-4">
-        <div class="h-50">
-            <label for="Input" class="text-light mt-4 mb-2">Input</label>
-            <textarea type="text" id="inputData" class="form-control h-75" aria-label="Input"></textarea>
-        </div>
-        <div class="h-50 output-container" style="color: lightgreen;">
-            <label for="Output" class="text-light mb-2">Output</label>
-            <textarea type="text" id="output" class="form-control h-75 output-textarea" aria-label="Output" style="color: rgb(33, 128, 33); " readonly></textarea>
-        </div>
-    </div>
-</div>
+        <div id="editor" class=" ace_editor ace_hidpi ace-monokai ace_dark"></div>
 
-
-
-
-
-<script>
-
-    
-    CodeMirror.registerHelper("lint", "text/x-cython", function (text) {
-        var found = [];
-
-        CodeMirror.loadMode(editor, "addon/comment/comment");
-        for (var i = 0; i < editor.lineCount(); i++) {
-            found.push({
-                from: CodeMirror.Pos(i, 0),
-                to: CodeMirror.Pos(i, editor.getLine(i).length),
-                message: "Syntax Error on Line " + (i + 1),
-                severity: "error",
-            });
-        }
-        return found;
-    });
-
-
-    var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
-        mode: "text/x-cython",
-        theme: "monokai",
-        lineNumbers: true,
-        autoCloseBrackets: true,
-        lint: true, 
-        extraKeys: {
-        "Ctrl-/": "toggleComment",
-        "Cmd-/": "toggleComment",  // For Mac users
-        },
-        gutters: ["CodeMirror-lint-markers"],
-    });
-
-
-
-    var width = window.innerWidth;
-    editor.setSize(0.7 * width, "700");
-
-    function changeTheme(theme) {
-        editor.setOption("theme", theme);
         
+
+        <textarea id="input" name="input" placeholder="Input" rows="4"></textarea>
+        <textarea id="output" name="output" placeholder="Output" rows="4" readonly></textarea>
+    </div>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.9.0/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ext-language_tools.js"></script>
+<script src="/static/ace-builds-master/ace-builds-master/src-min/ext-error_marker.js"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/java");
+
+    editor.setOptions({
+        enableBasicAutocompletion: true,
+        enableSnippets: true,
+        enableLiveAutocompletion: true
+        
+    });
+
+    var stdinVisible = false;
+
+    function toggleStdin() {
+        var inputTextArea = document.getElementById('input');
+        stdinVisible = !stdinVisible;
+        
+        if (stdinVisible) {
+            inputTextArea.style.display = 'block';
+            document.getElementById('stdinButtonText').innerText = 'Close Stdin';
+        } else {
+            inputTextArea.style.display = 'none';
+            document.getElementById('stdinButtonText').innerText = 'Stdin';
+        }
     }
 
-    var languageSelect = document.getElementById("inlineFormSelectPref");
 
-    languageSelect.addEventListener("change", function () {
-        if (languageSelect.value === "Java") {
-            editor.setOption("mode", "text/x-java");
-        } else if (languageSelect.value === "Python") {
-            editor.setOption("mode", "text/x-python");
-        } else {
-            editor.setOption("mode", "text/x-c++src");
+    function setDefaultCode(language) {
+        var defaultCode = '';
+
+        switch (language) {
+            case 'java':
+                editor.session.setMode("ace/mode/java");
+                defaultCode = 'import java.util.*; \nimport java.util.*; \nimport java.util.*; \n\nclass StudySync {\n    public static void main(String[] args) throws java.lang.Exception {\n\n         // Write your Java code here...     \n\n        System.out.println("Hello, World!");\n    }\n}';
+                break;
+            case 'python':
+                editor.session.setMode("ace/mode/python");
+                defaultCode = 'print("Hello world")';
+                break;
+            case 'cpp':
+                editor.session.setMode("ace/mode/c_cpp");
+                defaultCode = '#include <iostream>\nusing namespace std;\n\nint main() {\n\n    // Write C++ code here\n\n    cout << "Hello world!";\n\n    return 0;\n}';
+                break;
         }
-    });
+
+        editor.setValue(defaultCode);
+    }
+
+    function changeLanguage() {
+        var languageSelect = document.getElementById('languageSelect');
+        setDefaultCode(languageSelect.value);
+    }
+
+    function runCode() {
+        var code = editor.getValue();
+        var input_data = document.getElementById('input').value;
+        var outputTextArea = document.getElementById('output');
 
 
+
+        var languageSelect = document.getElementById('languageSelect');
+        var selectedLanguage = languageSelect.value;
+
+        var formData = new FormData(document.getElementById('codeForm'));
+        formData.delete('themeSelect');
+
+
+        try {
+            var result = executeCode(code, input_data, selectedLanguage);
+            outputTextArea.value = result;
+        } catch (error) {
+            outputTextArea.value = 'Error: ' + error.message;
+        }
+    }
+
+    function changeTheme() {
+        var themeSelect = document.getElementById('themeSelect');
+        var selectedTheme = themeSelect.value;
+
+        editor.setTheme("ace/theme/" + selectedTheme);
+    }
+    function addAnnotation(location) {
+        editor.getSession().setAnnotations([{
+            row: location.start.line - 1, 
+            column: location.start.column,
+            text: 'Syntax Error',
+            type: 'error'
+        }]);
+        
+        
+        editor.container.querySelector('.ace_gutter-cell.ace_error > .ace_gutter-layer').style.backgroundImage = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" fill=\"%23f00\"><text x=\"0\" y=\"11\" font-size=\"12\" font-family=\"Arial\" dy=\"-.25em\">✖</text></svg>')";
+        editor.container.querySelector('.ace_gutter-cell.ace_error > .ace_gutter-layer').style.backgroundSize = "12px 12px";
+        editor.container.querySelector('.ace_gutter-cell.ace_error > .ace_gutter-layer').style.backgroundRepeat = "no-repeat";
+    }
+
+    function clearAnnotations() {
+        editor.getSession().clearAnnotations();
+    }
+
+    setDefaultCode('java');
 </script>
 
-<script>
 
-function showLoading() {
+
+<script>
+    function showLoading() {
         document.getElementById('buttonText').style.display = 'none';
         document.getElementById('loading').style.display = 'inline-block';
     }
-    
+
     function hideLoading() {
         document.getElementById('loading').style.display = 'none';
         document.getElementById('buttonText').style.display = 'inline-block';
     }
-    
+
     async function runCode() {
-    showLoading(); 
+    showLoading();
 
     var code = editor.getValue();
-    var input_data = document.getElementById('inputData').value;
-    var language = languageSelect.value;
+    var input_data = document.getElementById('input').value;
+    var languageSelect = document.getElementById('languageSelect');
 
-    console.log(code);
-    console.log(input_data);
-    console.log(language);
 
     try {
         const response = await fetch('/compiler', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken'),
             },
-            body: new URLSearchParams({
+            body: JSON.stringify({
                 code,
+                language: languageSelect.value,
                 input_data,
-                language,
             }),
         });
 
         if (response.ok) {
             const resultData = await response.json();
 
-            
             if (resultData.error) {
-                
                 document.getElementById('output').style.color = 'red';
                 document.getElementById('output').value = 'Error: ' + resultData.error;
             } else {
-                
                 console.log('Result:', resultData.result);
                 document.getElementById('output').style.color = 'green';
                 document.getElementById('output').value = resultData.result;
             }
         } else {
-            
             document.getElementById('output').value = 'Error: Unable to execute code.';
         }
     } catch (error) {
         console.error('Error:', error.message);
-        
         document.getElementById('output').value = 'Error: ' + error.message;
     } finally {
-        hideLoading(); 
+        hideLoading();
     }
 
-    
     return false;
-
 }
 
-
-    
     function getCookie(name) {
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             var cookies = document.cookie.split(';');
             for (var i = 0; i < cookies.length; i++) {
                 var cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                     break;
@@ -231,33 +282,7 @@ function showLoading() {
         }
         return cookieValue;
     }
-</script>
 
-
-<script>
-    
-    function setDefaultCode(language) {
-        switch (language) {
-            case 'Java':
-                editor.setValue('import java.util.*; \nimport java.util.*; \nimport java.util.*; \n\nclass StudySync {\n    public static void main(String[] args) throws java.lang.Exception {\n\n         // Write your Java code here...     \n\n        System.out.println("Hello, World!");\n    }\n}');
-                break;
-            case 'Python':
-                editor.setValue('print("Hello world")');
-                break;
-            case 'C++':
-                editor.setValue('#include <bits/stdc++.h> \nusing namespace std;\n\nint main() {\n    // Write C++ code here\n    cout << "Hello world!";\n\n    return 0;\n}');
-                break;
-            default:
-                editor.setValue('');
-        }
-    }
-    
-    languageSelect.addEventListener('change', function () {
-        
-        setDefaultCode(languageSelect.value);
-    });
-    
-    setDefaultCode('Java');
 </script>
 
 </body>

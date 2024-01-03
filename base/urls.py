@@ -46,7 +46,7 @@ urlpatterns = [
     path('report-bug/',views.reportBugPage, name="report-bug" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
-
+    
     # unavailable pages
     path('unavailable-app/',views.unavailableAppPage, name="unavailable-app" ),
 
