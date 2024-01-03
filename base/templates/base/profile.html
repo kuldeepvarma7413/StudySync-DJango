@@ -1,0 +1,251 @@
+
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<style>
+    body{
+        background-color: white;
+    }
+    *{
+        margin: 0px;
+        padding: 0px;
+    }
+    .main-container{
+        position: relative;
+        top: 72px;
+        height: 90%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .inside-container{
+        display: grid;
+        grid-template-columns: 30% 70%;
+        width: 80%;
+        height: 80vh;
+        box-shadow: 0px 0px 10px #b9b8b8;
+        border-radius: 10px;
+    }
+    #refresh{
+        position: relative;
+        top: -7%;
+        left: 74%;
+    }
+    .outside-info{
+        margin: 50px 0px;
+        border-right: 2px solid #b9b8b8;
+    }
+    .info{
+        padding: 50px 20px;
+        text-align: center;
+    }
+    .info img, .show img{
+        border-radius: 50%;
+    }
+    .navs{
+        padding: 12px 6px;
+    }
+    .navs ul{
+        list-style: none;
+        display: flex;
+        gap: 20px;
+    }
+    .navs ul li{
+        padding: 5px 20px;
+        color: black;
+        border-radius: 10px;
+    }
+    li.selected{
+        background-color: darkorange;
+    }
+    .content-div{
+        display: none;
+        height: 68vh;
+    }
+    .content-div.show{
+        display: flex;
+        padding-top: 20px;
+        /* text-align: center; */
+        justify-content: center;
+        align-items: center;
+    }
+    form{
+        text-align: center;
+    }
+    .show input{
+        margin: auto;
+        height: 4rem;
+    }
+</style>
+
+<!-- profile section -->
+<div class="main-container">
+    <div class="inside-container">
+        <div class="outside-info">
+            <button id="refresh">↻</button>
+            <div class="info">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xnGLZJFli6FRyXSlm8-QnpJb9hh30HffEA&usqp=CAU" height="150px" width="150px">
+                <p id="name"></p>
+                <p id="email"></p>
+                <p>User ID: <span id="userid"></span></p>
+            </div>
+        </div>
+        <div class="action-divs">
+            <div class="navs">
+                <ul>
+                    <li class="nav1-label">
+                        <p  class="nav1" id="edit-profile">Edit Profile</p>
+                    </li>
+                    <!-- <li class="nav2-label">
+                        <p class="nav2" id="settings">Settings</p>
+                    </li> -->
+                    <li class="nav3-label">
+                        <p class="nav3" id="change-password">Change Password</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-div edit-profile">
+                <form id="form1">
+                    <div class="profile-photo">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xnGLZJFli6FRyXSlm8-QnpJb9hh30HffEA&usqp=CAU" height="150px" width="150px">
+                    </div>
+                    <div class="name">
+                        <label>
+                            <input type="text" id="firstname" placeholder="First Name" required>
+                        </label>
+                        <label>
+                            <input type="text" id="lastname" placeholder="Last Name" required>
+                        </label>
+                    </div>
+                    <label>
+                        Username: <span id="username1"></span>
+                    </label>
+                    <label>
+                        Email: <span id="email1"></span>
+                    </label>
+                    <label>Date Joined: <span id="datejoined"></span></label>
+                    <button type="submit" id="edit-profile-btn">Apply Changes</button>
+                </form>
+            </div>
+            <div class="content-div change-password">
+                <form id="form2">
+                    <label>
+                        Current Password:
+                        <input type="text" id="currpwd" required>
+                    </label>
+                    <label>
+                        New Password:
+                        <input type="text" id="newpwd1" required>
+                    </label>
+                    <label>
+                        Confirm Password:
+                        <input type="text" id="newpwd2" required>
+                    </label>
+                    <button type="submit" id="change-pwd-btn" style="margin-top: 20px;">Change Password</button>
+                </form>
+            </div>
+            <div class=""></div>
+            <div class=""></div>
+        </div>
+    </div>
+</div>
+<!-- snackbar -->
+<!-- The actual snackbar -->
+<div id="snackbar">
+    <span id="snackbar-text"></span>
+</div>
+
+<script>
+    const refreshbtn=document.getElementById('refresh');
+    window.addEventListener('load', function(){
+        refreshbtn.click()
+
+        const editprofilebtn=document.getElementById('edit-profile');
+        editprofilebtn.click()
+    
+        // prevent default forms
+        // prevent refresh on submit
+        // form1
+        var form = document.getElementById("form1");
+        function handleForm(event) { event.preventDefault(); } 
+        form.addEventListener('submit', handleForm);
+        // form2
+        var form = document.getElementById("form2");
+        function handleForm(event) { event.preventDefault(); } 
+        form.addEventListener('submit', handleForm);
+    
+        const edit_profile_btn=document.getElementById('edit-profile-btn');
+        edit_profile_btn.addEventListener('click', async function(){
+            var data = new FormData()
+            data.append('firstname', document.getElementById('firstname').value)
+            data.append('lastname', document.getElementById('lastname').value)
+            // send post request
+            const res=await fetch('/edit-profile/',{method:'POST', body: data,headers: {
+                'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+    
+            // refresh all fields
+            // got response
+            if(res[0].result=="success"){
+                showSuccessSnackbar(res[0].response, res[0].result)
+                form.reset()
+                refreshbtn.click()
+            }else{
+                showFailSnackbar(res[0].response, res[0].result)
+            }
+        })
+        
+        const change_pwd_btn=document.getElementById('change-pwd-btn');
+        change_pwd_btn.addEventListener('click', async function(){
+            var data = new FormData()
+            data.append('currpwd', document.getElementById('currpwd').value)
+            data.append('newpwd1', document.getElementById('newpwd1').value)
+            data.append('newpwd2', document.getElementById('newpwd2').value)
+            // send post request
+            const res=await fetch('/change-password/',{method:'POST', body: data,headers: {
+                'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+    
+            // refresh all fields
+            // got response
+            if(res[0].result=="success"){
+                showSuccessSnackbar(res[0].response, res[0].result)
+                form.reset()
+                refreshbtn.click()
+            }else{
+                showFailSnackbar(res[0].response, res[0].result)
+            }
+
+        })
+    })
+    refreshbtn.addEventListener('click', async function(){
+        // fetch details
+        const res=await fetch('/get-user-details').then(res=>res.json())??[];
+        document.getElementById('name').innerHTML=(res[0]['firstname']+" "+res[0]['lastname'])??res[0]['username']
+        document.getElementById('email').innerHTML=res[0]['email']
+        document.getElementById('userid').innerHTML=res[0]['userid']
+        document.getElementById('firstname').value=res[0]['firstname']
+        document.getElementById('lastname').value=res[0]['lastname']
+        document.getElementById('username1').innerHTML=res[0]['username']
+        document.getElementById('email1').innerHTML=res[0]['email']
+        document.getElementById('datejoined').innerHTML=res[0]['datejoined']
+
+    })
+    $(document).ready(function(){
+        $('.nav1').click(function(){
+            $('.nav1-label').addClass('selected').siblings().removeClass('selected');
+            $('.edit-profile').addClass('show').siblings().removeClass('show');
+        });
+        $('.nav2').click(function(){
+            $('.nav2-label').addClass('selected').siblings().removeClass('selected');       
+            // $('.change-password').addClass('show').siblings().removeClass('show');
+        });
+        $('.nav3').click(function(){
+            $('.nav3-label').addClass('selected').siblings().removeClass('selected');       
+            $('.change-password').addClass('show').siblings().removeClass('show');
+        });
+    });
+
+</script>
+
+{% endblock content %}
+

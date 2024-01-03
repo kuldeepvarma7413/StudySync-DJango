@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -51,14 +52,14 @@
   <body id="top">
     <header id="header" class="row">
       <div class="header-logo">
-        <a href="home">StudySync</a>
+        <a href="/home">StudySync</a>
       </div>
 
       <nav id="header-nav-wrap">
         <ul class="header-main-nav">
           {% if user.is_authenticated %}
           <li>
-            <a href="/compiler" title="practice" class="subnavbtn">Compiler</a>
+            <a href="/compiler" title="practice" class="subnavbtn">Practice</a>
           </li>
           <li class="current">
             <a href="/ppt-page" title="ppts">PPT</a>
@@ -67,29 +68,90 @@
           <!-- <li><a class="smoothscroll"  href="" title="cas">Projects</a></li> -->
           {% endif %}
           <li>
-            <a class="smoothscroll" href="home#about" title="about">About</a>
+            <a class="smoothscroll" href="/home#about" title="about">About</a>
           </li>
           <li>
-            <a class="smoothscroll" href="home#pricing" title="pricing"
+            <a class="smoothscroll" href="/home#pricing" title="pricing"
               >Pricing</a
             >
           </li>
           <!-- <li><a class="smoothscroll"  href="#testimonials" title="testimonials">Testimonials</a></li> -->
           <li>
-            <a class="smoothscroll" href="home#download" title="download"
+            <a class="smoothscroll" href="/home#download" title="download"
               >Download</a
             >
           </li>
           <li>
-            <a class="smoothscroll" href="home#footer" title="footer"
+            <a class="smoothscroll" href="/home#footer" title="footer"
               >Contact</a
             >
           </li>
         </ul>
         {% if user.is_authenticated %}
-        <a href="logout" title="logout" class="button button-primary cta"
+          <img src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
+          alt="" class="profile-photo" height="40px" width="40px" style="border-radius: 50%;">
+          <a id="username" class="username"><p>Kul Deep Varma ▼</p></a>
+           <div class="profile-info" id="profile-info">
+             <ol class="list">
+              <li>
+                <p>Kul Deep Varma</p>
+              </li>
+              <li><a href="/profile">Settings</a></li>
+              <li><a href="/report-bug">Report</a></li>
+              <li><a href="/logout">Log out</a></li>
+             </ol>
+           </div>
+          <script>
+            const photo=document.getElementById('username')
+            photo.addEventListener('click', function(){
+              const profile_info=document.getElementById('profile-info');
+              if(profile_info.style.display=="block"){
+                profile_info.style.display="none"
+              }else{
+                profile_info.style.display="block"
+              }
+            })
+          </script>
+           <style>
+            .profile-info{
+              display: none;
+              background: white;
+              position: absolute;
+              top: 77px;
+              right: -1.5%;
+              min-width: 180px;
+              padding: 10px 10px 5px 10px;
+              border-radius: 10px;
+              background-image: linear-gradient(45deg, #ffa857, white);
+              box-shadow: 0px 0px 10px #bababa;
+            }
+            .profile-info ol{
+              list-style: none;
+              margin: 0px;
+            }
+            .username{
+              cursor: pointer;
+            }
+            .list a{
+              color: black;
+              padding: 5px 0px;
+              display: inline-block;
+              width: 100%;
+              font-size: 12px;
+            }
+            .list a:hover{
+              background-color: darkorange;
+              color: white;
+            }
+            .list p{
+              text-align: center;
+              padding: 2px 0px;
+              border-bottom: 2px solid #b4b3b3;
+            }
+           </style>
+        <!-- <a href="logout" title="logout" class="button button-primary cta"
           >Logout</a
-        >
+        > -->
         {% else %}
         <a href="login" title="sign-up" class="button button-primary cta"
           >Sign Up/Login</a
@@ -104,6 +166,10 @@
     <style>
       header{
         top: 0;
+      }
+      a{
+        font-size: 16px;
+        cursor: pointer;
       }
     </style>
     {% block content %} {% endblock content %}
