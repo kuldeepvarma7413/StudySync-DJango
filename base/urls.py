@@ -38,7 +38,6 @@ urlpatterns = [
     path('resend_email_verification/<int:user_id>/', views.resend_email_verification, name='resend_email_verification'),
     path('Error/',views.Errorpage, name="Error" ),
     
-    path('home',views.homePage, name="home" ),
     path('ppt-page',views.pptPage, name="ppt-page" ),
     path('ca-page',views.CaPage, name="ca-page" ),
     path('pdfview',views.pdfview, name="pdfview" ),
@@ -76,6 +75,10 @@ urlpatterns = [
 
     # user access
     path('upload-ca',views.uploadCaAsUser, name="upload-ca" ), # type: ignore
+    path('edit-profile/',views.editProfile, name="edit-profile" ), # type: ignore
+    path('change-password/',views.changePassword, name="change-password" ), # type: ignore
+    path('get-user-details',views.getUserDetails, name="get-user-details" ),
+    path('profile/',views.profilePage, name="profile" ),
 
 ]
 if settings.DEBUG:

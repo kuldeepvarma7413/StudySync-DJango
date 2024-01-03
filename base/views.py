@@ -308,40 +308,19 @@ def register(request):
 
         
         if not username:
-            messages.error(request, "Please fill the username.")
-            return render(request, 'base/register.html', {'form': form})
+            data=[{'response':"Please fill in the username", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
         
         if not email:
-            messages.error(request, "Please fill in the email.")
-            return render(request, 'base/register.html', {'form': form})
-    
-        elif not password1:
-            messages.error(request, "Please fill in the password.")
-            return render(request, 'base/register.html', {'form': form})
-
-        # password regex
-        password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$'
-        
-        if password1 != password2:
-            messages.error(request, "Passwords does'nt match.")
-            return render(request, 'base/register.html', {'form': form})
-        
-        elif len(password1) < 8:
-            messages.error(request, "Password length must be at least 8 characters.")
-            return render(request, 'base/register.html', {'form': form})
-        
-        elif len(password1) > 15:
-            messages.error(request, "Password length must not exceed 15 characters.")
-            return render(request, 'base/register.html', {'form': form})
-        elif isCommonPassword(password1):
-            messages.error(request, "Password should not be common like abc or 123.")
-            return render(request, 'base/register.html', {'form': form})
-        
-        else: 
+            data=[{'response':"Please fill in the email", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        # pwd validation
+        validation=validate(password1, password2)
+        if validation==True: 
             form = userForm(request.POST)
             if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                messages.error(request, "user already exist.")
-                return render(request, 'base/register.html', {'form': form})
+                data=[{'response':"User already exist", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
                 
             if form.is_valid():
                 user = form.save(commit=False)
@@ -353,13 +332,15 @@ def register(request):
                 request.session['auth_token']=auth_token
                 profile_obj = Profile.objects.create(user = user, auth_token=auth_token)
                 profile_obj.save()
-                send_mail_after_registration(email , username, auth_token)
-                messages.success(request, "Registration successful!")
-                return redirect('Email_send')  
+                send_mail_after_registration(email , username, auth_token)  
+                data=[{'response':"Registration successful", 'result':'success', 'redirect':'/Email_send'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
 
             else:
-                messages.error(request, "An error occurred during registration.")
-                return render(request, 'base/register.html', {'form': form})
+                data=[{'response':"An error occurred during registration", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps(validation), content_type="application/json")
         
     else:
         form = userForm()
@@ -469,21 +450,25 @@ def email_verification_successful(request):
         return render(request, 'base/Error.html')
 
     
-    
-    
 @login_required(login_url='login')   
 def reportBugPage(request):
     if request.method=='POST':
-        report_type=request.POST['type']
-        report_Detail=request.POST['details']
-        Reporter_name=request.POST['name']
-        Reporter_email=request.user.email
+        try:
+            report_type=request.POST['type']
+            report_Detail=request.POST['detail']
+            Reporter_name=request.POST['name']
+            Reporter_email=request.user.email
+            if report_type=="" or report_Detail=="" or Reporter_name=="" or Reporter_email == "":
+                data=[{'response':"Please fill all fields", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            report=Report(reportType=report_type, detail=report_Detail, name=Reporter_name, email=Reporter_email)
+            report.save()
 
-        report=Report(reportType=report_type, detail=report_Detail, name=Reporter_name, email=Reporter_email)
-        report.save()
-
-        messages.success(request,'Thank you for helping us in development.')
-        return redirect('/report-bug')
+            data=[{'response':report_type+" Reported", 'result':'success'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Report Submitted", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
     return render(request, 'base/ReportBug.html')
 
 
@@ -563,7 +548,7 @@ def CompilerPage(request):
                 with open(code_file_path, 'w') as code_file:
                     code_file.write(code)
                 
-                compile_command = ['javac', 'Main.java']
+                compile_command = ['javac', os.path.join(temp_dir, 'Main.java')]
                 process = subprocess.run(compile_command, cwd=temp_dir, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 
                 if process.returncode != 0:
@@ -583,8 +568,7 @@ def CompilerPage(request):
                     return JsonResponse(result)
                     
                 except subprocess.TimeoutExpired:
-                    return JsonResponse({'error': 'Code execution timed out'})
-                
+                    return JsonResponse({'error': 'Code execution timed out'})    
                 
             elif language == 'cpp':
                 code_file_path = os.path.join(temp_dir, 'code.cpp') 
@@ -1127,6 +1111,80 @@ def returnUsers(request):
     else:
         data=[{'response':"Unauthorized Access", 'result':'fail'}]
         return HttpResponse(json.dumps(data), content_type="application/json")
+    
+
+@login_required(login_url='login')   
+def profilePage(request):
+    return render(request, 'base/profile.html')
+
+@login_required(login_url='login') 
+def getUserDetails(request):
+        try:
+            user=User.objects.filter(username=request.user.username)
+            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email,'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
+
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error while fetching data", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        
+@login_required(login_url='login')
+def editProfile(request):
+    if request.method=='POST':
+        try:
+            firstname=request.POST['firstname'].lstrip(' ')
+            lastname=request.POST['lastname'].lstrip(' ')
+            # validation
+            if firstname=="" or lastname=="":
+                data=[{'response':"Please fill in firstname or lastname", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            users=User.objects.filter(username=request.user.username)
+            for user in users:
+                user.first_name=firstname
+                user.last_name=lastname
+                user.save()
+                data=[{'response':"Profile data updated", 'result':'success'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+        except:
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+@login_required(login_url='login')
+def changePassword(request):
+    if request.method=='POST':
+        try:
+            currpwd=request.POST['currpwd'].lstrip(' ')
+            pwd1=request.POST['newpwd1'].lstrip(' ')
+            pwd2=request.POST['newpwd2'].lstrip(' ')
+
+            validation=validate(pwd1,pwd2)
+
+            if currpwd==pwd1:
+                    data=[{'response':"Current password and new password can't be same", 'result':'fail'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
+
+            if validation==True:            
+                saveuser=User.objects.get(id=request.user.id)
+                if request.user.check_password(currpwd):
+                    saveuser.set_password(pwd1)
+                    saveuser.save()
+                    data=[{'response':"Password Changed Successfully", 'result':'success'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
+                else:
+                    data=[{'response':"Wrong Password", 'result':'fail'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
+            else:
+                data=validation
+                return HttpResponse(json.dumps(validation), content_type="application/json")
+        except:
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 
@@ -1147,7 +1205,7 @@ def json_serial(obj):
         
 def convert_images_to_pdf(images):
     pdf_buffer = BytesIO()
-    pdf_buffer.write(img2pdf.convert(images))
+    pdf_buffer.write(img2pdf.convert(images)) 
     return pdf_buffer.getvalue()
 
 
@@ -1168,4 +1226,23 @@ def merge_pdf_files(files_list):
 
     return merged_pdf_content.getvalue()
 
-
+    
+def validate(pwd1, pwd2):
+    password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$'
+    # validation
+    if pwd1!=pwd2:
+        data=[{'response':"Password must match", 'result':'fail'}]
+        return data
+    if len(pwd1)==0:
+        data=[{'response':"Please fill in the password", 'result':'fail'}]
+        return data
+    if len(pwd1)<8 or len(pwd1)>15 :
+        data=[{'response':"Password must have length between 8-15", 'result':'fail'}]
+        return data
+    if isCommonPassword(pwd1):
+        data=[{'response':"Password must be unique", 'result':'fail'}]
+        return data
+    if not(re.match(password_regex,pwd1)):
+        data=[{'response':"Password must be unique", 'result':'fail'}]
+        return data
+    return True

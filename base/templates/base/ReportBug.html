@@ -1,15 +1,24 @@
+
 {% extends "base/base.html" %}
 {% block content %}
 
 	<style>
+		*{
+			font-family: "montserrat-regular", sans-serif;
+		}
+		label{
+			font-family: "montserrat-regular", sans-serif;
+		}
 
 		/* Form styling */
 		form {
 			margin: 50px auto;
-			width: 50%;
+			width: 95%;
+			max-width: 600px;
 			padding: 20px;
-			border: 2px solid black;
+			box-shadow: 0px 0px 10px lightgray;
 			border-radius: 10px;
+			text-align: center;
 			/* animation: slidein 2s ease-in-out; */
 		}
 
@@ -62,35 +71,130 @@ ul.messages li.text-danger {
 		input[type="submit"]:hover {
 			background-color: #3e8e41;
 		}
+		body{
+			background: white;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			overflow-y: scroll;
+		}
+		textarea{
+			min-height: 100px;
+			height: 10px !important;
+		}
+		input, textarea{
+			padding: 8px 10px !important;
+		}
+		input{
+			height: 4rem !important;
+		}
+		.report-type{
+			display: flex;
+			justify-content: space-evenly;
+		}
+		.report-type label{
+			text-align: center;
+			color: black;
+			width: 200px;
+			padding: 5px 10px;
+			border-radius: 8px;
+			border: 1px solid lightgray;
+		}
+		.report-type label.selected{
+			background: linear-gradient(45deg, #ff8303, #ffffff);
+			box-shadow: 0px 0px 10px lightgrey, 0px 0px 10px darkorange inset;
+		}
+		.report-type span{
+			width: 100%;
+		}
+		.report-type input{
+			display: none;
+		}
+		.details label{
+			text-align: start;
+			max-width: 510px;
+			margin: auto;
+		}
+		.details input, .details textarea{
+			width: 100%;
+		}
+		button{
+			margin: 10px;
+			background: darkorange;
+			outline: none;
+			border: none;
+			cursor: pointer;
+			padding: 6px 50px;
+		}
 	</style>
+	<script>
+		$(document).ready(function(){
+			$('#radio1').click(function(){
+				$('.bug-label').addClass('selected').siblings().removeClass('selected');       
+			});
+			$('#radio2').click(function(){
+				$('.feature-label').addClass('selected').siblings().removeClass('selected');       
+			});
+		});
+	</script>
 <body>
-	<form method="POST">
+	<form method="POST" id="myForm">
         {% csrf_token %}
 		<h2>Report a Bug or Suggest a Feature</h2>
-		<label>
-			<input type="radio" name="type" value="bug" checked> Bug
-		</label>
-		<label>
-			<input type="radio" name="type" value="feature"> Feature Suggestion
-		</label>
-		<label>
-			Details:
-			<textarea name="details" rows="5" cols="40"></textarea>
-		</label>
-		<label>
-			Name:
-			<input type="text" name="name">
-		</label>
-		{% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-				<li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% endif %}">
-					{{ message }}
-				</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-		<input type="submit" value="Submit">
+		<div class="report-type">
+			<label class="bug-label selected">
+				<input type="radio" id="radio1" name="type" value="bug" checked> <span>Bug</span>
+			</label>
+			<label class="feature-label">
+				<input type="radio" id="radio2" name="type" value="feature"> <span>Feature Suggestion</span>
+			</label>
+		</div>
+		<div class="details">
+			<label>
+				Details:
+				<textarea name="details" id="details" rows="5" cols="40" required></textarea>
+			</label>
+			<label>
+				Name:
+				<input type="text" name="name" id="name" required>
+			</label>
+		</div>
+		<button type="submit" value="Submit" id="submit">Submit</button>
 	</form>
 
+	<!-- snackbar -->
+    <!-- The actual snackbar -->
+    <div id="snackbar">
+        <span id="snackbar-text"></span>
+    </div>
+
+	<script>
+		// prevent refresh on submit
+		var form = document.getElementById("myForm");
+        function handleForm(event) { event.preventDefault(); } 
+        form.addEventListener('submit', handleForm);
+
+		// js post request
+		const submitbtn=document.getElementById('submit');
+		submitbtn.addEventListener('click', async function(){
+			var data = new FormData()
+			data.append('name', document.getElementById('name').value)
+			data.append('type', document.querySelector('input[name="type"]:checked').value)
+			data.append('detail', document.getElementById('details').value)
+			// send post request
+			const res=await fetch('/report-bug/',{method:'POST', body: data,headers: {
+				'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+
+			// refresh all fields
+			// got response
+			if(res[0].result=="success"){
+				showSuccessSnackbar(res[0].response, res[0].result)
+				form.reset()
+			}else{
+				showFailSnackbar(res[0].response, res[0].result)
+			}
+		})
+	</script>
+
 {% endblock content %}
+

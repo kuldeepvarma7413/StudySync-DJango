@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -9,58 +10,85 @@
     <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.png' %}">
     <title>Register | StudySync</title>
     <script>
-        function isCommonPassword(password) {
-            // List of common passwords
-            const commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"];
+        window.addEventListener('load', function(){
 
-            // Convert the password to lowercase for case-insensitive comparison
-            const lowercasedPassword = password.toLowerCase();
-            return commonPasswords.includes(lowercasedPassword);
-        }
+            function isCommonPassword(password) {
+                // List of common passwords
+                const commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"];
 
-        function validate(){
-            let password1=document.getElementById('password1').value.trim();
-            let password2=document.getElementById('password2').value.trim();
-
-            // error fields
-            let pwd1Error=document.getElementById("pwd1Error");
-            let pwd2Error=document.getElementById("pwd2Error");
+                // Convert the password to lowercase for case-insensitive comparison
+                const lowercasedPassword = password.toLowerCase();
+                return commonPasswords.includes(lowercasedPassword);
+            }
 
             // fetch form reference for animate while error occurs
             let formRef=document.getElementById("userForm");
-
-            // password regex
-            let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
-            
-            if( password1.length < 8 ){
-                pwd1Error.innerHTML="<span style='color: red;'>Password length must be equal or greater than 8.</span>";
+            function shakeForm(){
                 pwd1Error.classList.add("error-message");
                 formRef.classList.add("error");
-                return false;
-            }else if(isCommonPassword(password1)){
-                pwd1Error.innerHTML="<span style='color: red;'>Password should not be common like abc or 123.</span>";
-                pwd1Error.classList.add("error-message");
-                formRef.classList.add("error");
-                return false;
-            }else if( password1.length > 15 ){
-                pwd1Error.innerHTML="<span style='color: red;'>Password length shouldn't be greater than 15.</span>";
-                pwd1Error.classList.add("error-message");
-                formRef.classList.add("error");
-                return false;
-            }else if(password1 != password2){
-                pwd1Error.innerHTML="<span style='color: red;'>Password doesn't match </span>";
-                pwd1Error.classList.add("error-message");
-                formRef.classList.add("error");
-                return false;
-            }else if( !(regex.test(password1)) ){
-                pwd1Error.innerHTML="<span style='color: red;'>Password must contain Capital letter, small letter, symbol and number.</span>";
-                pwd1Error.classList.add("error-message");
-                formRef.classList.add("error");
-                return false;
             }
-            formRef.classList.remove("error");
-            return true;
-        }
+            
+            function validate(password1,password2){
+                // password regex
+                let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
+                
+                if(password1 != password2){
+                    showFailSnackbar("Password doesn't match","fail")
+                    shakeForm()
+                    return false;
+                }
+                if( password1.length < 8 || password1.length>15){
+                    showFailSnackbar("Password length must be in between 8-15","fail")
+                    shakeForm()
+                    return false;
+                }
+                if(isCommonPassword(password1)){
+                    showFailSnackbar("Password should not be common like abc or 123","fail")
+                    shakeForm()
+                    return false;
+                }
+                if( !(regex.test(password1)) ){
+                    showFailSnackbar("Password must contain Capital letter, small letter, symbol and number","fail")
+                    shakeForm()
+                    return false;
+                }
+                formRef.classList.remove("error");
+                return true;
+            }
+            
+            // prevent default forms
+           // prevent refresh on submit
+           // form1
+           function handleForm(event) { event.preventDefault(); } 
+           formRef.addEventListener('submit', handleForm);
+    
+           const registerbtn=document.getElementById('register-btn');
+           registerbtn.addEventListener('click', async function(){
+               var data = new FormData()
+               data.append('username', document.getElementById('username').value)
+               data.append('email', document.getElementById('email').value)
+               data.append('password1', document.getElementById('password1').value)
+               data.append('password2', document.getElementById('password2').value)
+               if(validate(document.getElementById('password1').value, document.getElementById('password2').value)){
+                   // send post request
+                   const res=await fetch('/register/',{method:'POST', body: data,headers: {
+                       'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+           
+                   // refresh all fields
+                   // got response
+                   if(res[0].result=="success"){
+                       showSuccessSnackbar(res[0].response, res[0].result)
+                       formRef.reset()
+                       window.location.replace(res[0]['redirect'])
+                   }else{
+                       showFailSnackbar(res[0].response, res[0].result)
+                   }
+               }
+           })
+
+        })
+
+
     </script>
 </head>
 <body>
@@ -68,20 +96,8 @@
         <div class="back-box box1"></div>
         <div class="back-box box2"></div>
         <div id="particleGenerator"></div>
-        <form method="POST" onsubmit="return validate()" id="userForm" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
-            {% csrf_token %}
+        <form id="userForm" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Sign Up</p>
-
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            <p>{{ formset.errors }} {{ formset.non_field_errors }}</p>
     
             <label for="username">Username</label>
             <input type="username" id="username" name="username" placeholder="" required>
@@ -101,7 +117,7 @@
 
             
             <div style="display: flex; align-items: baseline; justify-content: space-between;">
-                <button type="submit" class="btn">Register</button>
+                <button type="submit" class="btn" id="register-btn">Register</button>
             </div>
 
             
@@ -120,6 +136,16 @@
 
         </form>
     </div>
+<!-- snackbar -->
+<!-- The actual snackbar -->
+<div id="snackbar">
+    <span id="snackbar-text"></span>
+</div>
+
+<!-- Snackbar -->
+    <script src="{% static '/js/snackbar.js' %}" async defer></script>
+    <link rel="stylesheet" href="{% static '/css/snackbar.css' %}">
+
 </body>
 </html>
 
@@ -318,7 +344,6 @@ function particlesInit() {
 		var size = getRandomInt(2, 6);
 		var n = '<div class="particle" style="top:' + getRandomInt(15, 95) + '%; left:' + getRandomInt(5,95) + '%; width:'
 		+ size + 'px; height:' + size + 'px; animation-delay:' + (getRandomInt(0,30)/10) + 's; background-color:rgba(246,129,33,255);"></div>';
-		console.log("Particle " + i + ": " + n);
 		var node = document.createElement("div");
 		node.innerHTML = n;
 		generator.appendChild(node);
@@ -367,3 +392,4 @@ particlesInit();
 	}
 }
 </style>
+
