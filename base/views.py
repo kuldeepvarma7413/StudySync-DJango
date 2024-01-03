@@ -33,11 +33,12 @@ from PyPDF2 import PdfFileMerger , PdfMerger
 from django.core.files.uploadedfile import InMemoryUploadedFile , TemporaryUploadedFile
 from datetime import date, datetime
 from django.forms.models import model_to_dict
+from subprocess import TimeoutExpired
 from io import BytesIO
 from PIL import Image
 from io import StringIO
 import img2pdf
-import re , os , sys , contextlib
+import re , os , sys , contextlib , threading , shutil , tempfile
 import json , subprocess
 import cloudinary.api
 import cloudinary
@@ -501,186 +502,128 @@ def pdfview(request):
     
     
     
-@login_required
+@csrf_exempt
 def CompilerPage(request):
+    temp_dir = None  
+
     if request.method == 'POST':
-        code = request.POST.get('code', '') 
-        input_data = request.POST.get('input_data', '')
-        language = request.POST.get('language', '')
-        inputs = input_data.split('\n')
-        
-        if language == 'Python':
-            if not input_data:
-                process = subprocess.Popen(
-                    ['python', '-c', code],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                    
-                )
-                
-                
-                output, error = process.communicate(input='\n'.join(inputs))
-                
-                result = {
-                    'result': output,
-                    'error': error
-                }
-                
-                return JsonResponse(result)
-            else:
-                process = subprocess.Popen(
-                    ['python', '-c', code],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                )
-                
-                output, error = process.communicate(input='\n'.join(inputs))
-                
-                result = {
-                    'result': output,
-                    'error': error
-                }
-                
-                return JsonResponse(result)
-        elif language == 'Java': 
-            class_name = extract_java_class_name(code)
+        try:
             
-            classpath = os.path.join('java_editor_files', 'compiled_java_classes')
-            
-            os.makedirs(classpath, exist_ok=True)
-            
-            
-            java_file_path = os.path.join(classpath, f'{class_name}.java')
-            with open(java_file_path, 'w') as java_file:
-                java_file.write(code)
-                
-            compile_command = [r"C:\Program Files\Java\jdk-19\bin\javac.exe", '-d', classpath, java_file_path]
-            compile_process = subprocess.Popen(
-                compile_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            compile_output, compile_error = compile_process.communicate()
-            
-            if compile_process.returncode == 0:
-                
-                execute_command = [r"C:\Program Files\Java\jdk-19\bin\java.exe", '-cp', classpath, class_name]
-                execute_process = subprocess.Popen(
-                    execute_command,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                )
-                execute_output, execute_error = execute_process.communicate(input='\n'.join(inputs))
-                
-                
-                os.remove(java_file_path)
-                
-                result = {
-                    'result': execute_output,
-                    'error': execute_error
-                }
-                
-                return JsonResponse(result)
-            
-            else:
-                
-                result = {
-                    'result': '',
-                    'error': compile_error
-                }
-                
-                return JsonResponse(result)
-            
-        elif language == 'C++':
-            
-            executable_dir = r'C:\Users\PREDATOR\Desktop\StudySync\Cpp_editor_files'
-            os.makedirs(executable_dir, exist_ok=True)
-            
-            executable_path = os.path.join(executable_dir, 'executable')
-            
-            process = subprocess.Popen(
-                ['g++', '-x', 'c++', '-o', executable_path, '-'],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
-            
-            execute_output, execute_error = '', ''
-            
-            try:
-                
-                process.stdin.write(code)
-                process.stdin.close()
-                compile_output, compile_error = process.communicate()
+            data = json.loads(request.body)
+            code = data.get('code', '')
+            language = data.get('language', '')
+            input_data = data.get('input_data', '')
+            inputs = input_data.split()      
+            temp_dir = tempfile.mkdtemp()
 
-                if compile_error:
-                    raise Exception(compile_error)
-                
-                execute_process = subprocess.Popen(
-                    [executable_path],
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True
-                )
-                if input_data:
-                    inputs = input_data.split('\n')
-                    
-                    for line in inputs:
+            if language == 'python':
+                if not input_data:    
+                    process = subprocess.Popen(
+                        ['python', '-c', code],
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True
                         
-                        execute_process.stdin.write(line + '\n')
-                        execute_process.stdin.flush()
+                    )
+                    try:
+                        output, error = process.communicate(input='\n'.join(inputs), timeout=5)     
+                        
+                        result = {
+                            'result': output, 
+                            'error': error
+                        }
+                    except TimeoutExpired:      
+                        result = {
+                            'result': '',
+                            'error': 'Time out'
+                        }
                     
-                    execute_process.stdin.close()
-                    
-                    
-                    execute_output, execute_error = execute_process.communicate()
+                    return JsonResponse(result)
                 else:
+                    process = subprocess.Popen(
+                        ['python', '-c', code],
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True
+                    )
                     
-                    execute_process.stdin.write('0\n')
-                    execute_process.stdin.close()
+                    output, error = process.communicate(input='\n'.join(inputs))
+                    result = {
+                        'result': output,
+                        'error': error
+                    }
                     
-                    execute_output, execute_error = execute_process.communicate()
+                    return JsonResponse(result)
+                
+            elif language == 'java':
+                main_class = code.split('class ')[1].split('{')[0].strip() 
+                code_file_path = os.path.join(temp_dir, 'Main.java')  
+                with open(code_file_path, 'w') as code_file:
+                    code_file.write(code)
+                
+                compile_command = ['javac', 'Main.java']
+                process = subprocess.run(compile_command, cwd=temp_dir, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                
+                if process.returncode != 0:
+                    return JsonResponse({'error': process.stderr})
+                
+                try:
+                    command = ['java', main_class]  
+                    process = subprocess.run(command, cwd=temp_dir, text=True, input='\n'.join(inputs), stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+                    
+                    if process.returncode != 0:
+                        return JsonResponse({'error': process.stderr})
+                    
+                    result = {
+                        'result': process.stdout,
+                        'error': process.stderr
+                    }
+                    return JsonResponse(result)
+                    
+                except subprocess.TimeoutExpired:
+                    return JsonResponse({'error': 'Code execution timed out'})
+                
+                
+            elif language == 'cpp':
+                code_file_path = os.path.join(temp_dir, 'code.cpp') 
+                exe_file_path = os.path.join(temp_dir, 'executable.exe')  
+                with open(code_file_path, 'w') as code_file:
+                    code_file.write(code)
 
-            except Exception as e:
-                execute_error = str(e)
+                compile_command = ["g++", '-o', exe_file_path, 'code.cpp']
+                process = subprocess.run(compile_command, cwd=temp_dir, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                if process.returncode != 0:
+                    return JsonResponse({'error': process.stderr})
 
-            result = {
-                'result': execute_output,
-                'error': execute_error
-            }
 
-            return JsonResponse(result)
-            
-    else:
-        return render(request, "base/compiler_page.html")
-    
-    
-    
-    
-def extract_java_class_name(java_code):
-    if 'public static void main' in java_code:
-        class_name_match_with_public = re.search(r'public\s+class\s+(\w+)', java_code)
-        class_name_match_with_class = re.search(r'class\s+(\w+)', java_code)
-        
-        if class_name_match_with_public:
-            class_name = class_name_match_with_public.group(1)
-            return class_name
-        elif class_name_match_with_class:
-            class_name = class_name_match_with_class.group(1)
-            return class_name
-        else:
-            return 'Main'
-    else:
-        return 'DefaultClassName'
+                try:
+                    if isinstance(input_data, bytes):
+                        input_data_str = input_data.decode('utf-8')
+                        process = subprocess.run([exe_file_path], input=input_data_str, cwd=temp_dir, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+                    elif isinstance(input_data, str):
+                        process = subprocess.run([exe_file_path], input=input_data, cwd=temp_dir, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+                    else:
+                        raise ValueError("Invalid type for input_data")
+                except subprocess.TimeoutExpired:
+                    return JsonResponse({'error': 'Code execution timed out'})
+
+
+                
+                if process.returncode != 0:
+                    return JsonResponse({'error': process.stderr})
+
+            return JsonResponse({'result': process.stdout})
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+
+        finally:    
+            if temp_dir:
+                shutil.rmtree(temp_dir)
+
+    return render(request, "base/compiler_page.html")
 
 
 
@@ -957,7 +900,7 @@ def uploadFileAsAdmin(request):
         except:
             data=[{'response':"Error Occured, try again", 'result':'fail'}]    
             return HttpResponse(json.dumps(data), content_type="application/json")        
-             
+        
         
 
 def uploadCaAsUser(request):
