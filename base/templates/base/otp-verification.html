@@ -91,10 +91,10 @@
                     
                     
 
-					<button href="/otp-verification" type="submit" class="btn btn-primary submit_btn my-4">Submit</a></button> 
+					<button href="/otp-verification" type="submit" class="sbtbtn">Submit</a></button> 
 
                     <div class="fw-normal text-muted mb-2">
-						Didn’t get the code ? <a href="/resend_otp_verification" class="text-primary fw-bold text-decoration-none">Resend</a>
+						Didn’t get the code ? <a href="/resend_otp_verification" class="fw-bold text-decoration-none" style="color: darkorange;">Resend</a>
 					</div>
                     <!-- Add this div below your OTP input div -->
                     <div id="timer" class="fw-bold text-muted mb-2"></div>
@@ -122,6 +122,14 @@
     margin:0;
     padding:0;
     box-sizing: border-box;
+}
+.sbtbtn{
+    font-weight: 700;
+    padding: 8px 30px;
+    margin: 10px 0px;
+    border-radius: 15px;
+    border: none;
+    background-color: darkorange;
 }
 
 /* Variables */

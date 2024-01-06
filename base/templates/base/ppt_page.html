@@ -4,13 +4,8 @@
 <div class="main-container">
     <section>
       <div class="sidebar">
-        <!-- <p>Select Course </p> -->
-        <!-- <div class="searchbar">
-          <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
-            <button><i class="fa fa-search"></i></button>
-        </div> -->
         <input id="searchbar" onkeyup="search_course()" type="text" class="search" name="search" placeholder="Search Course.."> 
-        <div class="courses">
+        <div class="courses coursesview">
           <ol id="course-items" style="list-style: none;">
            
           </ol>
@@ -33,18 +28,18 @@
   const noFileFound=`<div style="text-align: center; grid-column:2/span 2; grid-row: 2;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
                     <p>No files Found. Select another one.</p></div>`
   const fileCard= `<div class="card">
-                  <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;">
-                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
-                      <div class="card-inside">
+                    <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
+                    <div class="card-inside">
+                      <a class="card-anchor" href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;">
                         <p>
                           <h5>%FILE_TITLE%</h5>
-                        </p>
+                          </p>
+                      </a>
                         <p>Unit : %FILE_UNIT%</p>
                         <p>Course Code : %FILE_COURSECODE%</p>
                         <p>Date Uploaded : %FILE_UPLOADED%</p>
-                        <!-- <a href="/media/%FILE_UPLOADED%" download="%FILE_TITLE%" class="downloadFile">Download</a> -->
+                        <a href="%URL%" download="%FILE_TITLE%.pdf">Download</a>
                       </div>
-                    </a>
                 </div> `
 
     const listItemEl=`<li data-courseId=%COURSE_CODE% class="course-card course-names" id="%COURSE_ID%"><h5>%COURSE_NAME%</h5></li>`;
@@ -59,6 +54,14 @@
       const defaultCard = document.querySelector(`[data-courseId="${coursesList[0].name}"]`);
       defaultCard.classList.add('default-card');
       const defaultClick=document.querySelector('.default-card').click();
+
+      const downloadfilebtns=document.getElementsByClassName('downloadfile');
+      for(var i=0; i<downloadfilebtns.length; i++){
+        const btn=downloadfilebtns[i];
+        btn.addEventListener('click', async function(event){
+          event.preventDefault();
+        })
+      }
     })
     
     
@@ -85,7 +88,6 @@
     courseItems.querySelectorAll('li').forEach(li => li.classList.remove('active'));
     const courseItem=event.target.closest('li');
     courseItem.classList.add('active');
-    courseItem.scrollIntoView({behaviour:'smooth',display:'block'})
     // set value on top coursecode
     const courseCodeTop=document.getElementById("top-coursecode").innerHTML=event.target.innerHTML;
     // remove filter of search bar
@@ -94,8 +96,8 @@
     const res= courseId ? await fetch(`/ppt-page?q=${courseId}`).then(res=>res.json()) : [];
     filesView.innerHTML=''
     res.forEach(file=>{
-      const card=fileCard.replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
-      .replace('%FILE_UPLOADED%',file.uploaded).replace('%FILE_ID%',file.id).replace('%FILE_COURSECODE%',file.coursecode);
+      const card=fileCard.replaceAll('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
+      .replace('%FILE_UPLOADED%',file.uploaded).replace('%URL%', file.url).replace('%FILE_ID%',file.id).replace('%FILE_COURSECODE%',file.coursecode);
       filesView.insertAdjacentHTML('beforeEnd',card);
       console.log(file.uploaded);
       console.log(file.uploaded.url);
@@ -117,7 +119,7 @@
     }
     body{
       background-color: white;
-      overflow-y: hidden;
+      overflow-y: scroll;
     }
     .content-top {
         padding-top: 30px;
@@ -128,7 +130,10 @@
     .content-top a{
         margin-right: 5%;
     }
-    .card a{
+    #course-items{
+      background-color: transparent;
+    }
+    .card{
         max-height: 300px;
         border-radius: 15px;
         padding: 10px;
@@ -140,7 +145,7 @@
         /* background-image: linear-gradient(to top left, black , rgb(255, 140, 0)) */
         /* cursor: pointer; */
     }
-    .card a:hover img{
+    .card:hover img{
       scale: 105%;
       transition: ease-in 0.2s;
     }
@@ -189,7 +194,7 @@
       color: rgba(246,129,33,255);
     }
     .main-container{
-      position: fixed;
+      position: relative;
       top: 72px;
       width: 100%;
       display: grid;
@@ -211,9 +216,7 @@
 
     /* sidebar */
     .sidebar{
-      /* border-left: 2px solid #dfdede; */
       height: fit-content;
-      /* padding: 10px 20px; */
     }
     .sidebar p{
       padding-bottom: 30px;
@@ -355,10 +358,30 @@
     .pushable:focus:not(:focus-visible) {
       outline: none;
     }
+    p span{
+      display: none;
+    }
 
-    @media screen and ( max-width: 750px ) {
+    @media screen and (min-width:320px) and ( max-width: 750px ) {
         .main-container{
           display: block;
+        }
+        .coursesview{
+          height: 23.5vh;
+        }
+        .content{
+          grid-template-columns: auto;
+        }
+        .content div{
+          grid-column: auto !important;
+        }
+        .card{
+          width: fit-content;
+          margin: auto;
+        }
+        .sidebar{
+          width: 90%;
+          margin: 10px auto;
         }
     }
   </style>

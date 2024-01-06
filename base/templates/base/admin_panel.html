@@ -376,89 +376,91 @@
         </style>
 </head>
 <body>
-    <div class="main-container">
-        <div class="left-aside-bar">
-            <a href="admin-panel">
-                <img src="{% static 'images/logo.png' %}" height="40px" alt="">
-            </a>
-            <p style="text-align: end; color: white;">Dashboard</p>
-            <br>
-            <div class="navigation">
-                <p style="margin-bottom: 15px; font-size: 20px;">Actions</p>
-                <a id="dashboard" class="action-btn">
-                    <img src="{% static 'images/icons/dashboard.png' %}" alt="">
-                    <p>Dashboard</p>
+    <div style="width: 100%;">
+        <div class="main-container">
+            <div class="left-aside-bar">
+                <a href="admin-panel">
+                    <img src="{% static 'images/logo.png' %}" height="40px" alt="">
                 </a>
-                <a id="users" class="action-btn">
-                    <img src="{% static 'images/icons/users.png' %}" alt="">
-                    <p>Users</p>
-                </a>
-                <a id="addfiles" class="action-btn">
-                    <img src="{% static 'images/icons/add-file.png' %}" alt="">
-                    <p>Add File/Course</p>
-                </a>
-                <a id="allfiles" class="action-btn">
-                    <img src="{% static 'images/icons/view-file.png' %}" alt="">
-                    <p>Files</p>
-                </a>
-                <a id="allcourses" class="action-btn">
-                    <img src="{% static 'images/icons/allcourses.png' %}" alt="">
-                    <p>Courses</p>
-                </a>
-                <a id="subscribers" class="action-btn">
-                    <img src="{% static 'images/icons/subscribe.png' %}" alt="">
-                    <p>Subscribers</p>
-                </a>
-                <a id="reports" class="action-btn">
-                    <img src="{% static 'images/icons/report.png' %}" alt="">
-                    <p>Reports</p>
-                </a>
-                <a href="logout">
-                    <img src="{% static 'images/icons/logout.png' %}" alt="">
-                    <p>Logout</p>
-                </a>
-            </div>
-        </div>
-        <div class="right-aside-bar">
-            <div class="header">
-                <style>
-                    .selected-nav-container{
-                        text-align: center;
-                        width: 200px;
-                        position: relative;
-                        top: 0;
-                        left: -40%;
-                    }
-                    #selected-nav{
-                        font-size: 20px;
-                        font-weight: 500;
-                    }
-                </style>
-                <div class="selected-nav-container">
-                    <p id="selected-nav"></p>
+                <p style="text-align: end; color: white;">Dashboard</p>
+                <br>
+                <div class="navigation">
+                    <p style="margin-bottom: 15px; font-size: 20px;">Actions</p>
+                    <a id="dashboard" class="action-btn">
+                        <img src="{% static 'images/icons/dashboard.png' %}" alt="">
+                        <p>Dashboard</p>
+                    </a>
+                    <a id="users" class="action-btn">
+                        <img src="{% static 'images/icons/users.png' %}" alt="">
+                        <p>Users</p>
+                    </a>
+                    <a id="addfiles" class="action-btn">
+                        <img src="{% static 'images/icons/add-file.png' %}" alt="">
+                        <p>Add File/Course</p>
+                    </a>
+                    <a id="allfiles" class="action-btn">
+                        <img src="{% static 'images/icons/view-file.png' %}" alt="">
+                        <p>Files</p>
+                    </a>
+                    <a id="allcourses" class="action-btn">
+                        <img src="{% static 'images/icons/allcourses.png' %}" alt="">
+                        <p>Courses</p>
+                    </a>
+                    <a id="subscribers" class="action-btn">
+                        <img src="{% static 'images/icons/subscribe.png' %}" alt="">
+                        <p>Subscribers</p>
+                    </a>
+                    <a id="reports" class="action-btn">
+                        <img src="{% static 'images/icons/report.png' %}" alt="">
+                        <p>Reports</p>
+                    </a>
+                    <a href="logout">
+                        <img src="{% static 'images/icons/logout.png' %}" alt="">
+                        <p>Logout</p>
+                    </a>
                 </div>
-                <a>
-                    <img src="{% static 'images\icons\notification.png' %}" height="25px" class="notification" title="Notification">
-                    <span class="notification-top">2</span>
-                </a>
-                <a href="/profile"><img src="https://media.licdn.com/dms/image/D4D03AQFzjZuT5Xv_bA/profile-displayphoto-shrink_100_100/0/1687401538044?e=1708560000&v=beta&t=fsXA09P8xNPX-RtjWpwS6zblvFoFmk00dQerJeqyAJY" 
-                title="Profile" height="40px" width="40px" style="border-radius: 50%;"></a>
             </div>
-            <div id="content-div">
-                <!-- dynamic content -->
+            <div class="right-aside-bar">
+                <div class="header">
+                    <style>
+                        .selected-nav-container{
+                            text-align: center;
+                            width: 200px;
+                            position: relative;
+                            top: 0;
+                            left: -40%;
+                        }
+                        #selected-nav{
+                            font-size: 20px;
+                            font-weight: 500;
+                        }
+                    </style>
+                    <div class="selected-nav-container">
+                        <p id="selected-nav"></p>
+                    </div>
+                    <a>
+                        <img src="{% static 'images\icons\notification.png' %}" height="25px" class="notification" title="Notification">
+                        <span class="notification-top">2</span>
+                    </a>
+                    <a href="/profile"><img src="https://media.licdn.com/dms/image/D4D03AQFzjZuT5Xv_bA/profile-displayphoto-shrink_100_100/0/1687401538044?e=1708560000&v=beta&t=fsXA09P8xNPX-RtjWpwS6zblvFoFmk00dQerJeqyAJY" 
+                    title="Profile" height="40px" width="40px" style="border-radius: 50%;"></a>
+                </div>
+                <div id="content-div">
+                    <!-- dynamic content -->
+                </div>
             </div>
+            
         </div>
-        
-    </div>
-    <!-- popup -->
-    <div id="popup" style="display: none;">
-        <p class="popup-content"></p>
-        <a id="popup-close-btn">Close</a>
-    </div>
-    <!-- snackbar -->
-    <!-- The actual snackbar -->
-    <div id="snackbar">
-        <span id="snackbar-text"></span>
+        <!-- popup -->
+        <div id="popup" style="display: none;">
+            <p class="popup-content"></p>
+            <a id="popup-close-btn">Close</a>
+        </div>
+        <!-- snackbar -->
+        <!-- The actual snackbar -->
+        <div id="snackbar">
+            <span id="snackbar-text"></span>
+        </div>
     </div>
 
     <script>
@@ -728,7 +730,7 @@
             <p class="text-mid">%CAFILE_DATE%</p>
             <div class="actions text-mid">
                 <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
-                <a href="%APPROVEURL%" id="%CA_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
+                <a id="%CA_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
                 <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
             </div>
             </li>`;
@@ -816,7 +818,7 @@
             cafiles_container.innerHTML='';
             allcafiles.forEach(file=>{
                 cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaNotVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
-            .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
+            .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate))
             });
             
             // onchange selectbox value
@@ -850,8 +852,12 @@
                         'X-CSRFToken': getCookie('csrftoken')
                     },}).then(res=>res.json())??[];
                     // deleted response
-                    showSuccessSnackbar(res[0].response, "success")
-                    allfilesbtn.click()
+                    if(res[0].result=='success'){
+                        showSuccessSnackbar(res[0].response, res[0].result)
+                        allfilesbtn.click()
+                    }else{
+                        showFailSnackbar(res[0].response,res[0].result)
+                    }
                     })
                 }
                 // delete post request on ca files
@@ -865,8 +871,32 @@
                         'X-CSRFToken': getCookie('csrftoken')
                     },}).then(res=>res.json())??[];
                     // deleted response
-                    showSuccessSnackbar(res[0].response, "success")
-                    selectbox.click()
+                    if(res[0].result=='success'){
+                        showSuccessSnackbar(res[0].response, res[0].result)
+                        selectbox.click()
+                    }else{
+                        showFailSnackbar(res[0].response,res[0].result)
+                    }
+                    })
+                }
+
+                // delete post request on ca files
+                const approvebtns=document.getElementsByClassName("approvebtn");
+                for(var i=0; i<approvebtns.length; i++){
+                    const btn=approvebtns[i];
+                    btn.addEventListener('click',async function(currbtn){
+                    const res=await fetch("approve-cafile?q="+this.id,{method:'POST',headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },}).then(res=>res.json())??[];
+                    // deleted response
+                    if(res[0].result=='success'){
+                        showSuccessSnackbar(res[0].response, res[0].result)
+                        selectbox.click()
+                    }else{
+                        showFailSnackbar(res[0].response,res[0].result)
+                    }
                     })
                 }
             })

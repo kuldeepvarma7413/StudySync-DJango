@@ -11,15 +11,6 @@
       type="image/x-icon"
       href="{% static 'images/favicon.png' %}"
     />
-    <!-- <title>Document</title> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
-    <link rel="stylesheet" href="{% static 'css/swiper-bundle.min.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.min.js"></script> -->
-
     <!-- mobile specific metas
    ================================================== -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,12 +24,10 @@
     <!-- script
   ================================================== -->
     <script src="{% static 'js/modernizr.js' %}"></script>
+    <script src="{% static 'js/main.js' %}" async defer></script>
 
     <!-- jQuery -->
-    <script
-      type="text/javascript"
-      src="{% static 'js/jquery-2.1.3.min.js' %}"
-    ></script>
+    <script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
 
     <!-- Snackbar -->
     <script src="{% static '/js/snackbar.js' %}" async defer></script>
@@ -86,72 +75,45 @@
               >Contact</a
             >
           </li>
-        </ul>
-        {% if user.is_authenticated %}
-          <img src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-          alt="" class="profile-photo" height="40px" width="40px" style="border-radius: 50%;">
-          <a id="username" class="username"><p>Kul Deep Varma ▼</p></a>
-           <div class="profile-info" id="profile-info">
-             <ol class="list">
-              <li>
-                <p>Kul Deep Varma</p>
-              </li>
+          {% if user.is_authenticated %}
+          <li style="padding-top: 16px;">
+            <p id="username" style="display: flex;">
+              <img class="profile-photo" height="40px" width="40px" style="border-radius: 50%; border: 1px solid white; background: white;">
+              <!-- <li class="profile-info" id="profile-info">
+                <ol class="list">
+                </ol>
+              </li> -->
+            </p>
+            <ol class="list" id="profile-info">
+              <li><p class="name"></p></li>
               <li><a href="/profile">Settings</a></li>
               <li><a href="/report-bug">Report</a></li>
               <li><a href="/logout">Log out</a></li>
-             </ol>
-           </div>
+            </ol>
+          </li>
+        </ul>
           <script>
-            const photo=document.getElementById('username')
-            photo.addEventListener('click', function(){
-              const profile_info=document.getElementById('profile-info');
-              if(profile_info.style.display=="block"){
-                profile_info.style.display="none"
-              }else{
-                profile_info.style.display="block"
+            window.addEventListener('load', async function(){
+              const res=await fetch('/get-user-details', {method:'POST', headers: {'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json());
+              // set userdata
+              const namefields=document.getElementsByClassName('name')
+              for(var i=0; i<namefields.length; i++){namefields[i].innerHTML=res[0].firstname+" "+res[0].lastname}
+              const image=document.getElementsByClassName('profile-photo');
+              for(var i=0; i<image.length; i++){
+                image[i].src=(res[0].profilephoto=="null")? "{% static 'images/icons/user.png' %}" : res[0].profilephoto
               }
+              const photo=document.getElementById('username')
+              photo.addEventListener('click', function(){
+                const profile_info=document.getElementById('profile-info');
+                if(profile_info.style.display=="block"){
+                  profile_info.style.display="none"
+                }else{
+                  profile_info.style.display="block"
+                }
+              })
             })
           </script>
-           <style>
-            .profile-info{
-              display: none;
-              background: white;
-              position: absolute;
-              top: 77px;
-              right: -1.5%;
-              min-width: 180px;
-              padding: 10px 10px 5px 10px;
-              border-radius: 10px;
-              background-image: linear-gradient(45deg, #ffa857, white);
-              box-shadow: 0px 0px 10px #bababa;
-            }
-            .profile-info ol{
-              list-style: none;
-              margin: 0px;
-            }
-            .username{
-              cursor: pointer;
-            }
-            .list a{
-              color: black;
-              padding: 5px 0px;
-              display: inline-block;
-              width: 100%;
-              font-size: 12px;
-            }
-            .list a:hover{
-              background-color: darkorange;
-              color: white;
-            }
-            .list p{
-              text-align: center;
-              padding: 2px 0px;
-              border-bottom: 2px solid #b4b3b3;
-            }
-           </style>
-        <!-- <a href="logout" title="logout" class="button button-primary cta"
-          >Logout</a
-        > -->
+
         {% else %}
         <a href="login" title="sign-up" class="button button-primary cta"
           >Sign Up/Login</a
@@ -170,6 +132,45 @@
       a{
         font-size: 16px;
         cursor: pointer;
+      }
+      ol{
+        list-style: none;
+        position: relative;
+        right: 103px;
+        top: 9px;
+        background: black;
+        padding: 10px;
+        text-align: center;
+        max-width: 250px;
+      }
+      .username{
+        cursor: pointer;
+      }
+      .list{
+        display: block;
+      }
+      .list a{
+        color: black;
+        padding: 5px 0px;
+        display: inline-block;
+        width: 100%;
+        font-size: 12px;
+        line-height: 15px !important;
+      }
+      .list a:hover{
+        background-color: darkorange;
+        color: white;
+      }
+      .list p{
+        text-align: center;
+        padding: 2px 0px;
+        border-bottom: 2px solid #b4b3b3;
+      }
+      @media screen and (min-width: 320px) and (max-width:768px) {
+        ol{
+          right: -10%;
+          top: -55px;
+        }
       }
     </style>
     {% block content %} {% endblock content %}

@@ -2,6 +2,7 @@ function showSnackbar(message, className) {
     var snackbar = document.getElementById("snackbar");
     var snackbarText = document.getElementById("snackbar-text");
     snackbarText.innerHTML = message;
+    snackbarText.style.background="transparent"
     snackbar.className = className + " show";
     setTimeout(function(){ snackbar.className = snackbar.className.replace("show", ""); }, 3000);
 }

@@ -374,7 +374,6 @@ ul,
 ol,
 dl,
 form,
-.fluid-video-wrapper,
 .ss-custom-select {
   margin-bottom: 3rem;
 } */
@@ -1263,19 +1262,20 @@ h1.intro-header::before {
   font-size: 14px;
   position: absolute;
   top: 0;
-  right: 40px;
+  right: -127px;
 }
 
 #header-nav-wrap .header-main-nav {
-  display: inline-block;
+  display: flex;
+  /* align-items: center; */
   list-style: none;
   height: 72px;
   margin: 0 1rem 0 0;
 }
 
 #header-nav-wrap .header-main-nav li {
-  display: inline-block;
   padding-left: 0;
+  height: fit-content;
   margin-right: 1.5rem;
 }
 
