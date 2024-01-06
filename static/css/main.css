@@ -1262,7 +1262,7 @@ h1.intro-header::before {
   font-size: 14px;
   position: absolute;
   top: 0;
-  right: -127px;
+  right: 0px;
 }
 
 #header-nav-wrap .header-main-nav {
