@@ -11,52 +11,91 @@
     <title>Login | StudySync</title>
 </head>
 <body>
-    <div class="container" style="width: 40%; margin: 100px auto;">
-        <div class="back-box box1"></div>
-        <div class="back-box box2"></div>
+    <div class="container" style="margin: 150px auto 0px; border-radius: 10px; box-shadow: 0px 0px 10px #c9c9c9;">
+        <!-- <div class="back-box box1"></div>
+        <div class="back-box box2"></div> -->
         <div id="particleGenerator"></div>
-        {% comment %} <p class="back-box box1"></p>
-        <p class="back-box box2"></p> {% endcomment %}
-        <form action="" method="POST" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
-            {% csrf_token %}
+        <form id="userForm" method="POST" style="text-align: center; padding: 10px 20px; background: transparent;margin: 0px auto;">
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Login</p>
-
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{% if message.tags == 'success' %}text-success{% elif message.tags == 'error' %}text-danger{% elif message.tags == 'info' %}text-info{% endif %}">
-                        {{ message|safe }}
-                    </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
     
-            <label for="email">Email or Username</label>
-            <input type="text" id="email" name="email" class="email">
+            <p>
+                <input type="text" id="email" name="email" class="email">
+                <label for="email"><span>Email or Username</span></label>
+            </p>
+            <p>
+                <input type="password" id="password1" name="password1" class="password1">
+                <label for="email"><span>Password</span></label>
+                <a style="float: left; margin-left: 10px;" href="/Forgot_Password">Forgot password?</a>
+            </p>
     
-            <label for="email">Password</label>
-            <input type="password" id="password1" name="password1" class="password1">
 
     
-            <div style="display: flex; align-items: baseline; justify-content: space-between; margin-top: 10px;">
-                <button type="submit" class="btn">Login</button>
-                <a href="/Forgot_Password">Forgot password?</a>
+            <div style="display: flex; width: 100%; align-items: baseline; justify-content: space-between; margin-top: 10px;">
+                <button type="submit" style="width: 100%;" id="login-btn" class="btn">Login</button>
             </div>
-            <p style="text-align: left;">Don't have an account? <a href="/register">Create New</a></p>
-
-            <hr style="margin-top: 15px;">
-            <p style="margin: -11px auto 30px auto; width: fit-content; padding: 0px 15px;">Or Login with</p>
-
-            {% load socialaccount %}
-            <button class="google-btn" id="google-sign-in-button">
-                <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: rgba(246,129,33,255);">Log in with Google</a>
-                
-            </button>
-
+            <p style="text-align: left; margin: 10px 10px;">Don't have an account? <a href="/register">Create New</a></p>
+            
         </form>
     </div>
+    <div class="container">
+        {% load socialaccount %}
+        <div class="signup-options" id="google-sign-in-button">
+            <p>Sign up with</p>
+            <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: white;">
+                <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
+            </a>
+        </div>
+    </div>
 </body>
+<!-- snackbar -->
+<!-- The actual snackbar -->
+<div id="snackbar">
+    <span id="snackbar-text"></span>
+</div>
+
+<!-- Snackbar -->
+    <script src="{% static '/js/snackbar.js' %}" async defer></script>
+    <link rel="stylesheet" href="{% static '/css/snackbar.css' %}">
+
+    <script>
+        window.addEventListener('load', function(){
+             // prevent default forms
+           // prevent refresh on submit
+           // form1
+           let formRef=document.getElementById("userForm");
+           function handleForm(event) { event.preventDefault(); } 
+           formRef.addEventListener('submit', handleForm);
+
+    
+           const registerbtn=document.getElementById('login-btn');
+           registerbtn.addEventListener('click', async function(){
+               var data = new FormData()
+               let email=document.getElementById('email').value
+               let password=document.getElementById('password1').value
+               data.append('email', email)
+               data.append('password1', password)
+               if(email.length==0){
+                showFailSnackbar("please fill in email or username","fail")
+               }
+               if(password.length==0){
+                showFailSnackbar("please fill in password","fail")
+               }
+                // send post request
+                const res=await fetch('/login/',{method:'POST', body: data,headers: {
+                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                    console.log(res)
+
+                // got response
+                if(res[0].result=="success"){
+                    showSuccessSnackbar(res[0].response, res[0].result)
+                    formRef.reset()
+                    window.location.replace(res[0]['redirect'])
+                }else{
+                    showFailSnackbar(res[0].response, res[0].result)
+                }
+           })
+        })
+    </script>
 </html>
 
 <style>
@@ -72,12 +111,8 @@
         overflow-x: hidden;
         overflow-y: hidden;
     }
-    label{
-        display: block;
-        text-align: left;
-        margin: 12px auto 3px;
-        margin-left: 5px;
-        color: white;
+    .container{
+        width: 350px;
     }
     label, p{
         color: black !important;
@@ -99,23 +134,39 @@
     .btn{
         font-weight: 700;
         padding: 8px 30px;
-        margin: 10px 0px;
-        border-radius: 15px;
+        margin: 10px 7px;
+        border-radius: 4px;
         border: 1px solid rgba(246,129,33,255);
         background-color: rgba(246,129,33,255);
     }
-    .google-btn{
+    .signup-options{
         margin: 20px auto;
         margin-bottom: 30%;
+        border: none;
+        /* background-color: darkorange; */
         display: flex;
+        justify-content: center;
         align-items: center;
-        box-shadow: -2px -2px 6px rgba(246,129,33,255), 0px 0px 10px rgba(246,129,33,255) inset  ;
         border-radius: 15px;
         padding: 6px 12px;
         height: 40px;
-        background-color: transparent;
     }
-    .back-box{
+    .signup-options a{
+        display: inline-block;
+        margin: 0px 10px;
+        border: 1px solid black;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+    }
+    .signup-options a img{
+        height: 20px;
+        width: 20px;
+        margin: auto;
+        display: block;
+        margin-top: 4px;
+    }
+    /* .back-box{
         position: absolute;
         width: 450px;
         height: 450px;
@@ -124,7 +175,6 @@
         transform: rotate(45deg);
         overflow: hidden;
         border-radius: 100px;
-        /* rotate: deg(90); */
         background-image: linear-gradient(to right, rgba(246,129,33,255),rgba(246,110,33,255));
     }
     .box1{
@@ -136,7 +186,7 @@
         top: -50px;
         transform: rotate(35deg);
         right: -100px;
-    }
+    } */
     button:hover{
         cursor: pointer;
     }
@@ -215,6 +265,7 @@
     .error{
         animation: shake 0.4s;
     }
+
 </style>
 
 
@@ -280,6 +331,37 @@ particlesInit();
 </script>
 
 <style>
+
+    input:focus + label {
+        opacity:1;
+        transform: scale(0.75) translateY(-70%) translateX(-14px);
+    }
+    p {
+        margin:20px 0;
+        position:relative;
+    }
+
+    label {
+        padding:10px 18px;
+        pointer-events: none;
+        position:absolute;
+        left:0;
+        top:0;
+        transition: 0.2s;
+        transition-timing-function: ease;
+        transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        opacity:0.5;
+        background: transparent;
+    }
+
+    input {
+        padding:10px;
+    }
+    span{
+        background-color: white;
+        padding: 0px 5px;
+        border-radius: 15px;
+    }
 
 .particle {
 	opacity: 0;

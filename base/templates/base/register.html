@@ -92,29 +92,28 @@
     </script>
 </head>
 <body>
-    <div class="container" style="width: 40%; margin: 150px auto; margin-top: 50px;">
-        <div class="back-box box1"></div>
-        <div class="back-box box2"></div>
+    <div class="container" style="margin: 100px auto 0px; border-radius: 10px; box-shadow: 0px 0px 10px #c9c9c9; width: 350px;">
+        {% comment %} <div class="back-box box1"></div>
+        <div class="back-box box2"></div> {% endcomment %}
         <div id="particleGenerator"></div>
-        <form id="userForm" style="text-align: center; padding: 10px 20px; width: 60%; background: transparent;margin: 0px auto;">
+        <form id="userForm" style="text-align: center; padding: 10px 20px; background: transparent;margin: 0px auto;">
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Sign Up</p>
-    
-            <label for="username">Username</label>
-            <input type="username" id="username" name="username" placeholder="" required>
-
-            <label for="email">Email id</label>
-            <input type="email" id="email" name="email" placeholder="" required>
-    
-            <label for="password">Password</label>
-            <input type="password" id="password1" name="password1" placeholder="" required>
-            <p id="pwd1Error"></p>
-            
-            <label for="password">Confirm Password</label>
-            <input type="password" id="password2" name="password2" placeholder="" required>
-            <p id="pwd2Error"></p>
-
-            <!-- <p id="message"></p> -->
-
+            <p>
+                <input type="username" id="username" name="username" placeholder="" required>
+                <label for="username"><span>Username</span></label>
+            </p>
+            <p>
+                <input type="email" id="email" name="email" placeholder="" required>
+                <label for="email"><span>Email id</span></label>
+            </p>
+            <p>
+                <input type="password" id="password1" name="password1" placeholder="" required>
+                <label for="password"><span>Password</span></label>
+            </p>
+            <p>
+                <input type="password" id="password2" name="password2" placeholder="" required>
+                <label for="password"><span>Confirm Password</span></label>
+            </p>
             
             <div style="display: flex; align-items: baseline; justify-content: space-between;">
                 <button type="submit" class="btn" id="register-btn">Register</button>
@@ -122,19 +121,16 @@
 
             
             <p style="text-align: left;">Already have an account? <a href="/login">Login</a></p>
-
-            <hr style="margin-top: 15px;">
-            <p style="margin: -11px auto 10px auto; background-color: white; width: fit-content; padding: 0px 15px;">Or Sign Up with</p>
-
-            
-            {% load socialaccount %}
-        
-            <button class="google-btn" id="google-sign-in-button">
-                <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
-                <a href="{% provider_login_url 'google' method='oauth2' %}" style="display: inline-block; color: rgba(246,129,33,255);">Sign in with Google</a>      
-            </button>
-
         </form>
+    </div>
+    <div class="container">
+        {% load socialaccount %}
+        <div class="signup-options" id="google-sign-in-button">
+            <p>Sign up with</p>
+            <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: white;">
+                <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
+            </a>
+        </div>
     </div>
 <!-- snackbar -->
 <!-- The actual snackbar -->
@@ -163,7 +159,6 @@
     label{
         display: block;
         text-align: left;
-        margin: 12px auto 3px;
         margin-left: 5px;
     }
     label, p{
@@ -188,18 +183,64 @@
         border: 1px solid rgba(246,129,33,255);
         background-color: rgba(246,129,33,255);
     }
-    .google-btn{
+    .signup-options{
         margin: 20px auto;
         margin-bottom: 30%;
+        border: none;
+        /* background-color: darkorange; */
         display: flex;
+        justify-content: center;
         align-items: center;
-        box-shadow: 0px 0px 6px black, 0px 0px 10px rgba(246,129,33,255) inset  ;
         border-radius: 15px;
         padding: 6px 12px;
         height: 40px;
-        background-color: transparent;
     }
-    .back-box{
+    .signup-options a{
+        display: inline-block;
+        margin: 0px 10px;
+        border: 1px solid black;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+    }
+    .signup-options a img{
+        height: 20px;
+        width: 20px;
+        margin: auto;
+        display: block;
+        margin-top: 4px;
+    }
+    input:focus + label {
+        opacity:1;
+        transform: scale(0.75) translateY(-70%) translateX(-14px);
+    }
+    p {
+        margin:20px 0;
+        position:relative;
+    }
+
+    label {
+        padding:10px 18px;
+        pointer-events: none;
+        position:absolute;
+        left:0;
+        top:0;
+        transition: 0.2s;
+        transition-timing-function: ease;
+        transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+        opacity:0.5;
+        background: transparent;
+    }
+
+    input {
+        padding:10px;
+    }
+    span{
+        background-color: white;
+        padding: 0px 5px;
+        border-radius: 15px;
+    }
+    /* .back-box{
         position: absolute;
         width: 450px;
         height: 450px;
@@ -208,7 +249,6 @@
         transform: rotate(45deg);
         overflow: hidden;
         border-radius: 100px;
-        /* rotate: deg(90); */
         background-image: linear-gradient(to right, rgba(246,129,33,255),rgba(246,110,33,255));
     }
     .box1{
@@ -220,7 +260,7 @@
         top: -50px;
         transform: rotate(35deg);
         right: -100px;
-    }
+    } */
     button:hover{
         cursor: pointer;
     }

@@ -81,6 +81,7 @@ class Profile(models.Model):
     auth_token = models.CharField(max_length = 140, blank=True)
     is_verified = models.BooleanField(default = False)
     created_at =models.DateTimeField(auto_now_add=True)
+    profile_photo=models.FileField(upload_to="media/profile_photos/",max_length=250,null=True,default=None)
     
     def __str__(self):
         return self.user.username

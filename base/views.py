@@ -106,25 +106,24 @@ def loginPage(request):
                 if user in admins:
                     # Admins (staff) don't have profiles, so no need to check is_verified
                     login(request, user)
-                    return redirect('admin-panel')
+                    data=[{'response':"login successful", 'result':'success','redirect':'/admin-panel'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
 
                 # For non-admin users, check the profile for verification
                 if profile_obj is not None and not profile_obj.is_verified:
                     resend_link = reverse('resend_email_verification', args=[user.id])
-                    messages.error(request, f'Profile is not verified check your mail or Click resend to send the verification email. <a href="{resend_link}"> Resend</a>')
-                    
-    
-                    
-                    return redirect('login')
-
+                    data=[{'response':"Profile is not verified check your mail or Click resend to send the verification email. <a href="+resend_link+"> Resend</a>", 'result':'fail'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")
+                
                 login(request, user)
-                return redirect('home')
+                data=[{'response':"login successful", 'result':'success','redirect':'/home'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
             else:
-                messages.error(request, "Invalid password please enter correct password.")
-                return redirect('login')
+                data=[{'response':"Invalid password please enter correct password.", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
         else:
-            messages.error(request, "User not found.")
-            return redirect('login')
+            data=[{'response':"User not found", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
 
     context = {'page': page}
     return render(request, 'base/login.html', context)
@@ -135,23 +134,6 @@ def loginPage(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
-
-
-# def admin_home(request):
-#     if request.user.is_staff:
-#         return()
-#     # Your view logic here
-#     return render(request, 'login.html')
-
-
-
-# /////////////////////////////////////////////////////////////////
-# @login_required(login_url='login')
-# def homePage(request):
-#     page='login'
-#     form = UserCreationForm
-#     if request.user.is_authenticated and not request.user.is_staff:
-#         courses=Courses.objects.all()
 
 @login_required(login_url='login')
 def getCourses(request):
@@ -221,7 +203,7 @@ def pptPage(request):
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
-    data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit} for file in Files]
+    data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit, 'url': file.fileupload.url} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -1059,6 +1041,13 @@ def is_Verified(username):
             return True
     return False
 
+def get_profile_photo(username):
+    profiles=Profile.objects.all()
+    for profile in profiles:
+        if str(profile.user) == str(username):
+            return profile.profile_photo.url
+    return False
+
 
 @login_required(login_url='login')
 def returnReports(request):
@@ -1121,8 +1110,7 @@ def profilePage(request):
 def getUserDetails(request):
         try:
             user=User.objects.filter(username=request.user.username)
-            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email,'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
-
+            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email, 'profilephoto' : "null" if get_profile_photo(u.username)==False else get_profile_photo(u.username),'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
             return HttpResponse(json.dumps(data), content_type="application/json")
         except:
             data=[{'response':"Error while fetching data", 'result':'fail'}]

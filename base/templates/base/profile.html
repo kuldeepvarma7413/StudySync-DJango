@@ -77,6 +77,42 @@
         margin: auto;
         height: 4rem;
     }
+    #refresh{
+        display: none;
+    }
+    @media screen and (min-width: 320px) and (max-width: 768px){
+        .inside-container{
+            display: block;
+            height: 100%;
+            margin-top: 60px;
+        }
+        .outside-info{
+            margin: 0px;
+            border: none;
+        }
+        .info{
+            padding: 20px;
+        }
+        ul{
+            margin: 0px;
+        }
+        .content-div{
+            height: 100%;
+        }
+        .navs ul{
+            display: flex;
+            justify-content: space-evenly;
+        }
+        .navs ul li{
+            padding: 5px 10px;
+        }
+        .main-container{
+            height: 85%;
+        }
+        .change-password{
+            padding-top: 50px !important;
+        }
+    }
 </style>
 
 <!-- profile section -->
@@ -85,9 +121,9 @@
         <div class="outside-info">
             <button id="refresh">↻</button>
             <div class="info">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xnGLZJFli6FRyXSlm8-QnpJb9hh30HffEA&usqp=CAU" height="150px" width="150px">
+                <img class="profile-photo" height="150px" width="150px">
                 <p id="name"></p>
-                <p id="email"></p>
+                <p class="emailfield"></p>
                 <p>User ID: <span id="userid"></span></p>
             </div>
         </div>
@@ -107,8 +143,8 @@
             </div>
             <div class="content-div edit-profile">
                 <form id="form1">
-                    <div class="profile-photo">
-                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-xnGLZJFli6FRyXSlm8-QnpJb9hh30HffEA&usqp=CAU" height="150px" width="150px">
+                    <div>
+                        <img class="profile-photo" height="150px" width="150px">
                     </div>
                     <div class="name">
                         <label>
@@ -122,7 +158,7 @@
                         Username: <span id="username1"></span>
                     </label>
                     <label>
-                        Email: <span id="email1"></span>
+                        Email: <span class="emailfield"></span>
                     </label>
                     <label>Date Joined: <span id="datejoined"></span></label>
                     <button type="submit" id="edit-profile-btn">Apply Changes</button>
@@ -132,15 +168,15 @@
                 <form id="form2">
                     <label>
                         Current Password:
-                        <input type="text" id="currpwd" required>
+                        <input type="text" id="currpwd" autocomplete="off" required>
                     </label>
                     <label>
                         New Password:
-                        <input type="text" id="newpwd1" required>
+                        <input type="text" id="newpwd1" autocomplete="off" required>
                     </label>
                     <label>
                         Confirm Password:
-                        <input type="text" id="newpwd2" required>
+                        <input type="text" id="newpwd2" autocomplete="off" required>
                     </label>
                     <button type="submit" id="change-pwd-btn" style="margin-top: 20px;">Change Password</button>
                 </form>
@@ -221,13 +257,15 @@
         // fetch details
         const res=await fetch('/get-user-details').then(res=>res.json())??[];
         document.getElementById('name').innerHTML=(res[0]['firstname']+" "+res[0]['lastname'])??res[0]['username']
-        document.getElementById('email').innerHTML=res[0]['email']
         document.getElementById('userid').innerHTML=res[0]['userid']
-        document.getElementById('firstname').value=res[0]['firstname']
-        document.getElementById('lastname').value=res[0]['lastname']
+        // document.getElementById('firstname').value=res[0]['firstname']
+        // document.getElementById('lastname').value=res[0]['lastname']
         document.getElementById('username1').innerHTML=res[0]['username']
-        document.getElementById('email1').innerHTML=res[0]['email']
         document.getElementById('datejoined').innerHTML=res[0]['datejoined']
+        const emailfields=document.getElementsByClassName('emailfield');
+        for (var i=0; i<emailfields.length; i++){
+            emailfields[i].innerHTML+=res[0]['email']
+        }
 
     })
     $(document).ready(function(){
