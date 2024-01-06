@@ -15,7 +15,7 @@
         <!-- <div class="back-box box1"></div>
         <div class="back-box box2"></div> -->
         <div id="particleGenerator"></div>
-        <form id="userForm" method="POST" style="text-align: center; padding: 10px 20px; background: transparent;margin: 0px auto;">
+        <form id="userForm" method="POST" style="text-align: center; padding: 10px 20px 0px; background: transparent;margin: 0px auto;">
             <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Login</p>
     
             <p>
@@ -36,15 +36,15 @@
             <p style="text-align: left; margin: 10px 10px;">Don't have an account? <a href="/register">Create New</a></p>
             
         </form>
-    </div>
-    <div class="container">
         {% load socialaccount %}
         <div class="signup-options" id="google-sign-in-button">
-            <p>Sign up with</p>
-            <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: white;">
+            <p style="margin: 0px 15px 10px;" class="backline"><span style="background-color: white; padding: 0px 5px;">Or continue with</span></p>
+            <a href="{% provider_login_url 'google' %}?next=/" style="display: inline-block; color: white; margin-bottom: 10px;">
                 <img src="/static/images/google-icon.png" width="15px" style="margin-bottom: 10px;" class="image-container">
             </a>
         </div>
+    </div>
+    <div class="container">
     </div>
 </body>
 <!-- snackbar -->
@@ -143,18 +143,13 @@
         margin: 20px auto;
         margin-bottom: 30%;
         border: none;
-        /* background-color: darkorange; */
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        text-align: center;
         border-radius: 15px;
         padding: 6px 12px;
-        height: 40px;
     }
     .signup-options a{
         display: inline-block;
         margin: 0px 10px;
-        border: 1px solid black;
         border-radius: 50%;
         width: 30px;
         height: 30px;
@@ -230,6 +225,13 @@
         color: #a94442; /* Error message text color */
     }
 
+    .backline{
+        background: linear-gradient(180deg, 
+            rgba(0,0,0,0) calc(50% - 1px), 
+            rgba(192,192,192,1) calc(50%), 
+            rgba(0,0,0,0) calc(50% + 1px));
+    }
+
 
     @media (max-width:1200px){
         .back-box p{ 
@@ -239,6 +241,16 @@
     @media (max-width:767px){
         .btn input{ 
             height:40px; 
+        }
+    }
+    @media screen and (max-width:768px){
+        .container{
+            margin-top: 200px !important;
+        }
+    }
+    @media screen and (min-width: 768px){
+        .container{
+            width: 450px;
         }
     }
 
