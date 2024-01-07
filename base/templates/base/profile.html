@@ -1,4 +1,3 @@
-
 {% extends "base/base.html" %}
 {% load static %}
 {% block content %}
@@ -80,6 +79,56 @@
     #refresh{
         display: none;
     }
+    .profile-pic {
+        width: 100%;
+        max-height: 100%;
+        display: inline-block;
+    }
+
+    .file-upload {
+        display: none;
+    }
+    .circle {
+        border-radius: 100% !important;
+        overflow: hidden;
+        width: 128px;
+        height: 128px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        /* position: absolute; */
+        /* top: 72px; */
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+    .p-image {
+    position: relative;
+    top: -23px;
+    right: 30px;
+    color: #666666;
+    transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+    }
+    .p-image:hover {
+    transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+    }
+    .upload-button {
+        cursor: pointer;
+    font-size: 1.2em;
+    }
+
+    .upload-button:hover {
+    transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+    color: #999;
+    }
+    .p-photo{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-photo{
+        height: 150px !important;
+        width: 150px !important;
+    }
     @media screen and (min-width: 320px) and (max-width: 768px){
         .inside-container{
             display: block;
@@ -121,10 +170,11 @@
         <div class="outside-info">
             <button id="refresh">↻</button>
             <div class="info">
-                <img class="profile-photo" height="150px" width="150px">
+                <img class="profile-photo">
                 <p id="name"></p>
                 <p class="emailfield"></p>
                 <p>User ID: <span id="userid"></span></p>
+                <button id="delete-profile-btn">Delete Profile</button>
             </div>
         </div>
         <div class="action-divs">
@@ -144,19 +194,27 @@
             <div class="content-div edit-profile">
                 <form id="form1">
                     <div>
-                        <img class="profile-photo" height="150px" width="150px">
+                        <div class="p-photo">
+                            <div class="circle">
+                              <img class="profile-photo profile-pic">
+                            </div>
+                            <div class="p-image">
+                              <i class="fa fa-camera upload-button"></i>
+                               <input class="file-upload" type="file" accept="image/*"/>
+                            </div>
+                         </div>
                     </div>
-                    <div class="name">
+                    <div>
                         <label>
                             <input type="text" id="firstname" placeholder="First Name" required>
                         </label>
                         <label>
-                            <input type="text" id="lastname" placeholder="Last Name" required>
+                            <input type="text" id="lastname" placeholder="Last Name">
+                        </label>
+                        <label>
+                            <input type="text" id="username1" placeholder="Username" required>
                         </label>
                     </div>
-                    <label>
-                        Username: <span id="username1"></span>
-                    </label>
                     <label>
                         Email: <span class="emailfield"></span>
                     </label>
@@ -194,8 +252,19 @@
 
 <script>
     const refreshbtn=document.getElementById('refresh');
-    window.addEventListener('load', function(){
-        refreshbtn.click()
+    window.addEventListener('load', async function(){
+        // fetch details
+        const res=await fetch('/get-user-details').then(res=>res.json())??[];
+        document.getElementById('name').innerHTML=(res[0]['firstname']+" "+res[0]['lastname'])??res[0]['username']
+        document.getElementById('userid').innerHTML=res[0]['userid']
+        document.getElementById('firstname').value=res[0]['firstname']
+        document.getElementById('lastname').value=res[0]['lastname']
+        document.getElementById('username1').value=res[0]['username']
+        document.getElementById('datejoined').innerHTML=res[0]['datejoined']
+        const emailfields=document.getElementsByClassName('emailfield');
+        for (var i=0; i<emailfields.length; i++){
+            emailfields[i].innerHTML=res[0]['email']
+        }
 
         const editprofilebtn=document.getElementById('edit-profile');
         editprofilebtn.click()
@@ -216,6 +285,8 @@
             var data = new FormData()
             data.append('firstname', document.getElementById('firstname').value)
             data.append('lastname', document.getElementById('lastname').value)
+            data.append('username', document.getElementById('username1').value)
+            data.append('profile-photo', document.querySelector('input[type="file"]').files[0])
             // send post request
             const res=await fetch('/edit-profile/',{method:'POST', body: data,headers: {
                 'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
@@ -250,23 +321,29 @@
             }else{
                 showFailSnackbar(res[0].response, res[0].result)
             }
-
+            
+        })
+        
+        const deleteprofilebtn=document.getElementById('delete-profile-btn');
+        deleteprofilebtn.addEventListener('click', async function(){
+            const res=await fetch('/delete-profile/',{method:'POST',headers: {
+                'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+            // refresh all fields
+            // got response
+            if(res[0].result=="success"){
+                alert("Your profile has been deleted.")
+                window.addEventListener('load', async function(){
+                    setTimeout('', 2000);
+                    window.location.replace('/login')
+                })
+                // showSuccessSnackbar(res[0].response, res[0].result)
+            }else{
+                showFailSnackbar(res[0].response, res[0].result)
+            }
         })
     })
     refreshbtn.addEventListener('click', async function(){
-        // fetch details
-        const res=await fetch('/get-user-details').then(res=>res.json())??[];
-        document.getElementById('name').innerHTML=(res[0]['firstname']+" "+res[0]['lastname'])??res[0]['username']
-        document.getElementById('userid').innerHTML=res[0]['userid']
-        // document.getElementById('firstname').value=res[0]['firstname']
-        // document.getElementById('lastname').value=res[0]['lastname']
-        document.getElementById('username1').innerHTML=res[0]['username']
-        document.getElementById('datejoined').innerHTML=res[0]['datejoined']
-        const emailfields=document.getElementsByClassName('emailfield');
-        for (var i=0; i<emailfields.length; i++){
-            emailfields[i].innerHTML+=res[0]['email']
-        }
-
+        window.location.replace('/profile')
     })
     $(document).ready(function(){
         $('.nav1').click(function(){
@@ -280,6 +357,28 @@
         $('.nav3').click(function(){
             $('.nav3-label').addClass('selected').siblings().removeClass('selected');       
             $('.change-password').addClass('show').siblings().removeClass('show');
+        });
+    });
+
+    // profile photo
+    $(document).ready(function() {
+        var readURL = function(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('.profile-pic').attr('src', e.target.result);
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $(".file-upload").on('change', function(){
+            readURL(this);
+        });
+
+        $(".upload-button").on('click', function() {
+        $(".file-upload").click();
         });
     });
 

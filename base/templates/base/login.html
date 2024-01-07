@@ -12,11 +12,11 @@
 </head>
 <body>
     <div class="container" style="margin: 150px auto 0px; border-radius: 10px; box-shadow: 0px 0px 10px #c9c9c9;">
-        <!-- <div class="back-box box1"></div>
-        <div class="back-box box2"></div> -->
+        <div class="back-box box1"></div>
+        <div class="back-box box2"></div>
         <div id="particleGenerator"></div>
         <form id="userForm" method="POST" style="text-align: center; padding: 10px 20px 0px; background: transparent;margin: 0px auto;">
-            <p style="font-weight: 700; font-size: 20px; margin: 15px auto;">Login</p>
+            <p class="login">Login</p>
     
             <p>
                 <input type="text" id="email" name="email" class="email">
@@ -75,24 +75,25 @@
                data.append('email', email)
                data.append('password1', password)
                if(email.length==0){
-                showFailSnackbar("please fill in email or username","fail")
+                showFailSnackbar("please fill in email or username",'fail')
                }
-               if(password.length==0){
-                showFailSnackbar("please fill in password","fail")
+               else if(password.length==0){
+                showFailSnackbar("please fill in password",'fail')
+               }else{
+                   // send post request
+                   const res=await fetch('/login/',{method:'POST', body: data,headers: {
+                       'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                       console.log(res)
+   
+                   // got response
+                   if(res[0].result=="success"){
+                       showSuccessSnackbar(res[0].response, res[0].result)
+                       formRef.reset()
+                       window.location.replace(res[0]['redirect'])
+                   }else{
+                       showFailSnackbar(res[0].response, res[0].result)
+                   }
                }
-                // send post request
-                const res=await fetch('/login/',{method:'POST', body: data,headers: {
-                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                    console.log(res)
-
-                // got response
-                if(res[0].result=="success"){
-                    showSuccessSnackbar(res[0].response, res[0].result)
-                    formRef.reset()
-                    window.location.replace(res[0]['redirect'])
-                }else{
-                    showFailSnackbar(res[0].response, res[0].result)
-                }
            })
         })
     </script>
@@ -127,11 +128,18 @@
         background-color: transparent;
         /* border-color: ; */
     }
+    .email:focus{
+        border: 2px solid darkorange;
+    }
+    .login{
+        font-weight: 700; font-size: 20px; margin: 15px auto;
+    }
     a{
         color: rgba(246,129,33,255);
         text-decoration: none;
     }
     .btn{
+        color: white;
         font-weight: 700;
         padding: 8px 30px;
         margin: 10px 7px;
@@ -161,7 +169,7 @@
         display: block;
         margin-top: 4px;
     }
-    /* .back-box{
+    .back-box{
         position: absolute;
         width: 450px;
         height: 450px;
@@ -181,7 +189,7 @@
         top: -50px;
         transform: rotate(35deg);
         right: -100px;
-    } */
+    }
     button:hover{
         cursor: pointer;
     }
@@ -246,6 +254,9 @@
     @media screen and (max-width:768px){
         .container{
             margin-top: 200px !important;
+        }
+        .box1, .box2{
+            display: none;
         }
     }
     @media screen and (min-width: 768px){

@@ -44,6 +44,7 @@ urlpatterns = [
     path('pdfview',views.pdfview, name="pdfview" ),
     path('compiler',views.CompilerPage, name="compiler" ), # type: ignore
     path('report-bug/',views.reportBugPage, name="report-bug" ),
+    path('discuss/',views.discussPage, name="discuss" ),
     
     path('google/',views.google_authentication_view ,name = "google"),
     
@@ -80,6 +81,7 @@ urlpatterns = [
     path('change-password/',views.changePassword, name="change-password" ), # type: ignore
     path('get-user-details',views.getUserDetails, name="get-user-details" ),
     path('profile/',views.profilePage, name="profile" ),
+    path('delete-profile/',views.deleteProfile, name="delete-profile" ), #type: ignore
 
 ]
 if settings.DEBUG:

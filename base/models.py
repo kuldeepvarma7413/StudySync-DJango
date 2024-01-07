@@ -44,7 +44,7 @@ class cafiles(models.Model):
 class Syllabus(models.Model):
     courseCode=models.CharField(max_length=20)
     title=models.CharField(max_length=100)
-    fileupload=models.FileField(upload_to="media/",max_length=250,null=True,default=None)
+    fileupload=models.FileField(upload_to="media/",null=True,default=None,storage=RawMediaCloudinaryStorage())
     
 class subscribers(models.Model):
     email=models.CharField(max_length=320)
@@ -81,7 +81,7 @@ class Profile(models.Model):
     auth_token = models.CharField(max_length = 140, blank=True)
     is_verified = models.BooleanField(default = False)
     created_at =models.DateTimeField(auto_now_add=True)
-    profile_photo=models.FileField(upload_to="media/profile_photos/",max_length=250,null=True,default=None)
+    profile_photo=models.FileField(upload_to="media/profile_photos/",null=True,default=None, storage=RawMediaCloudinaryStorage())
     
     def __str__(self):
         return self.user.username

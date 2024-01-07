@@ -25,7 +25,7 @@
                 {% endif %}
             <div class="card-container">
                 <h3 class="card-title animate__animated animate__fadeIn">We have sent an email to you
-                    <div class="card-text animate__animated animate__fadeIn">Please check your Mail</div>
+                    <div class="card-text animate__animated animate__fadeIn">Please check your Mail. Redirecting...</div>
                 </h3>
             </div>
         </div>
@@ -34,6 +34,12 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     </body>
 </html>
+<script>
+    window.addEventListener('load', async function(){
+        setTimeout('', 5000);
+        window.location.replace('/login')
+    })
+</script>
 <style>
     body {
         display: flex;
