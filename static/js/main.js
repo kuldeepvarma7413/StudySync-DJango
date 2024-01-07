@@ -234,7 +234,7 @@
 		// ssPreloader();
 		ssMobileMenu();
 		// ssOwlCarousel();
-		// ssWaypoints();
+		ssWaypoints();
 		ssSmoothScroll();
 		// ssPlaceholder();
 		ssAlertBoxes();

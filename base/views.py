@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
@@ -98,6 +99,7 @@ def loginPage(request):
         else:
             user = User.objects.filter(username__iexact=email_or_username).first()
 
+
         if user is not None:
             user = authenticate(request, username=user.username, password=password)
             profile_obj = Profile.objects.filter(user=user).first()
@@ -108,12 +110,18 @@ def loginPage(request):
                     login(request, user)
                     data=[{'response':"login successful", 'result':'success','redirect':'/admin-panel'}]
                     return HttpResponse(json.dumps(data), content_type="application/json")
-
+                # for non-admin users who has deleted their profile and try to reopen their account then ask for email verification
+                if profile_obj is None:
+                    profile_obj = Profile.objects.create(user = user, auth_token=str(uuid.uuid4()))
+                    profile_obj.save()
+                    resend_link = reverse('resend_email_verification', args=[user.id])
+                    data=[{'response':"Verify your email to reopen your account <a href="+resend_link+"> Click here</a>", 'result':'fail'}]
+                    return HttpResponse(json.dumps(data), content_type="application/json")                
                 # For non-admin users, check the profile for verification
                 if profile_obj is not None and not profile_obj.is_verified:
                     resend_link = reverse('resend_email_verification', args=[user.id])
                     data=[{'response':"Profile is not verified check your mail or Click resend to send the verification email. <a href="+resend_link+"> Resend</a>", 'result':'fail'}]
-                    return HttpResponse(json.dumps(data), content_type="application/json")
+                    return HttpResponse(json.dumps(data), content_type="application/json")                
                 
                 login(request, user)
                 data=[{'response':"login successful", 'result':'success','redirect':'/home'}]
@@ -815,10 +823,6 @@ def update_password_with_otp(request):
         form = PasswordUpdateForm()
 
     return render(request, "base/password_verification.html", {'form': form})
-    
-    
-    
-    
 
 
 # temp views
@@ -1034,21 +1038,6 @@ def noofusers(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-def is_Verified(username):
-    profiles=Profile.objects.all()
-    for profile in profiles:
-        if str(profile.user) == str(username):
-            return True
-    return False
-
-def get_profile_photo(username):
-    profiles=Profile.objects.all()
-    for profile in profiles:
-        if str(profile.user) == str(username):
-            return profile.profile_photo.url
-    return False
-
-
 @login_required(login_url='login')
 def returnReports(request):
     # all admins
@@ -1110,7 +1099,7 @@ def profilePage(request):
 def getUserDetails(request):
         try:
             user=User.objects.filter(username=request.user.username)
-            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email, 'profilephoto' : "null" if get_profile_photo(u.username)==False else get_profile_photo(u.username),'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
+            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email, 'profilephoto' : "null" if get_profile_photo(request,u.username)==False else get_profile_photo(request, u.username),'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
             return HttpResponse(json.dumps(data), content_type="application/json")
         except:
             data=[{'response':"Error while fetching data", 'result':'fail'}]
@@ -1122,16 +1111,45 @@ def editProfile(request):
         try:
             firstname=request.POST['firstname'].lstrip(' ')
             lastname=request.POST['lastname'].lstrip(' ')
+            username=request.POST['username'].lstrip(' ')
+            if 'profile-photo' in request.FILES:
+                profilephoto=request.FILES['profile-photo']
+            else:
+                profilephoto=None
             # validation
-            if firstname=="" or lastname=="":
-                data=[{'response':"Please fill in firstname or lastname", 'result':'fail'}]
+            if firstname=="":
+                data=[{'response':"Please fill in firstname", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            if username=="":
+                data=[{'response':"Username can't be empty", 'result':'fail'}]
                 return HttpResponse(json.dumps(data), content_type="application/json")
             users=User.objects.filter(username=request.user.username)
             for user in users:
                 user.first_name=firstname
                 user.last_name=lastname
+                if username != "":
+                    if checkusername(username) or request.user.username==username:
+                        if request.user.username!=username:
+                            user.username=username
+                    else:
+                        data=[{'response':"Username not available", 'result':'fail'}]
+                        return HttpResponse(json.dumps(data), content_type="application/json")
+                if profilephoto != None:
+                    userprofile=Profile.objects.filter(user=request.user).first()
+                    if userprofile != None:
+                        if userprofile.profile_photo == "":
+                            userprofile.profile_photo.delete()
+                        userprofile.profile_photo=profilephoto
+                        userprofile.save()
+                    else:
+                        profile, created = Profile.objects.get_or_create(user=request.user)
+                        if created:
+                            profile.auth_token = str(uuid.uuid4())
+                            profile.is_verified = True
+                            profile.profile_photo=profilephoto
+                            profile.save()
                 user.save()
-                data=[{'response':"Profile data updated", 'result':'success'}]
+                data=[{'response':"Profile details updated", 'result':'success'}]
                 return HttpResponse(json.dumps(data), content_type="application/json")
         except:
             data=[{'response':"Error Occured", 'result':'fail'}]
@@ -1174,12 +1192,56 @@ def changePassword(request):
     data=[{'response':"Unauthorized Access", 'result':'fail'}]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+def deleteProfile(request):
+    if request.method=='POST':
+        try:
+            user=Profile.objects.filter(user=request.user).first()
+            if user!=None:
+                user.delete()
+                logout(request)
+                data=[{'response':"Profile deleted", 'result':'success'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+            raise
+        except:
+            data=[{'response':"Error Occured", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    data=[{'response':"Unauthorized Access", 'result':'fail'}]
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
+
+############################################################
+##################### non-authorized pages #################
+############################################################
+
+def discussPage(request):
+    return render(request, 'base/discuss-page.html')
 
 
 ############################################################
 ###################### functions ###########################
 ############################################################
+
+def checkusername(username):
+    users=User.objects.all()
+    for user in users:
+        if str(user.username)==username:
+            return False
+    return True
+
+
+def is_Verified(username):
+    profiles=Profile.objects.all()
+    for profile in profiles:
+        if str(profile.user) == str(username):
+            return True
+    return False
+
+def get_profile_photo(request,username):
+    profile=Profile.objects.filter(user=request.user).first()
+    if str(profile) == str(username) and profile !=None and profile.profile_photo!="":
+        return profile.profile_photo.url
+    return False
+
 
 def isCommonPassword(password):
     commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"]
