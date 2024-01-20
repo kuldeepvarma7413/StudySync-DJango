@@ -81,7 +81,7 @@
           {% if user.is_authenticated %}
           <li style="padding-top: 16px;">
             <p id="username" style="display: flex;">
-              <img class="profile-photo" style="height:40px !important;width:40px !important;border-radius: 50%; border: 1px solid white; background: white; cursor: pointer;">
+              <img class="profile-photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" style="height:40px !important;width:40px !important;border-radius: 50%; border: 1px solid white; background: white; cursor: pointer;">
               <!-- <li class="profile-info" id="profile-info">
                 <ol class="list">
                 </ol>
@@ -106,7 +106,7 @@
               }
               const image=document.getElementsByClassName('profile-photo');
               for(var i=0; i<image.length; i++){
-                image[i].src=(res[0].profilephoto=="null")? "{% static 'images/icons/user.png' %}" : res[0].profilephoto
+                if(res[0].profilephoto!="null"){ image[i].src= res[0].profilephoto}
               }
               const photo=document.getElementById('username')
               photo.addEventListener('click', function(){

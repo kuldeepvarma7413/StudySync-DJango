@@ -132,7 +132,7 @@
     @media screen and (min-width: 320px) and (max-width: 768px){
         .inside-container{
             display: block;
-            height: 100%;
+            height: fit-content;
             margin-top: 60px;
         }
         .outside-info{
@@ -170,7 +170,7 @@
         <div class="outside-info">
             <button id="refresh">↻</button>
             <div class="info">
-                <img class="profile-photo">
+                <img class="profile-photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU">
                 <p id="name"></p>
                 <p class="emailfield"></p>
                 <p>User ID: <span id="userid"></span></p>
@@ -196,7 +196,7 @@
                     <div>
                         <div class="p-photo">
                             <div class="circle">
-                              <img class="profile-photo profile-pic">
+                              <img class="profile-photo profile-pic" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU">
                             </div>
                             <div class="p-image">
                               <i class="fa fa-camera upload-button"></i>
@@ -294,7 +294,7 @@
             // refresh all fields
             // got response
             if(res[0].result=="success"){
-                showSuccessSnackbar(res[0].response, res[0].result)
+                // showSuccessSnackbar(res[0].response, res[0].result)
                 form.reset()
                 refreshbtn.click()
             }else{
@@ -343,7 +343,8 @@
         })
     })
     refreshbtn.addEventListener('click', async function(){
-        window.location.replace('/profile')
+        await window.location.replace('/profile')
+        showSuccessSnackbar("Profile updated", 'success')
     })
     $(document).ready(function(){
         $('.nav1').click(function(){
