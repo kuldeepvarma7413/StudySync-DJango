@@ -233,7 +233,7 @@
 
 		// ssPreloader();
 		ssMobileMenu();
-		// ssOwlCarousel();
+		ssOwlCarousel();
 		ssWaypoints();
 		ssSmoothScroll();
 		// ssPlaceholder();
