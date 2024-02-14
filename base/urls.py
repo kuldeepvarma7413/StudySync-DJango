@@ -82,6 +82,10 @@ urlpatterns = [
     path('get-user-details',views.getUserDetails, name="get-user-details" ),
     path('profile/',views.profilePage, name="profile" ),
     path('delete-profile/',views.deleteProfile, name="delete-profile" ), #type: ignore
+    
+    
+    # Discussions
+    path('discussions/',views.allDiscussions, name="discussions" ), #type: ignore
 
 ]
 if settings.DEBUG:

@@ -12,6 +12,10 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.mjs"></script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    
+
     <style>
         * {
             padding: 0px;
@@ -40,25 +44,225 @@
             word-spacing:60px;
             line-height: 3.5;
         }
+
+        @media only screen and (max-width: 2560px) {
+        .loader-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            margin: 0;
+        }
+
+        .loadingio-spinner-eclipse-mb4xqdposok {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: inline-block;
+            overflow: hidden;
+            background: black;
+        }
+
+        .ldio-q7a1mw80l0f {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: translateZ(0) scale(1);
+            backface-visibility: hidden;
+            transform-origin: 0 0;
+        }
+
+        .ldio-q7a1mw80l0f div {
+            position: absolute;
+            animation: ldio-q7a1mw80l0f 1s linear infinite;
+            width: 240px;
+            height: 240px;
+            top: 30px;
+            left: 30px;
+            border-radius: 50%;
+            box-shadow: 0 4px 0 0 rgb(234, 144, 17);
+            transform-origin: 120px 122px;
+        }
+
+        .circle-animation {
+            width: 300px;
+            height: 300px;
+            border: 4px solid transparent;
+            border-top-color: rgb(234, 144, 17);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        .loader-icon {
+            font-size: 50px;
+            margin: 10px;
+            animation: float 2s ease-in-out infinite;
+            position: absolute;
+            top: 39%; /* Adjust the position of the book icon */
+            /* left: 50%;
+            transform: translate(-50%, -50%);  */
+            color:rgb(234, 144, 17);
+        }
+
+        .loader-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: rgb(234, 144, 17);
+            position: absolute;
+            top: 53%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes ldio-q7a1mw80l0f {
+            0% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(180deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    }
+    
     </style>
+
+<!-- <style>
+    /* ... Your existing styles ... */
+
+    @media only screen and (max-width: 375px) {
+        
+
+        .loader-icon {
+            font-size: 50px;
+            margin: 10px;
+            animation: float 2s ease-in-out infinite;
+            position: absolute;
+            top: 30%; 
+            color:rgb(234, 144, 17);
+        }
+
+    }
+
+
+    @media only screen and (max-width: 1024px) {
+        
+
+        .loader-icon {
+            font-size: 50px;
+            margin: 10px;
+            animation: float 2s ease-in-out infinite;
+            position: absolute;
+            top: 45%; 
+            color:rgb(234, 144, 17);
+        }
+
+    }
+
+</style> -->
+
+    
+    
 </head>
 
 <body>
     <div id="pdfViewerDiv">
+        <div class="loader-container">
+            <div class="loadingio-spinner-eclipse-mb4xqdposok">
+                <div class="ldio-q7a1mw80l0f">
+                    <div></div>
+                </div>
+            </div>
+            <!-- Move the loader-icon div inside the loader-container div -->
+            <div class="loader-icon">
+                <i class="fas fa-book-reader reading-animation"></i>
+            </div>
+            <div class="loader-text">StudySync</div>
+        </div>
+
         <div class="main-div">
             {% for file in files %}
-                <div class="pdf-container embed-container">
-                    {% if file.fileupload.name|lower|slice:"-4" == '.ppt' %}
-                        {% with pdf_content=file.pdf_content %}
-                            <embed class="view-pdf-btn" src="data:application/pdf;base64,{{ pdf_content }}" type="application/pdf"></embed>
-                        {% endwith %}
-                    {% else %}
-                        <embed class="view-pdf-btn" data-pdf-url="/media/{{ file.fileupload.url }}" data-pdf-id="{{ file.fileupload.id }}"></embed>
-                    {% endif %}
-                </div>
+            <div class="pdf-container embed-container">
+                {% if file.fileupload.name|lower|slice:"-4" == '.ppt' %}
+                {% with pdf_content=file.pdf_content %}
+                <embed class="view-pdf-btn" src="data:application/pdf;base64,{{ pdf_content }}" type="application/pdf"></embed>
+                {% endwith %}
+                {% else %}
+                <embed class="view-pdf-btn" data-pdf-url="/media/{{ file.fileupload.url }}" data-pdf-id="{{ file.fileupload.id }}"></embed>
+                {% endif %}
+            </div>
             {% endfor %}
         </div>
     </div>
+
+    <script>
+        window.addEventListener('load', function () {
+            var loaderContainer = document.querySelector('.loader-container');
+            var mainDiv = document.querySelector('.main-div');
+
+            setTimeout(function () {
+                loaderContainer.style.display = 'none';
+                mainDiv.style.display = 'block';
+                document.body.style.overflow = 'auto';
+            }, 2000);
+
+            var interval = setInterval(function () {
+                var mainDiv = document.querySelector('.main-div');
+                if (mainDiv && mainDiv.offsetWidth > 0 && mainDiv.offsetHeight > 0) {
+                    clearInterval(interval);
+                    loaderContainer.style.display = 'none';
+                }
+            }, 500);
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var mainDiv = document.querySelector('.main-div');
+            var pdfUrl = document.querySelector('.view-pdf-btn').getAttribute('data-pdf-url');
+
+            var pdfLoader = document.getElementById('pdfLoader');
+            pdfLoader.style.display = 'block'; // Show the PDF loader
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(function (pdfDoc) {
+                var embedElements = document.querySelectorAll('.view-pdf-btn');
+                embedElements.forEach(function (element) {
+                    element.src = URL.createObjectURL(pdfDoc);
+                });
+
+                pdfLoader.style.display = 'none'; // Hide the PDF loader
+
+                mainDiv.style.display = 'block';
+            });
+        });
+    </script>
+    
+    
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="/static/pdfjs/build/pdf.mjs"></script>

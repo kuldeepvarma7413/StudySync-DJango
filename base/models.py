@@ -41,10 +41,10 @@ class cafiles(models.Model):
 
     # class Meta:
     #     ordering = ['-unit']
-class Syllabus(models.Model):
-    courseCode=models.CharField(max_length=20)
-    title=models.CharField(max_length=100)
-    fileupload=models.FileField(upload_to="media/",null=True,default=None,storage=RawMediaCloudinaryStorage())
+# class Syllabus(models.Model):
+#     courseCode=models.CharField(max_length=20)
+#     title=models.CharField(max_length=100)
+#     fileupload=models.FileField(upload_to="media/syllabus/",null=True,default=None,storage=RawMediaCloudinaryStorage())
     
 class subscribers(models.Model):
     email=models.CharField(max_length=320)
@@ -85,5 +85,23 @@ class Profile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+    
+    
+class Discuss(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE) 
+    views = models.IntegerField()
+    votes = models.IntegerField()
+    title = models.CharField(max_length = 1000, blank=True)
+    Description = models.CharField(max_length = 8000, blank=True)
+    tags = models.CharField(max_length = 100, blank=True)
+    Time = models.DateTimeField(auto_now_add=True)
+    Images = models.FileField(upload_to="media/discussions/",null=True,default=None, storage=RawMediaCloudinaryStorage())
+    
+    def __str__(self):
+        return self.title
+    
+    
+    
     
     

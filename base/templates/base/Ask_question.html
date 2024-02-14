@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <div class="s-notice s-notice__info p24 w70 lg:w100">
+            <h2 class="fs-title fw-normal mb8">Writing a good question</h2>
+            <p class="fs-body2 mb0">
+                You’re ready to <a href="https://stackoverflow.com/help/how-to-ask" previewlistener="true">ask</a> a <a href="https://stackoverflow.com/help/on-topic" previewlistener="true">programming-related question</a> and this form will help guide you through the process.
+            </p>
+            <p class="fs-body2 mt0">
+                Looking to ask a non-programming question? See <a href="https://stackexchange.com/sites#technology-traffic">the topics here</a> to find a relevant site.
+            </p>
+            <h5 class="fw-bold mb8">Steps</h5>
+            <ul class="mb0">
+                <li>Summarize your problem in a one-line title.</li>
+                <li>Describe your problem in more detail.</li>
+                <li>Describe what you tried and what you expected to happen.</li>
+                <li>Add “tags” which help surface your question to members of the community.</li>
+                <li>Review your question and post it to the site.</li>
+            </ul>
+        </div>
+        <div>
+            <div class="js-post-title-overlay p24">
+                <div class="d-flex gs4 gsy fd-column js-stacks-validation">
+                    <div class="d-flex fd-column flex--item">
+                        <div class="flex--item">
+                            <label for="title" class="s-label">
+                                Title
+                            </label>
+                        </div>
+                        <div class="d-flex flex--item md:fd-column">
+                            <div class="s-description flex--item9 my2">
+                                <label for="title">
+                                    Be specific and imagine you’re asking a question to another person.
+                                </label>
+                            </div>
+                            <div class="flex--item3 s-input-message js-title-text-counter ta-right md:ta-left my2 s-description py2 cool"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex ps-relative">
+                        <input id="title" name="title" type="text" maxlength="300" placeholder="e.g. Is there an R function for finding the index of an element in a vector?" class="s-input js-post-title-field ask-title-field" value="" data-min-length="15" data-max-length="150">
+                        <svg aria-hidden="true" class="s-input-icon js-title-invalid-alert d-none svg-icon iconAlertCircle" width="18" height="18" viewBox="0 0 18 18"><path d="M9 17c-4.36 0-8-3.64-8-8 0-4.36 3.64-8 8-8 4.36 0 8 3.64 8 8 0 4.36-3.64 8-8 8ZM8 4v6h2V4H8Zm0 8v2h2v-2H8Z"></path></svg>
+                    </div>
+                    <div id="title-validation-message" class="flex--item s-input-message d-none js-stacks-validation-message"></div>
+                </div>
+                <button class="flex--item s-btn s-btn__filled mt8 js-next-title js-next-buttons" type="button">Next</button>
+            </div>
+        </div>
+
+
+        <div>
+
+            <div class="js-problem-details-overlay js-overlay-enabled o30 t0 b0 bg-black-200 p24 c-not-allowed">
+                <div class="d-flex gs4 gsy fd-column js-stacks-validation">
+                    <div class="flex--item">
+                        <label for="problem-details" class="d-block s-label c-not-allowed">
+                            What are the details of your problem?
+                            <p class="s-description mt2 mb6">Introduce the problem and expand on what you put in the title. Minimum 20 characters.</p>
+                        </label>
+                    </div>
+                    <div class="js-problem-details-field" id="problem-details" data-stacks-editor-instance-id="6421"><div class="ps-relative z-base s-textarea overflow-auto hmn2 w100 p0 d-flex fd-column s-editor-resizable" readonly="" aria-readonly="true"><div class="js-sticky-sentinel"></div><div class="py6 bg-inherit btr-sm w100 ps-sticky t0 l0 z-nav s-editor-shadow js-plugin-container js-sticky"><div class="d-flex overflow-x-auto ai-center px12 py4 pb0"><div class="d-flex g16 fl-grow1 ai-center js-editor-menu pe-none"><div class="s-editor-menu-block d-flex g2  js-block-formatting1"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-heading-btn" aria-label="Heading (Ctrl-H)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleHeading" type="button" disabled="" aria-describedby="--stacks-s-tooltip-x0kjy2gs"><span class="svg-icon-bg iconHeader"></span></button><div id="--stacks-s-tooltip-x0kjy2gs" class="s-popover s-popover__tooltip" role="tooltip">Heading (Ctrl-H)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-bold-btn" aria-label="Bold (Ctrl-B)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleBold" type="button" disabled="" aria-describedby="--stacks-s-tooltip-z247l65l"><span class="svg-icon-bg iconBold"></span></button><div id="--stacks-s-tooltip-z247l65l" class="s-popover s-popover__tooltip" role="tooltip">Bold (Ctrl-B)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-italic-btn" aria-label="Italic (Ctrl-I)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleEmphasis" type="button" disabled="" aria-describedby="--stacks-s-tooltip-ux27r07f"><span class="svg-icon-bg iconItalic"></span></button><div id="--stacks-s-tooltip-ux27r07f" class="s-popover s-popover__tooltip" role="tooltip">Italic (Ctrl-I)<div class="s-popover--arrow"></div></div></div><div class="s-editor-menu-block d-flex g2  js-block-code-formatting"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-code-btn" aria-label="Inline code (Ctrl-K)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleCode" type="button" disabled="" aria-describedby="--stacks-s-tooltip-rid80v17"><span class="svg-icon-bg iconCode"></span></button><div id="--stacks-s-tooltip-rid80v17" class="s-popover s-popover__tooltip" role="tooltip"><p class="mb4">Inline code (Ctrl-K)</p><p class="fs-caption fc-light m0">Single line code span for use within a block of text</p><div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-code-block-btn" aria-label="Code block (Ctrl-M)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleCodeblock" type="button" disabled="" aria-describedby="--stacks-s-tooltip-cc8s85dh"><span class="svg-icon-bg iconCodeblockAlt"></span></button><div id="--stacks-s-tooltip-cc8s85dh" class="s-popover s-popover__tooltip" role="tooltip"><p class="mb4">Code block (Ctrl-M)</p><p class="fs-caption fc-light m0">Multiline block of code with syntax highlighting</p><div class="s-popover--arrow"></div></div></div><div class="s-editor-menu-block d-flex g2  js-block-formatting2"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-insert-link-btn" aria-label="Link (Ctrl-L)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleLink" type="button" disabled="" aria-describedby="--stacks-s-tooltip-kcxwrkc9"><span class="svg-icon-bg iconLink"></span></button><div id="--stacks-s-tooltip-kcxwrkc9" class="s-popover s-popover__tooltip" role="tooltip">Link (Ctrl-L)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-blockquote-btn" aria-label="Blockquote (Ctrl-Q)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleBlockquote" type="button" disabled="" aria-describedby="--stacks-s-tooltip-tl0j6g1q"><span class="svg-icon-bg iconQuote"></span></button><div id="--stacks-s-tooltip-tl0j6g1q" class="s-popover s-popover__tooltip" role="tooltip">Blockquote (Ctrl-Q)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-insert-image-btn" aria-label="Image (Ctrl-G)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="insertImage" type="button" disabled="" aria-describedby="--stacks-s-tooltip-qdhg2zvu"><span class="svg-icon-bg iconImage"></span></button><div id="--stacks-s-tooltip-qdhg2zvu" class="s-popover s-popover__tooltip" role="tooltip">Image (Ctrl-G)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-insert-table-btn" aria-label="Table (Ctrl-E)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="insertTable" type="button" disabled="" aria-describedby="--stacks-s-tooltip-ra56d0s1"><span class="svg-icon-bg iconTable"></span></button><div id="--stacks-s-tooltip-ra56d0s1" class="s-popover s-popover__tooltip" role="tooltip">Table (Ctrl-E)<div class="s-popover--arrow"></div></div></div><div class="s-editor-menu-block d-flex g2  js-block-formatting3"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-numbered-list-btn" aria-label="Numbered list (Ctrl-O)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleOrderedList" type="button" disabled="" aria-describedby="--stacks-s-tooltip-fq39hksf"><span class="svg-icon-bg iconOrderedList"></span></button><div id="--stacks-s-tooltip-fq39hksf" class="s-popover s-popover__tooltip" role="tooltip">Numbered list (Ctrl-O)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-bullet-list-btn" aria-label="Bulleted list (Ctrl-U)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="toggleUnorderedList" type="button" disabled="" aria-describedby="--stacks-s-tooltip-13c9frvr"><span class="svg-icon-bg iconUnorderedList"></span></button><div id="--stacks-s-tooltip-13c9frvr" class="s-popover s-popover__tooltip" role="tooltip">Bulleted list (Ctrl-U)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-horizontal-rule-btn" aria-label="Horizontal rule (Ctrl-R)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="insertRule" type="button" disabled="" aria-describedby="--stacks-s-tooltip-6oqkcktn"><span class="svg-icon-bg iconHorizontalRule"></span></button><div id="--stacks-s-tooltip-6oqkcktn" class="s-popover s-popover__tooltip" role="tooltip">Horizontal rule (Ctrl-R)<div class="s-popover--arrow"></div></div><div data-controller="s-popover" data-s-popover-toggle-class="is-selected" data-s-popover-placement="bottom" data-s-popover-reference-selector="#more-formatting-dropdown-btn-7169"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-more-formatting-dropdown s-btn__dropdown" aria-label="More formatting" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="more-formatting-dropdown" type="button" aria-controls="more-formatting-dropdown-popover-7169" data-action="s-popover#toggle" id="more-formatting-dropdown-btn-7169" disabled="" aria-expanded="false" aria-describedby="--stacks-s-tooltip-3gkrc2mx"><span class="svg-icon-bg iconEllipsisHorizontal"></span></button><div id="--stacks-s-tooltip-3gkrc2mx" class="s-popover s-popover__tooltip" role="tooltip">More formatting<div class="s-popover--arrow"></div></div><div class="s-popover wmn-initial w-auto px0 pt0 py8" id="more-formatting-dropdown-popover-7169" role="menu"><div class="s-popover--arrow" aria-hidden="true"></div><div class="d-flex fd-column" role="presentation"><button type="button" data-key="tag-btn" role="menuitem" class="s-block-link s-editor--dropdown-item js-editor-btn" disabled="">Tag (Ctrl-[)</button><button type="button" data-key="spoiler-btn" role="menuitem" class="s-block-link s-editor--dropdown-item js-editor-btn" disabled="">Spoiler (Ctrl-/)</button><button type="button" data-key="subscript-btn" role="menuitem" class="s-block-link s-editor--dropdown-item js-editor-btn" disabled="">Subscript (Ctrl-,)</button><button type="button" data-key="superscript-btn" role="menuitem" class="s-block-link s-editor--dropdown-item js-editor-btn" disabled="">Superscript (Ctrl-.)</button><button type="button" data-key="kbd-btn" role="menuitem" class="s-block-link s-editor--dropdown-item js-editor-btn" disabled="">Keyboard (Ctrl-')</button></div></div></div></div><div class="s-editor-menu-block d-flex g2 d-none sm:d-inline-flex vk:d-inline-flex js-block-history"><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-undo-btn" aria-label="Undo (Ctrl-Z)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="undo-btn" type="button" disabled="" aria-describedby="--stacks-s-tooltip-igfmk9iy"><span class="svg-icon-bg iconUndo"></span></button><div id="--stacks-s-tooltip-igfmk9iy" class="s-popover s-popover__tooltip" role="tooltip">Undo (Ctrl-Z)<div class="s-popover--arrow"></div></div><button class="s-editor-btn s-btn s-btn__muted js-editor-btn js-redo-btn" aria-label="Redo (Ctrl-Y)" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="redo-btn" type="button" disabled="" aria-describedby="--stacks-s-tooltip-u0xti15n"><span class="svg-icon-bg iconRefresh"></span></button><div id="--stacks-s-tooltip-u0xti15n" class="s-popover s-popover__tooltip" role="tooltip">Redo (Ctrl-Y)<div class="s-popover--arrow"></div></div></div><div class="s-editor-menu-block d-flex g2  js-block-other"><a class="s-editor-btn s-btn s-btn__muted flex--item js-editor-btn js-help-link" href="/editing-help" target="_blank" aria-label="Help" data-controller="s-tooltip" data-s-tooltip-placement="top" data-key="help-link" disabled="" aria-describedby="--stacks-s-tooltip-u5jiguv5" previewlistener="true"><span class="svg-icon-bg iconHelp"></span></a><div id="--stacks-s-tooltip-u5jiguv5" class="s-popover s-popover__tooltip" role="tooltip">Help<div class="s-popover--arrow"></div></div></div></div><div class="flex--item d-flex ai-center ml24 fc-medium"><div class="s-btn-group s-btn-group--radio fw-nowrap">
+                        <input type="radio" name="mode-toggle-1468" id="mode-toggle-rich-1468" class="s-btn--radio js-editor-toggle-btn" data-mode="0">
+                        <label class="s-btn s-btn__muted s-btn__outlined s-editor-btn px6" for="mode-toggle-rich-1468" title="Rich text mode">
+                        <span class="svg-icon-bg iconRichText"></span>
+                        <span class="v-visible-sr">Rich text mode</span>
+                        </label>
+                        <input type="radio" name="mode-toggle-1468" id="mode-toggle-markdown-1468" class="s-btn--radio js-editor-toggle-btn" data-mode="1" data-preview="false" checked="">
+                        <label class="s-btn s-btn__muted s-btn__outlined s-editor-btn px6" for="mode-toggle-markdown-1468" title="Markdown mode">
+                        <span class="svg-icon-bg iconMarkdown"></span>
+                        <span class="v-visible-sr">Markdown mode</span>
+                        </label>
+                        <input type="radio" name="mode-toggle-1468" id="mode-toggle-preview-1468" class="s-btn--radio js-editor-toggle-btn" data-mode="1" data-preview="true"><label class="s-btn s-btn__muted s-btn__outlined s-editor-btn px6" for="mode-toggle-preview-1468" title="Markdown with preview mode">
+                        <span class="svg-icon-bg iconMarkdownPreview"></span>
+                        <span class="v-visible-sr">Markdown with preview mode</span>
+                        </label></div></div></div><div></div></div><div class="fl-grow1 outline-none p12 pt6 w100 s-prose js-editor ProseMirror" role="textbox" aria-multiline="true" aria-label="Body" contenteditable="false" translate="no"><pre class="s-code-block markdown"><code><br class="ProseMirror-trailingBreak"></code></pre></div></div><div></div></div>
+                        <div id="problem-details-validation-message" class="flex--item s-input-message d-none js-stacks-validation-message"></div>
+                    </div>
+                <button class="s-btn s-btn__filled mt12 js-next-problem-details js-next-buttons d-none" disabled="" type="button">Next</button>
+            </div>
+        </div>
+        
+        <script src="" async defer></script>
+    </body>
+</html>
