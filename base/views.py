@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 from urllib import request
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
@@ -1215,14 +1216,13 @@ def deleteProfile(request):
 ############################################################
 
 
-
+@csrf_exempt
 def allDiscussions(request):
     try:
-        print(True)
-        discussions = Discuss.objects.get()
-        print("1")
-    
-        data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user,'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
+        discussions = Discuss.objects.all()  
+        # , 'userimage': "null" if get_profile_photo(request,des.user.username)==False else get_profile_photo(request, des.user.username)   for profile photo  
+        data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user.username, 'profile_photo': NULL,'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
+        print(data)
     
         return HttpResponse(json.dumps(data), content_type="application/json")
     
@@ -1238,7 +1238,7 @@ def allDiscussions(request):
 ############################################################
 
 def discussPage(request):
-    return render(request, 'base/discuss-page.html')
+    return render(request, 'base/discuss_page.html')
 
 
 ############################################################

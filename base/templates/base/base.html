@@ -47,7 +47,7 @@
       <nav id="header-nav-wrap">
         <ul class="header-main-nav">
           <li>
-            <a href="/discuss" title="discuss" class="subnavbtn">Discuss</a>
+            <a href="/discuss" title="discuss" class="subnavbtn" id="discuss-btn">Discuss</a>
           </li>
           {% if user.is_authenticated %}
           <li>
@@ -117,26 +117,12 @@
                   profile_info.style.display="block"
                 }
               })
-
-              // selected on click (nav-items)
-              const subnavs=document.getElementsByClassName('subnavbtn')
-              for(var i=0; i<subnavs.length; i++){
-                const nav=subnavs[i];
-                nav.addEventListener('click', function(event){
-                  for(var j=0; j<subnavs.length; j++){
-                    const nav=subnavs[j];
-                    nav.classList.remove('selected');
-                  }
-                  event.target.classList.add('selected');
-                })
-              }
-
             })
             
           </script>
 
         {% else %}
-        <a href="login" title="sign-up" class="button button-primary cta" style="display: inline-block; margin-top: 17px;"
+        <a href="/login" title="sign-up" class="button button-primary cta" style="display: inline-block; margin-top: 17px;"
           >Sign Up/Login</a
         >
         {% endif %}
@@ -149,6 +135,9 @@
     <style>
       header{
         top: 0;
+      }
+      body{
+        overflow-y: hidden;
       }
       a{
         font-size: 16px;
@@ -193,8 +182,8 @@
       .header-main-nav li a{
         color: rgba(255, 255, 255, 0.45);
       }
-      .header-main-nav li a.selected{
-        color: #fff !important;
+      .header-main-nav li a.selected, .header-main-nav li a:hover{
+        color: darkorange !important;
       }
       @media screen and (min-width: 320px) and (max-width:768px) {
         ol{
@@ -204,6 +193,23 @@
         }
       }
     </style>
+    <script>
+      window.addEventListener('load', ()=>{
+        // selected on click (nav-items)
+        const subnavs=document.getElementsByClassName('subnavbtn')
+        for(var i=0; i<subnavs.length; i++){
+          const nav=subnavs[i];
+          nav.addEventListener('click', function(event){
+            for(var j=0; j<subnavs.length; j++){
+              const nav=subnavs[j];
+              nav.classList.remove('selected');
+            }
+            event.target.classList.add('selected');
+          })
+        }
+      })
+    </script>
+
     {% block content %} {% endblock content %}
   </body>
 </html>

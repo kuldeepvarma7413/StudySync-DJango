@@ -1,0 +1,760 @@
+{% extends "base/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="template-body">
+    <div class="grid-view-1">
+        <div class="page-navs">
+            <a id="ask-ques">
+                <img src="{% static 'images/icons/question.png' %}" alt="">
+                Ask Question
+            </a>
+            <a id="homebtn">
+                <img src="{% static 'images/icons/home.png' %}" alt="">
+                Home
+            </a>
+            <a id="questions">
+                <img src="{% static 'images/icons/questions.png' %}" alt="">
+                Questions
+            </a>
+            <a>
+                <img src="{% static 'images/icons/users.png' %}" alt="">
+                Users
+            </a>
+        </div>
+    </div>
+    <div class="grid-view-2">
+        <!-- ask question -->
+        <div class="outer-container" id="ask-ques-div">
+            <!-- div 1 -->
+            <div class="headers">
+                <p class="headers-p1">Describe your problem?</p>
+                <p class="headers-p2">in public chat</p>
+            </div>
+            <!-- good question container -->
+            <div class="good-ques">
+                <h1>Writing a good question</h1>
+                <p>You are ready to ask a programming related question. And this phone will help guide you through the process Looking to ask a non-programming question.</p>
+                <h3>Steps</h3>
+                <ul>
+                    <li>Summarise your problem in a one line title.</li>
+                    <li>Describe your problem in more detail.</li>
+                    <li>Describe what you tried and what you expected to happen.</li>
+                    <li>Add "tags" which help surface your question to members of the community.</li>
+                    <li>Review your question and post it to the site.</li>
+                </ul>
+                <p>Note: * denotes mandatory fields.</p>
+            </div>
+            <form id="ques-form">
+                <!-- title div -->
+                <div class="title-div">
+                    <div class="div-header">
+                        <h1>Title <span class="mandatory-field">*</span></h1>
+                        <a class="next-btn" id="title-next">
+                            <img src="{% static 'images/icons/next.png' %}">
+                        </a>
+                    </div>
+                    <p>Be specific and imagine you are asking a question to another person.</p>
+                    <textarea name="" id="title-input" rows="2"></textarea>
+                </div>
+                <!-- description div -->
+                <div class="description-div" id="description-div">
+                    <div class="overlay" id="desOverlay"></div>
+                    <div class="div-header">
+                        <h1>Description <span class="mandatory-field">*</span></h1>
+                        <a class="next-btn" id="description-next">
+                            <img src="{% static 'images/icons/next.png' %}">
+                        </a>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <p style="width: 85%;">Describe your problem. if you want to attach a file, then you can also attach a file.</p>
+                        <div class="editor-icons">
+                            <label for="file"><img src="{% static 'images/icons/upload-image.png' %}" title="Select only one file" class="upload-img-img" style="transform: translateY(2px);"></label>
+                            <img class="link-img" src="{% static 'images/icons/link.png' %}" title="add link" id="add-link">
+                        </div>
+                    </div>
+                    <textarea name="" id="description-input" rows="20"></textarea>
+                    <input type="file" id="file" accept=".jpg/.jpeg/.png">
+                </div>
+                <!-- code div -->
+                <div class="code-div">
+                    <div class="overlay" id="codeOverlay"></div>
+                    <div class="div-header">
+                        <h1>Code</h1>
+                        <a class="next-btn" id="code-next">
+                            <img src="{% static 'images/icons/next.png' %}">
+                        </a>
+                    </div>
+                    <p>Paste your code here to let others understand your perblem easily.</p>
+                    <!-- text editor -->
+                    <textarea name="" id="code-input" rows="15"></textarea>
+                </div>
+                <!-- tags -->
+                <div class="tags-div">
+                    <div class="overlay" id="tagsOverlay"></div>
+                    <h1>Tags <span class="mandatory-field">*</span></h1>
+                    <p>Add up to five tags to describe what your question is about. Start typing to see suggestions. (use comma ',' to saparate tags)</p>
+                    <textarea name="" id="tags-input" rows="2"></textarea>
+                </div>
+                <div class="btn-div">
+                    <button id="submit-ques-btn">Submit</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- questions -->
+        <div id="questions-div">
+            <div class="searchbar-div">
+                <input type="search" id="searchquestion" placeholder="Search..." onkeyup="search_course()">
+            </div>
+            <div class="content-div">
+                <div class="analysis">
+                    <p>Total questions <span id="ques-count"></span></p>
+                    <div class="ques-navs">
+                        <ul id="hasAnswers">
+                            <li id="all-ques">All</li>
+                            <li id="unanswered-ques">Unanswered</li>
+                            <li id="answered-ques">Answered</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="content" id="content">
+                    <!-- dynamic data -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid-view-3">Advertisements</div>
+    
+    <!-- snackbar -->
+    <!-- The actual snackbar -->
+    <div id="snackbar">
+        <span id="snackbar-text"></span>
+    </div>
+</div>
+
+<style>
+    #questions-div, #ask-ques-div{
+        display: none;
+    }
+    .mandatory-field{
+        color: red;
+        font-size: 22px;
+        font-weight: 100;
+    }
+</style>
+
+<!-- fetch content -->
+<script>
+
+    var quesCard= `<div class="question-card">
+                    <div class="question-card-left">
+                        <p><span id="vote-count">%VOTE_COUNT%</span> votes</p>
+                        <p><span id="ans-count">5</span> Answers</p>
+                        <p><span id="view-count">%VIEW_COUNT%</span> Views</p>
+                    </div>
+                    <div class="question-card-right">
+                        <h4 class="ques-title searchdata">%TITLE%</h4>
+                        <p class="description searchdata">%DESCRIPTION%</p>
+                        <div class="tags">
+                            <a>HTML</a>
+                            <a>JavaScript</a>
+                            <a>CSS</a>
+                        </div>
+                        <a class="asked-by">
+                            <img src="%USER_PROFILE_PHOTO%" alt="">
+                            <span>Asked by: %ASKED_BY_USER%</span>
+                        </a>
+                    </div>
+                </div>`
+
+    window.addEventListener('load', async function(){
+
+        // left container buttons. home, question, ask ques, users
+        var askQuesBtn=document.getElementById('ask-ques')
+        var questionsBtn=document.getElementById('questions')
+
+        // content divs
+        var askQuesContentDiv=document.getElementById('ask-ques-div')
+        var questionsContentDiv=document.getElementById('questions-div')
+
+
+        askQuesBtn.addEventListener('click', ()=>{
+            questionsContentDiv.style.display="none"
+            askQuesContentDiv.style.display="block"
+        })
+
+        questionsBtn.addEventListener('click', async function(){
+            // set display property
+            questionsContentDiv.style.display="block"
+            askQuesContentDiv.style.display="none"
+
+            var contentContainer=document.getElementById('content')
+            // set ques count
+            var ques_count=document.getElementById('ques-count');
+    
+            var discussions=await fetch('/discussions/').then(res=>res.json()) ?? [];
+            // set answer counts, user image
+            contentContainer.innerHTML='';
+            discussions.forEach((ques)=>{
+                contentContainer.insertAdjacentHTML('beforeEnd', quesCard.replace("%VOTE_COUNT%", ques.votes).replace("%VIEW_COUNT%", ques.views)
+                .replace("%TITLE%", ques.title).replace('%DESCRIPTION%', ques.description).replace("%ASKED_BY_USER%", ques.user)
+                .replace("%USER_PROFILE_PHOTO%", ques.profile_photo==0 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" : ques.profile_photo) )
+    
+                console.log(ques.profile_photo)
+    
+            })
+    
+    
+            // filters
+            // buttons
+            var all_ques_btn=document.getElementById('all-ques')
+            var answered_ques_btn=document.getElementById('answered-ques')
+            var unanswered_ques_btn=document.getElementById('unanswered-ques')
+            
+            answered_ques_btn.addEventListener('click', ()=>{
+                var cards=document.getElementsByClassName('question-card')
+                for(var i=0; i<cards.length; i++){
+                    var ansCount=cards[i].querySelector('#ans-count').innerHTML
+                    if(ansCount>0){
+                        cards[i].style.display="grid";
+                    }else{
+                        cards[i].style.display="none";
+                    }
+                }
+                setQuesCount()
+            })
+            
+            unanswered_ques_btn.addEventListener('click', ()=>{
+                var cards=document.getElementsByClassName('question-card')
+                for(var i=0; i<cards.length; i++){
+                    var ansCount=cards[i].querySelector('#ans-count').innerHTML
+                    if(ansCount==0){
+                        cards[i].style.display="grid";
+                    }else{
+                        cards[i].style.display="none";
+                    }
+                }
+                setQuesCount()
+            })
+            
+            all_ques_btn.addEventListener('click', ()=>{
+                var cards=document.getElementsByClassName('question-card')
+                for(var i=0; i<cards.length; i++){
+                    cards[i].style.display="grid";
+                }
+                setQuesCount()
+            })
+    
+            // set ques count
+            function setQuesCount(){
+                var cards=contentContainer.querySelectorAll('.question-card')
+                var count=0;
+                for(var i=0; i<cards.length; i++){
+                    if(window.getComputedStyle(cards[i]).getPropertyValue('display')!="none"){
+                        count++;
+                    }
+                }
+                ques_count.innerHTML=count
+            }
+    
+    
+            // select buttons on click answered, unanswered, all
+            var buttonlist=document.querySelectorAll('#hasAnswers li');
+            for(var i=0; i<buttonlist.length; i++){
+                    const nav=buttonlist[i];
+                    nav.addEventListener('click', function(event){
+                    for(var j=0; j<buttonlist.length; j++){
+                        const nav=buttonlist[j];
+                        nav.classList.remove('selected');
+                    }
+                    event.target.classList.add('selected');
+                })
+            }
+    
+            all_ques_btn.click()
+        })
+
+
+        // select left container buttons, home, ask question etc.
+        var buttonlist=document.querySelectorAll('.page-navs a')
+        console.log(buttonlist)
+        for(var i=0; i<buttonlist.length; i++){
+                const nav=buttonlist[i];
+                nav.addEventListener('click', function(event){
+                for(var j=0; j<buttonlist.length; j++){
+                    const nav=buttonlist[j];
+                    nav.classList.remove('selected');
+                }
+                event.target.classList.add('selected');
+            })
+        }
+
+
+        // select discuss btn
+        document.getElementById('discuss-btn').classList.add('selected');
+        // manual click on questions
+        questionsBtn.click()
+
+
+
+    })
+</script>
+
+<style>
+    .template-body{
+        height: 92%;
+        margin-top: 72px;
+        display: grid;
+        grid-template-columns: 250px auto 250px;
+    }
+    .grid-view-1{
+        border-right: 1px solid rgb(29,40,40);
+    }
+    .grid-view-3{
+        border-left: 1px solid rgb(29,40,40);
+    }
+
+    /* left side */
+    .page-navs{
+        display: flex;
+        flex-direction: column;
+        padding: 20px 30px;
+        padding-top: 50px;
+    }
+    .page-navs a{
+        color: #767676;
+    }
+    .page-navs a:hover, .page-navs a.selected{
+        color: darkorange;
+    }
+    .page-navs a img{
+        width: 25px !important;
+        height: 25px !important;
+    }
+    .page-navs a{
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 10px 0px;
+    }
+
+    /* middle side */
+    .grid-view-2{
+        overflow-y: auto;
+    }
+    .searchbar-div{
+        padding: 10px;
+    }
+    .searchbar-div input{
+        display: block;
+        margin: 0px auto;
+        height: 4rem;
+        padding: 10px 15px;
+        width: 60%;
+        color: white;
+        background-color: #1f1f1f;
+    }
+    .searchbar-div input:focus{
+        color: white;
+    }
+    .analysis{
+        padding: 20px 30px;
+        display: grid;
+        grid-template-columns: 25% 75%;
+    }
+    .ques-navs ul{
+        list-style: none;
+        display: flex;
+        gap: 20px;
+        float: right;
+    }
+    .ques-navs ul li{
+        cursor: pointer;
+    }
+    .ques-navs ul li:hover, .ques-navs ul li.selected{
+        color: darkorange;
+    }
+
+    .content{
+        border-top: 1px solid rgb(29,40,40);
+        padding: 20px 50px;
+    }
+    .question-card{
+        display: none;
+        padding: 10px 20px;
+        border: 1px solid gray;
+        border-left: none;
+        border-right: none;
+        grid-template-columns: 15% 85%;
+    }
+    .question-card-left{
+        text-align: right;
+        padding-right: 20px;
+    }
+    .question-card-right h4, .description{
+        color: white;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .question-card-right h4{
+        color: darkorange;
+    }
+    .tags{
+        display: inline;
+    }
+    .tags a{
+        border: none;
+        background-color: #31220f;
+        padding: 5px 10px;
+        border-radius: 10px;
+        color: darkorange;
+    }
+    .asked-by{
+        display: flex;
+        align-items: center;
+        float: right;
+        gap: 3px;
+    }
+    .asked-by img{
+        border-radius: 50%;
+        height: 15px;
+        width: 15px;
+        margin-bottom: 2px;
+    }
+    .asked-by span{
+        padding-top: 1px;
+    }
+
+    /* right side */
+    .grid-view-3{
+        padding: 30px 20px;
+        padding-top: 40px;
+    }
+
+
+    /* scroller */
+    div ::-webkit-scrollbar {
+        width: 7px;
+    }
+    /* Track */
+    div ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 5px #b6b6b6; 
+        margin: 10% 0%;
+    }
+    /* Handle */
+    div ::-webkit-scrollbar-thumb {
+        background: rgba(246,129,33,255); 
+    }
+    /* Handle on hover */
+    div ::-webkit-scrollbar-thumb:hover {
+        background: rgba(246,129,33,255); 
+    }
+</style>
+
+<!-- ask ques CSS -->
+
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    .outer-container{
+        padding: 0px 15% 50px;
+        padding-bottom: 20px !important;
+    }
+    .outer-container div{
+        position: relative;
+        margin: auto;
+        padding: 25px 30px;
+        background-color: rgb(27, 27, 27);
+        color: white;
+        margin-bottom: 50px;
+        border-radius: 10px;
+    }
+    .outer-container div h1{
+        color: white;
+    }
+
+    h1{
+        font-size: 20px;
+    }
+    .outer-container div p{
+        font-size: 16px;
+        margin-top: 15px;
+        color: rgb(148, 148, 148);
+    }
+
+    textarea{
+        resize: none;
+        width: 100%;
+        background-color: rgb(32, 31, 31);
+        border: none;
+        border-radius: 10px;
+        margin: 15px 0px;
+        color: white;
+        padding: 10px 15px;
+    }
+
+    /* good question */
+    .good-ques, .good-ques div, .good-ques p{
+        color: black !important;
+        background-color: rgb(240 187 154) !important;
+        filter: brightness(0.9);
+    }
+
+    .good-ques ul{
+        margin-left: 40px;
+    }
+
+    .good-ques h3{
+        margin-top: 15px;
+    }
+    .good-ques p{
+        background-color: transparent !important;
+    }
+    .outer-container .good-ques h1{
+        color: black;
+    }
+
+    /* header */
+    .headers{
+        background-color: transparent !important;
+        margin-bottom: 0px !important;
+        padding-left: 0px !important;
+    }
+
+    .headers p{
+        font-size: 30px !important;
+        margin-top: 0px !important;
+        font-weight: 700;
+    }
+
+    /* tags */
+    .tags-div{
+        margin-bottom: 20px !important;
+    }
+    #tags-input{
+        min-height: auto;
+    }
+
+    /* button */
+    .btn-div{
+        text-align: center;
+        background-color: transparent !important;
+        margin-bottom: 0px !important;
+    }
+    button{
+        padding: 8px 30px;
+        border: none;
+        background-color: rgba(246,129,33,255);
+        border-radius: 15px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .next-btn{
+        background-color: white;
+        text-align: center;
+        border-radius: 15px;
+        margin: 0px;
+        height: 30px;
+        width: 40px;
+        scale: 1/1;
+        padding: 5px;
+        padding-left: 2px;
+        font-size: 14px;
+    }
+    .description-div .next-btn img{
+        height: 100% !important;
+    }
+    #title-input{
+        min-height: auto;
+    }
+    .div-header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+
+    /* textarea hover */
+    textarea:focus{
+        color: white;
+    }
+    /* tags and title input height */
+    #tags, #title{
+        min-height: 50px !important;
+        max-height: 50px !important;
+    }
+    /* headers p1 and p2 colors */
+    .headers-p1{
+        background: linear-gradient(rgba(246,129,33), rgb(176, 156, 125)) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent;
+    }
+    .headers-p2{
+        background: linear-gradient(rgb(204, 165, 106), transparent) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent;
+    }
+
+    /* input file btn */
+    input::file-selector-button {
+        content: "click";
+        background-color: rgba(246,129,33);
+        border-radius: 10px;
+        border-color: rgba(246,129,33);
+        margin-right: 10px;
+    }
+    /* link image */
+    .description-div img{
+        cursor: pointer;
+        height: 15px !important;
+    }
+    .description-div .upload-img-img{
+        height: 20px !important;
+
+    }
+    .description-div p{
+        margin-top: 0px !important;
+    }
+    .description-div div{
+        margin-bottom: 0px !important;
+        padding-left: 0px !important;
+    }
+    /* editor icons */
+    .editor-icons{
+        display: flex;
+        align-items: baseline;
+        gap: 15px;
+        padding: 0px !important;
+        margin: 0px !important;
+    }
+    /* file input display none */
+    #file{
+        display: none;
+    }
+
+    /* hide rest divs */
+    .overlay{
+        background: rgb(163, 163, 163) !important;
+        z-index: 9;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+        top: 0;
+        right: 0;
+        position: absolute !important;
+    }
+
+    /* phone view */
+    @media screen and (max-width: 1000px) {
+        .outer-container{
+            padding: 0px 6% 50px;
+        }
+    }
+
+</style>
+
+<!-- ask question script -->
+
+<script>
+    window.addEventListener('load', ()=>{
+        // textareas
+        var desInput=document.getElementById('description-input')
+        var codeInput=document.getElementById('code-input')
+        var tagsInput=document.getElementById('tags-input')
+        // disabled
+        desInput.disabled=true
+        codeInput.disabled=true
+        tagsInput.disabled=true
+        // buttons
+        var titleNxtBtn=document.getElementById('title-next');
+        var descriptionNxtBtn=document.getElementById('description-next');
+        var codeNxtBtn=document.getElementById('code-next');
+    
+        // divs
+        var desDivOverlay=document.getElementById('desOverlay');
+        var codeDivOverlay=document.getElementById('codeOverlay');
+        var tagsDivOverlay=document.getElementById('tagsOverlay');
+    
+        titleNxtBtn.addEventListener('click', ()=>{
+            if(document.getElementById('title-input').value.length==0){
+                showFailSnackbar("Fill in title", 'fail')
+            }else{
+                desDivOverlay.style.display="none";
+                desInput.disabled=false
+            }
+        })
+        descriptionNxtBtn.addEventListener('click', ()=>{
+            codeDivOverlay.style.display="none";
+            codeInput.disabled=false
+        })
+        codeNxtBtn.addEventListener('click', ()=>{
+            tagsDivOverlay.style.display="none";
+            tagsInput.disabled=false
+        })
+    })
+    var addLinkBtn=document.getElementById('add-link');
+    var descriptionBox=document.getElementById('description-input');
+    addLinkBtn.addEventListener('click', ()=>{
+        descriptionBox.value+=descriptionBox.innerHTML+` [refer to](www.stydysync.in)`;
+    })
+</script>
+<script>
+    // prevent refresh on submit
+    var form=document.getElementById('ques-form')
+    function handleForm(event) { event.preventDefault(); } 
+    form.addEventListener('submit', handleForm);
+
+    var submitQuesBtn=document.getElementById('submit-ques-btn');
+
+    submitQuesBtn.addEventListener('click', ()=>{
+        var title=document.getElementById('title-input').value
+        var description=document.getElementById('description-input').value
+        var code=document.getElementById('code-input').value
+        var tags=document.getElementById('tags-input').value
+
+        if(title.length==0 || description.length==0 || tags.length==0){
+            showFailSnackbar("Fill in the mandatory fields",'fail')
+        }
+
+        console.log(description)
+
+        //send post request            
+    })
+
+</script>
+
+
+<!-- search questions -->
+<script>
+    function search_course() { 
+        document.getElementById('all-ques').click()
+        let input = document.getElementById('searchquestion').value 
+        input=input.toUpperCase(); 
+        let x = document.getElementsByClassName('question-card'); 
+            
+        for (i = 0; i < x.length; i++) {  
+            const card=x[i];
+            const datatosearch=card.getElementsByClassName('searchdata');
+            for(var j=0; j<datatosearch.length; j++){
+                if (!datatosearch[i].innerHTML.toUpperCase().includes(input)) { 
+                    card.style.display="none"; 
+                } 
+                else { 
+                    card.style.display="grid";                  
+                } 
+            }
+        } 
+    } 
+</script>
+
+{% endblock content %}
