@@ -1284,16 +1284,6 @@ h1.intro-header::before {
   line-height: 72px;
 }
 
-#header-nav-wrap .header-main-nav li a,
-#header-nav-wrap .header-main-nav li a:visited {
-  color: rgba(255, 255, 255, 0.45);
-}
-
-#header-nav-wrap .header-main-nav li a:hover,
-#header-nav-wrap .header-main-nav li a:focus {
-  color: #ffffff;
-}
-
 #header-nav-wrap .header-main-nav li.current a {
   color: #ffffff;
 }
@@ -2850,6 +2840,24 @@ footer ul a:visited {
   .footer-bottom .copyright span::after {
     display: none;
   }
+}
+
+/* scroller */
+div ::-webkit-scrollbar {
+  width: 7px;
+}
+/* Track */
+div ::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px #b6b6b6; 
+  margin: 10% 0%;
+}
+/* Handle */
+div ::-webkit-scrollbar-thumb {
+  background: rgba(246,129,33,255); 
+}
+/* Handle on hover */
+div ::-webkit-scrollbar-thumb:hover {
+  background: rgba(246,129,33,255); 
 }
 
 
