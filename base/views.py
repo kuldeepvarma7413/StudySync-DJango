@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
-from base.models import Courses, files ,Syllabus , subscribers , Profile
+from base.models import Courses, files  , subscribers , Profile,Discuss
 from .forms import userForm , PasswordUpdateForm
 from django.contrib.auth.forms import PasswordChangeForm
 from .models import Report , User_Email_verification, cafiles
@@ -1207,6 +1207,30 @@ def deleteProfile(request):
             return HttpResponse(json.dumps(data), content_type="application/json")
     data=[{'response':"Unauthorized Access", 'result':'fail'}]
     return HttpResponse(json.dumps(data), content_type="application/json")
+
+
+
+############################################################
+##################### Discussions  #########################
+############################################################
+
+
+
+def allDiscussions(request):
+    try:
+        print(True)
+        discussions = Discuss.objects.get()
+        print("1")
+    
+        data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user,'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
+    
+        return HttpResponse(json.dumps(data), content_type="application/json")
+    
+    except:
+        data=[{'response':"Error Occured", 'result':'fail'}]
+        return HttpResponse(json.dumps(data), content_type="application/json")
+        
+    
 
 
 ############################################################
