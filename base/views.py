@@ -1100,7 +1100,7 @@ def profilePage(request):
 def getUserDetails(request):
         try:
             user=User.objects.filter(username=request.user.username)
-            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email, 'profilephoto' : "null" if get_profile_photo(request,u.username)==False else get_profile_photo(request, u.username),'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
+            data=[{'username':u.username, 'firstname':u.first_name, 'lastname':u.last_name, 'email':u.email, 'profilephoto' : "null" if get_profile_photo(request,u)==False else get_profile_photo(request, u),'userid': u.id, 'datejoined': json_serial(u.date_joined)}for u in user]
             return HttpResponse(json.dumps(data), content_type="application/json")
         except:
             data=[{'response':"Error while fetching data", 'result':'fail'}]
@@ -1221,9 +1221,8 @@ def allDiscussions(request):
     try:
         discussions = Discuss.objects.all()  
         # , 'userimage': "null" if get_profile_photo(request,des.user.username)==False else get_profile_photo(request, des.user.username)   for profile photo  
-        data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user.username, 'profile_photo': NULL,'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
+        data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user.username, 'profilephoto' : "null" if get_profile_photo(request,des.user)==False else get_profile_photo(request, des.user),'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
         print(data)
-    
         return HttpResponse(json.dumps(data), content_type="application/json")
     
     except:
@@ -1261,10 +1260,11 @@ def is_Verified(username):
     return False
 
 def get_profile_photo(request,username):
-    profile=Profile.objects.filter(user=request.user).first()
+    profile=Profile.objects.filter(user=username).first()
     if str(profile) == str(username) and profile !=None and profile.profile_photo!="":
         return profile.profile_photo.url
-    return False
+    else:
+        return False
 
 
 def isCommonPassword(password):

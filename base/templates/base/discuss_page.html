@@ -200,10 +200,7 @@
             discussions.forEach((ques)=>{
                 contentContainer.insertAdjacentHTML('beforeEnd', quesCard.replace("%VOTE_COUNT%", ques.votes).replace("%VIEW_COUNT%", ques.views)
                 .replace("%TITLE%", ques.title).replace('%DESCRIPTION%', ques.description).replace("%ASKED_BY_USER%", ques.user)
-                .replace("%USER_PROFILE_PHOTO%", ques.profile_photo==0 ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" : ques.profile_photo) )
-    
-                console.log(ques.profile_photo)
-    
+                .replace("%USER_PROFILE_PHOTO%", ques.profilephoto=="null" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" : ques.profilephoto) )    
             })
     
     
@@ -422,8 +419,10 @@
     }
     .asked-by img{
         border-radius: 50%;
-        height: 15px;
-        width: 15px;
+        height: 18px;
+        width: 18px;
+        border: 0.2px solid rgb(77, 76, 76);
+        padding: 0px;
         margin-bottom: 2px;
     }
     .asked-by span{

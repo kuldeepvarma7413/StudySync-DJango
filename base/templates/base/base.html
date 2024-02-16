@@ -49,10 +49,10 @@
           <li>
             <a href="/discuss" title="discuss" class="subnavbtn" id="discuss-btn">Discuss</a>
           </li>
-          {% if user.is_authenticated %}
           <li>
             <a href="/compiler" title="practice" class="subnavbtn">Practice</a>
           </li>
+          {% if user.is_authenticated %}
           <li >
             <a href="/ppt-page" title="ppts" class="subnavbtn">PPT</a>
           </li>
@@ -62,11 +62,11 @@
           <li>
             <a class="smoothscroll subnavbtn" href="/home#about" title="about">About</a>
           </li>
-          <li>
+          {% comment %} <li>
             <a class="smoothscroll subnavbtn" href="/home#pricing" title="pricing"
               >Pricing</a
             >
-          </li>
+          </li> {% endcomment %}
           <!-- <li><a class="smoothscroll"  href="#testimonials" title="testimonials">Testimonials</a></li> -->
           <li>
             <a class="smoothscroll subnavbtn" href="/home#download" title="download"
