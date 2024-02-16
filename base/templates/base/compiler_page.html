@@ -21,17 +21,17 @@
             align-items: center;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.705); 
-            color: white; 
-            width: 820px; 
-            margin-bottom: 10px; 
-            margin: 5px;
+            color: white;
+            border-bottom: 1px solid black; 
+            width: 100%; 
         }
 
-        #languageSelect {
+        #languageSelect, #themeSelect {
             margin-right: 30px;
-            color: white; 
-            background-color: rgb(234, 144, 17); 
-            border: 1px solid white; 
+            color: white;
+            background-color: rgb(76 74 70);
+            padding: 3px 18px;
+            border-radius: 5px;
         }
 
         #runButton {
@@ -44,24 +44,24 @@
         }
 
         #editor {
-            width: 820px;
+            width: 100%;
             flex: 1;
         }
 
-        #output {
-            width: 820px; 
+        #output, #input {
+            width: 100%; 
             height: 100px;
-            margin-top: 10px;
-            border: 1px solid lightcoral; 
-            /* background-color: #f4e8d0; */
-            /* color: #3d2c1a;  */
+            border: 0.5px solid rgb(76 74 70); 
+            background-color: black;
+            color: white;
+            border-radius: 0px; 
+            resize: none;
         }
         #input {
-            width: 820px;
-            height: 100px;
-            margin-top: 10px;
-            border: 1px solid lightcoral;
             display: none;
+        }
+        .btn, .btn:visited, .btn:focus{
+            border: none !important;
         }
     </style>
 </head>
@@ -70,23 +70,23 @@
 <form id="codeForm" onsubmit="submitForm(); return false;" method="post">
     <div id="editor-container">
         <div id="header-bar">
+            <select id="themeSelect" onchange="changeTheme()">
+                <option value="monokai">Monokai</option>
+                <option value="github">Github</option>
+                <option value="solarized_dark">Solarized Dark</option>
+            </select>
             <select id="languageSelect" onchange="changeLanguage()">
                 <option value="java">Java</option>
                 <option value="python">Python</option>
                 <option value="cpp">C++</option>
             </select>
             <button type="button" class="btn btn-info" onclick="toggleStdin()" style="background-color: rgba(246, 129, 33, 1);">
-            <span id="stdinButtonText">Stdin</span>
-        </button>
+                <span id="stdinButtonText">Stdin</span>
+            </button>
 
-            <select id="themeSelect" onchange="changeTheme()">
-                <option value="monokai">Monokai</option>
-                <option value="github">Github</option>
-                <option value="solarized_dark">Solarized Dark</option>
-            </select>
 
-            <button type="button" class="btn btn-success" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
-                <span id="buttonText">Run Code </span>
+            <button type="button" class="btn" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
+                <span id="buttonText">Run</span>
                 <span id="loading" class="spinner-border spinner-border-sm text-light" role="status" style="display: none;">
                     <span class="visually-hidden">Loading...</span>
                 </span>
@@ -120,8 +120,8 @@
 
     var stdinVisible = false;
 
+    var inputTextArea = document.getElementById('input');
     function toggleStdin() {
-        var inputTextArea = document.getElementById('input');
         stdinVisible = !stdinVisible;
         
         if (stdinVisible) {
@@ -160,10 +160,10 @@
         setDefaultCode(languageSelect.value);
     }
 
+    var outputTextArea = document.getElementById('output');
     function runCode() {
         var code = editor.getValue();
         var input_data = document.getElementById('input').value;
-        var outputTextArea = document.getElementById('output');
 
 
 
@@ -185,7 +185,20 @@
     function changeTheme() {
         var themeSelect = document.getElementById('themeSelect');
         var selectedTheme = themeSelect.value;
+        if(selectedTheme=="github"){
+            // change input output color
+            inputTextArea.style.background="white"
+            inputTextArea.style.color="black"
+            outputTextArea.style.background="white"
+            outputTextArea.style.color="black"
+        }else if(selectedTheme=="monokai"){
+            // change input output color
+            inputTextArea.style.background="black"
+            inputTextArea.style.color="white"
+            outputTextArea.style.background="black"
+            outputTextArea.style.color="white"
 
+        }
         editor.setTheme("ace/theme/" + selectedTheme);
     }
     function addAnnotation(location) {
