@@ -1,60 +1,9 @@
-
+{% extends "base/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - StudySync</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="{% static '/js/snackbar.js' %}" async defer></script>
-    <link rel="stylesheet" href="{% static '/css/snackbar.css' %}">
-    <style type="text/css">
-        /* ... your existing styles ... */
-        .loader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    }
-    
-    .loader-spinner {
-    border: 8px solid rgba(234, 144, 17, 0.3);
-    border-top: 8px solid #ea9011;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-    }
-    </style>
-
-</head>
-<body>
+{% block content %}
     <div style="width: 100%;">
         <div class="main-container">
             <div class="left-aside-bar">
-                <a href="admin-panel">
-                    <img src="{% static 'images/logo.png' %}" height="40px" alt="">
-                </a>
-                <p style="text-align: end; color: white;">Dashboard</p>
-                <br>
                 <div class="navigation">
                     <p style="margin-bottom: 15px; font-size: 20px;">Actions</p>
                     <a id="dashboard" class="action-btn">
@@ -85,37 +34,14 @@
                         <img src="{% static 'images/icons/report.png' %}" alt="">
                         <p>Reports</p>
                     </a>
-                    <a href="logout">
+                    <a href="logout" class="action-btn">
                         <img src="{% static 'images/icons/logout.png' %}" alt="">
                         <p>Logout</p>
                     </a>
                 </div>
             </div>
             <div class="right-aside-bar">
-                <div class="header">
-                    <style>
-                        .selected-nav-container{
-                            text-align: center;
-                            width: 200px;
-                            position: relative;
-                            top: 0;
-                            left: -40%;
-                        }
-                        #selected-nav{
-                            font-size: 20px;
-                            font-weight: 500;
-                        }
-                    </style>
-                    <div class="selected-nav-container">
-                        <p id="selected-nav"></p>
-                    </div>
-                    <a>
-                        <img src="{% static 'images\icons\notification.png' %}" height="25px" class="notification" title="Notification">
-                        <span class="notification-top">2</span>
-                    </a>
-                    <a href="/profile"><img src="https://media.licdn.com/dms/image/D4D03AQFzjZuT5Xv_bA/profile-displayphoto-shrink_100_100/0/1687401538044?e=1708560000&v=beta&t=fsXA09P8xNPX-RtjWpwS6zblvFoFmk00dQerJeqyAJY" 
-                    title="Profile" height="40px" width="40px" style="border-radius: 50%;"></a>
-                </div>
+                <p id="selected-nav"></p>
                 <div id="content-div">
                     <!-- dynamic content -->
                 </div>
@@ -132,42 +58,7 @@
         <div id="snackbar">
             <span id="snackbar-text"></span>
         </div>
-
-        <div class="loader" id="loader">
-            <div class="loader-spinner"></div>
-        </div>
     </div>
-
-    <script>
-        window.addEventListener('DOMContentLoaded', function () {
-            var loader = document.getElementById('loader');
-            var mainDiv = document.getElementById('main-container'); // Replace 'main-container' with the actual ID of your main content container
-    
-            function stopLoader() {
-                loader.style.display = 'none';
-                mainDiv.style.display = 'block'; // Display the main content
-                document.body.style.overflow = 'auto'; // Restore scrolling
-            }
-    
-            // Fallback: Stop loader after 5 seconds even if the content is not loaded
-            var fallbackTimeout = setTimeout(stopLoader, 5000);
-    
-            // Check if the main content is loaded
-            function checkContentLoaded() {
-                if (document.readyState === 'complete') {
-                    clearInterval(interval);
-                    clearTimeout(fallbackTimeout); // Clear the fallback timeout since the content is loaded
-                    stopLoader();
-                }
-            }
-    
-            // Check if the main content is loaded every 100 milliseconds
-            var interval = setInterval(checkContentLoaded, 100);
-    
-            // Additional check in case the 'DOMContentLoaded' event is missed
-            document.addEventListener('DOMContentLoaded', checkContentLoaded);
-        });
-    </script>
 
     <script>
 
@@ -176,604 +67,632 @@
         const dashboardbtn= document.getElementById("dashboard");
         // selected nav text element in header
         const selectedNav=document.getElementById('selected-nav');
-        window.addEventListener('load', async function(){
-            dashboardbtn.click();
-        })
-        
-        dashboardbtn.addEventListener('click', async function(){
-            // set dashboard text in header
-            selectedNav.innerHTML="DASHBOARD"
-            // fetch analysis on load
-            const loadanalysiscontent=`<div class="analysis-container">
-                    <div class="totalusers analysis-card">
-                        <img src="{% static 'images/icons/users-big.png' %}" alt="" height="50px">
-                        <p><span>%TOTAL_USERS%</span>+<br>Users</p>
-                    </div>
-                    <div class="totalusers analysis-card">
-                        <img src="{% static 'images/icons/file-big1.png' %}" alt="" height="50px">
-                        <p><span>%TOTAL_COURSEFILES%</span>+<br>Course Files</p>
-                    </div>
-                    <div class="totalusers analysis-card">
-                        <img src="{% static 'images/icons/file-big2.png' %}" alt="" height="50px">
-                        <p><span>%TOTAL_CAFILES%</span>+<br>CA Files</p>
+        window.addEventListener('load', function(){
+            
+            dashboardbtn.addEventListener('click', async function(){
+                // set dashboard text in header
+                selectedNav.innerHTML="DASHBOARD"
+                // fetch analysis on load
+                const loadanalysiscontent=`<div class="analysis-container">
+                        <div class="totalusers analysis-card">
+                            <img src="{% static 'images/icons/users-big.png' %}" alt="" height="50px">
+                            <p><span>%TOTAL_USERS%</span>+<br>Users</p>
                         </div>
                         <div class="totalusers analysis-card">
-                        <img src="{% static 'images/icons/report-big.png' %}" alt="" height="50px">
-                        <p><span>%TOTAL_REPORTS%</span>+<br>Reports</p>
+                            <img src="{% static 'images/icons/file-big1.png' %}" alt="" height="50px">
+                            <p><span>%TOTAL_COURSEFILES%</span>+<br>Course Files</p>
                         </div>
                         <div class="totalusers analysis-card">
-                        <img src="{% static 'images/icons/subscribe-big.png' %}" alt="" height="50px">
-                        <p><span>%TOTAL_SUBSCRIBERS%</span>+<br>Subscribers</p>
+                            <img src="{% static 'images/icons/file-big2.png' %}" alt="" height="50px">
+                            <p><span>%TOTAL_CAFILES%</span>+<br>CA Files</p>
+                            </div>
+                            <div class="totalusers analysis-card">
+                            <img src="{% static 'images/icons/report-big.png' %}" alt="" height="50px">
+                            <p><span>%TOTAL_REPORTS%</span>+<br>Reports</p>
+                            </div>
+                            <div class="totalusers analysis-card">
+                            <img src="{% static 'images/icons/subscribe-big.png' %}" alt="" height="50px">
+                            <p><span>%TOTAL_SUBSCRIBERS%</span>+<br>Subscribers</p>
+                        </div>
+                    </div>`;
+                    
+                    const analysisdata=await fetch(`/get-analysis`).then(res=>res.json()) ?? [];
+                    contentdiv.innerHTML='';
+                    contentdiv.insertAdjacentHTML('beforeEnd', loadanalysiscontent.replace('%TOTAL_USERS%',analysisdata[0]['usercount'])
+                    .replace('%TOTAL_COURSEFILES%',analysisdata[0]['coursefilescount']).replace('%TOTAL_CAFILES%',analysisdata[0]['cafilescount'])
+                    .replace('%TOTAL_REPORTS%',analysisdata[0]['reportscount']).replace('%TOTAL_SUBSCRIBERS%',analysisdata[0]['subscriberscount']));
+            })
+
+            // onclick on users
+            // userdatalist
+            const userdatalist= 
+                `<li class="users-list">
+                    <p class="text-mid">%USER_COUNT%</p>
+                    <p>%USERNAME%</p>
+                    <p>%EMAIL%</p>
+                    <p class="text-mid">%FIRST_NAME%</p>
+                    <p class="text-mid">%LAST_NAME%</p>
+                    <p class="text-mid">%IS_VERIFIED%</p>
+                    <p class="text-mid">%LAST_LOGIN%</p>
+                </li>`;
+            const usersbtn = document.getElementById("users");
+            usersbtn.addEventListener('click', async function(){
+                // set Users text in header
+                selectedNav.innerHTML="USERS"
+                const users = await fetch("/get-users").then(res=>res.json()) ?? [];
+                contentdiv.innerHTML='';
+                contentdiv.innerHTML=
+                `<div class="allusers">
+                    <li class="users-list-header">
+                        <p class="text-mid">S.No.</p><p>Username</p><p>Email</p><p class="text-mid">First Name</p><p class="text-mid">Last Name</p><p class="text-mid">Verified</p><p class="text-mid">Last Login</p>
+                    </li>
+                    <div id="user-data-list"></div>
+                </div>`;
+                var i=1;
+                const user_data_container=document.getElementById("user-data-list");
+                users.forEach((user)=>{
+                    user_data_container.insertAdjacentHTML("beforeEnd",userdatalist.replace("%USERNAME%", user.username).replace("%USER_COUNT%", i++).replace("%EMAIL%", user.email)
+                    .replace("%FIRST_NAME%", user.firstname == undefined?"":user.firstname).replace("%LAST_NAME%", user.lastname == undefined?"":user.lastname)
+                    .replace("%LAST_LOGIN%", user.lastlogin == undefined?"":user.lastlogin).replace('%IS_VERIFIED%', user.isverified==true?"Yes":"No"))
+                    // "✓":"✗"
+                })
+            })
+
+            // add files content
+            // add files btn
+            const addfilesbtn=document.getElementById('addfiles');
+            addfilesbtn.addEventListener('click', function(){
+                // set Add File/Course text in header
+                selectedNav.innerHTML="ADD FILE OR COURSE"
+                contentdiv.innerHTML=
+                `<div class="upload-files-container">
+                    <div class="upload-files-top">
+                        <a id="course-file-upload" class="upload-file-btn">Course File</a>
+                        <a id="ca-file-upload" class="upload-file-btn">Course</a>
+                        </div>
+                    <div id="upload-container">
+                        <!-- dynamic containers -->
                     </div>
                 </div>`;
+
                 
-                const analysisdata=await fetch(`/get-analysis`).then(res=>res.json()) ?? [];
-                contentdiv.innerHTML='';
-                contentdiv.insertAdjacentHTML('beforeEnd', loadanalysiscontent.replace('%TOTAL_USERS%',analysisdata[0]['usercount'])
-                .replace('%TOTAL_COURSEFILES%',analysisdata[0]['coursefilescount']).replace('%TOTAL_CAFILES%',analysisdata[0]['cafilescount'])
-                .replace('%TOTAL_REPORTS%',analysisdata[0]['reportscount']).replace('%TOTAL_SUBSCRIBERS%',analysisdata[0]['subscriberscount']));
-        })
-
-        // onclick on users
-        // userdatalist
-        const userdatalist= 
-            `<li class="users-list">
-                <p class="text-mid">%USER_COUNT%</p>
-                <p>%USERNAME%</p>
-                <p>%EMAIL%</p>
-                <p class="text-mid">%FIRST_NAME%</p>
-                <p class="text-mid">%LAST_NAME%</p>
-                <p class="text-mid">%IS_VERIFIED%</p>
-                <p class="text-mid">%LAST_LOGIN%</p>
-            </li>`;
-        const usersbtn = document.getElementById("users");
-        usersbtn.addEventListener('click', async function(){
-            // set Users text in header
-            selectedNav.innerHTML="USERS"
-            const users = await fetch("/get-users").then(res=>res.json()) ?? [];
-            contentdiv.innerHTML='';
-            contentdiv.innerHTML=
-            `<div class="allusers">
-                <li class="users-list-header">
-                    <p class="text-mid">S.No.</p><p>Username</p><p>Email</p><p class="text-mid">First Name</p><p class="text-mid">Last Name</p><p class="text-mid">Verified</p><p class="text-mid">Last Login</p>
-                </li>
-                <div id="user-data-list"></div>
-            </div>`;
-            var i=1;
-            const user_data_container=document.getElementById("user-data-list");
-            users.forEach((user)=>{
-                user_data_container.insertAdjacentHTML("beforeEnd",userdatalist.replace("%USERNAME%", user.username).replace("%USER_COUNT%", i++).replace("%EMAIL%", user.email)
-                .replace("%FIRST_NAME%", user.firstname == undefined?"":user.firstname).replace("%LAST_NAME%", user.lastname == undefined?"":user.lastname)
-                .replace("%LAST_LOGIN%", user.lastlogin == undefined?"":user.lastlogin).replace('%IS_VERIFIED%', user.isverified==true?"Yes":"No"))
-                // "✓":"✗"
-            })
-        })
-
-        // add files content
-        // add files btn
-        const addfilesbtn=document.getElementById('addfiles');
-        addfilesbtn.addEventListener('click', function(){
-            // set Add File/Course text in header
-            selectedNav.innerHTML="ADD FILE OR COURSE"
-            contentdiv.innerHTML=
-            `<div class="upload-files-container">
-                <div class="upload-files-top">
-                    <a id="course-file-upload">Course File</a>
-                    <a id="ca-file-upload">Course</a>
-                    </div>
-                <div id="upload-container">
-                    <!-- dynamic containers -->
-                </div>
-            </div>`;
-            // click on course file upload btn on load
-            const coursefilebtn=document.querySelector('#course-file-upload')
-            coursefilebtn.click() //not working
-            
-            // upload file container
-            const uploadfilecontainer= document.getElementById('upload-container');
-            
-            const uploadcoursefilebtn = document.getElementById("course-file-upload");
-            // click event on upload course files
-            uploadcoursefilebtn.addEventListener('click', function(){
-                // add active class on btn
-    
-                uploadfilecontainer.innerHTML=
-                `<form id="myForm" enctype="multipart/form-data">
-                    <h2>Add File</h2>
-                    <div>
-                        <label for="title">Title:</label>
-                        <input type="text" id="title" name="title" class="form-input" required>
-                    </div>
-                    
-                    <div>
-                        <label for="courseCode">Course Code:</label>
-                        <input type="text" id="courseCode" name="courseCode" class="form-input" required>
-                    </div>
-                    
-                    <div>
-                        <label for="unit">Unit:</label>
-                        <input type="text" id="unit" name="unit" class="form-input" required>
-                    </div>
-                    
-                    <div>
-                        <label for="file">File:</label>
-                        <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
-                    </div>
+                // upload file container
+                const uploadfilecontainer= document.getElementById('upload-container');
+                
+                const uploadcoursefilebtn = document.getElementById("course-file-upload");
+                // click event on upload course files
+                uploadcoursefilebtn.addEventListener('click', function(){
+                    // add active class on btn
         
-                    <button type="submit" id="upload-course-file">Submit</button>
-                </form>`;
+                    uploadfilecontainer.innerHTML=
+                    `<form id="myForm" enctype="multipart/form-data">
+                        <h2>Add File</h2>
+                        <div>
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="courseCode">Course Code:</label>
+                            <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="unit">Unit:</label>
+                            <input type="text" id="unit" name="unit" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="file">File:</label>
+                            <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+                        </div>
+            
+                        <button type="submit" id="upload-course-file">Submit</button>
+                    </form>`;
 
-                const uploadbtn=document.getElementById('upload-course-file');
-                // prevent refresh on submit
-                var form = document.getElementById("myForm");
-                function handleForm(event) { event.preventDefault(); } 
-                form.addEventListener('submit', handleForm);
+                    const uploadbtn=document.getElementById('upload-course-file');
+                    // prevent refresh on submit
+                    var form = document.getElementById("myForm");
+                    function handleForm(event) { event.preventDefault(); } 
+                    form.addEventListener('submit', handleForm);
 
-                // onclick event
-                uploadbtn.addEventListener('click', async function(){
-                    var data = new FormData()
-                    data.append('title', document.getElementById('title').value)
-                    data.append('courseCode', document.getElementById('courseCode').value)
-                    data.append('unit', document.getElementById('unit').value)
-                    data.append('file', document.querySelector('input[type="file"]').files[0])
-                    // send post request
-                    const res=await fetch('upload-file',{method:'POST', body: data,headers: {
-                        'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                    // onclick event
+                    uploadbtn.addEventListener('click', async function(){
+                        var data = new FormData()
+                        data.append('title', document.getElementById('title').value)
+                        data.append('courseCode', document.getElementById('courseCode').value)
+                        data.append('unit', document.getElementById('unit').value)
+                        data.append('file', document.querySelector('input[type="file"]').files[0])
+                        // send post request
+                        const res=await fetch('upload-file',{method:'POST', body: data,headers: {
+                            'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
 
-                    // click on coursefile btn to refresh
-                    uploadcoursefilebtn.click()
-                    // got response
-                    if(res[0].result=="success"){
-                        showSuccessSnackbar(res[0].response, res[0].result)
-                    }else{
-                        showFailSnackbar(res[0].response, res[0].result)
-                    }
+                        // click on coursefile btn to refresh
+                        uploadcoursefilebtn.click()
+                        // got response
+                        if(res[0].result=="success"){
+                            showSuccessSnackbar(res[0].response, res[0].result)
+                        }else{
+                            showFailSnackbar(res[0].response, res[0].result)
+                        }
+                    })
                 })
-            })
-            const uploadcafilebtn = document.getElementById("ca-file-upload");
-            uploadcafilebtn.addEventListener('click', function(){
-                // add active class on btn
-    
-                uploadfilecontainer.innerHTML=
-                `<form id="myForm2" enctype="multipart/form-data" method="post">
-                    <h2>Add Course</h2>
-                    {% csrf_token %}
-                    <div>
-                        <label for="title">Title:</label>
-                        <input type="text" id="title" name="title" class="form-input" required>
-                    </div>
-                    
-                    <div>
-                        <label for="courseCode">Course Code:</label>
-                        <input type="text" id="courseCode" name="courseCode" class="form-input" required>
-                    </div>
-                    
-                    <button type="submit" id="upload-course">Submit</button>
-                </form>`;
-                    
-                const uploadbtn=document.getElementById('upload-course');
-                // prevent refresh on submit
-                var form = document.getElementById("myForm2");
-                function handleForm(event) { event.preventDefault(); } 
-                form.addEventListener('submit', handleForm);
-                // onclick event
-                uploadbtn.addEventListener('click', async function(){
-                    var data = new FormData()
-                    data.append('title', document.getElementById('title').value)
-                    data.append('courseCode', document.getElementById('courseCode').value)
-                    // send post request
-                    const res=await fetch('upload-course',{method:'POST', body: data,headers: {
-                        'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                    // click on coursefile btn to refresh
-                    uploadcafilebtn.click()
-                    // got response
-                    if(res[0].result=="success"){
-                        showSuccessSnackbar(res[0].response, res[0].result)
-                    }else{
-                        showFailSnackbar(res[0].response, res[0].result)
-                    }
-                })
-            })
-        });
+                const uploadcafilebtn = document.getElementById("ca-file-upload");
+                uploadcafilebtn.addEventListener('click', function(){
+                    // add active class on btn
         
+                    uploadfilecontainer.innerHTML=
+                    `<form id="myForm2" enctype="multipart/form-data" method="post">
+                        <h2>Add Course</h2>
+                        {% csrf_token %}
+                        <div>
+                            <label for="title">Title:</label>
+                            <input type="text" id="title" name="title" class="form-input" required>
+                        </div>
+                        
+                        <div>
+                            <label for="courseCode">Course Code:</label>
+                            <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+                        </div>
+                        
+                        <button type="submit" id="upload-course">Submit</button>
+                    </form>`;
+                        
+                    const uploadbtn=document.getElementById('upload-course');
+                    // prevent refresh on submit
+                    var form = document.getElementById("myForm2");
+                    function handleForm(event) { event.preventDefault(); } 
+                    form.addEventListener('submit', handleForm);
+                    // onclick event
+                    uploadbtn.addEventListener('click', async function(){
+                        var data = new FormData()
+                        data.append('title', document.getElementById('title').value)
+                        data.append('courseCode', document.getElementById('courseCode').value)
+                        // send post request
+                        const res=await fetch('upload-course',{method:'POST', body: data,headers: {
+                            'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                        // click on coursefile btn to refresh
+                        uploadcafilebtn.click()
+                        // got response
+                        if(res[0].result=="success"){
+                            showSuccessSnackbar(res[0].response, res[0].result)
+                        }else{
+                            showFailSnackbar(res[0].response, res[0].result)
+                        }
+                    })
+                })
 
-        // filter course files
-        function filterCourseFiles() { 
-            let input = document.getElementById('coursefilesearch').value
-            input=input.toLowerCase()  
-            let x = document.getElementsByClassName('files'); 
                 
-            for (i = 0; i < x.length; i++) {  
-                const item=!x[i].innerHTML.toLowerCase().includes(input);
-                if (item) { 
-                    x[i].style.display="none"; 
-                } 
-                else { 
-                    x[i].style.display="grid";                  
-                } 
-            }
-        }
-
-        //filter ca files
-        function filterCaFiles() { 
-            let input = document.getElementById('cafilesearch').value
-            input=input.toLowerCase()  
-            let x = document.getElementsByClassName('cafiles'); 
-                
-            for (i = 0; i < x.length; i++) {  
-                const item=!x[i].innerHTML.toLowerCase().includes(input);
-                if (item) { 
-                    x[i].style.display="none"; 
-                } 
-                else { 
-                    x[i].style.display="grid";                  
-                    } 
-            }
-        }
-
-        // all files
-        // files output html format
-        const file_list=`<li class="files">
-            <input type="checkbox" class="coursefilecheckbox text-mid">
-            <p>%FILE_TITLE%</p>
-            <p class="text-mid">%FILE_UNIT%</p>
-            <p class="text-mid">%FILE_COURSECODE%</p>
-            <p class="text-mid">%FILE_UPLOADED%</p>
-            <div class="actions text-mid">
-                <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
-                <!-- <a href="%URL%" id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a> -->
-                <a id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-            </div>
-            </li>`;
-        const noFileFound=`<p class="nofilefound">No files found.</p>`;
-        // template for not verified files
-        const listItemCaNotVerified=`<li class="cafiles">
-            <input type="checkbox" class="cafilecheckbox text-mid">
-            <p class="text-mid">%CA_NO%</p>
-            <p>%TEACHER%</p>
-            <p class="text-mid">%CAFILE_COURSECODE%</p>
-            <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
-            <p class="text-mid">%CAFILE_DATE%</p>
-            <div class="actions text-mid">
-                <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
-                <a id="%CA_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
-                <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-            </div>
-            </li>`;
-
-            // template for verified files
-        const listItemCaVerified=`<li class="cafiles">
-            <input type="checkbox" class="cafilecheckbox text-mid">
-            <p class="text-mid">%CA_NO%</p>
-            <p>%TEACHER%</p>
-            <p class="text-mid">%CAFILE_COURSECODE%</p>
-            <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
-            <p class="text-mid">%CAFILE_DATE%</p>
-            <div class="actions text-mid">
-                <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
-                <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-            </div>
-            </li>`;
-
-        const allfilesbtn=document.getElementById("allfiles");
-        allfilesbtn.addEventListener('click', async function(){
-            // set Files text in header
-            selectedNav.innerHTML="FILES"
-            contentdiv.innerHTML=
-            `<div class="allfiles">
-                <div id="files-content">
-                    <input type="text" placeholder="Search by title, coursecode" id="coursefilesearch" onchange="filterCourseFiles()">
-                    <div class="files-header-container">
-                        <li class="files-header">
-                            <input type="checkbox" class="text-mid">
-                            <p>Title</p>
-                            <p class="text-mid">Unit</p>
-                            <p class="text-mid">Course Code</p>
-                            <p class="text-mid">Upload Date</p>
-                            <p class="text-mid">Actions</p>
-                        </li>
-                    </div>
-                    <div id="files-container">
-                            <!-- dynamic data -->
-                    </div>
-                </div>
-                <div id="cafiles-content">
-                    <div id="cafiles-actions">
-                        <input type="text" placeholder="Search by teacher, coursecode" id="cafilesearch" onchange="filterCaFiles()">
-                        <select name="" id="selectboxca" required>
-                            <option value="0" selected>Not Verified</option>
-                            <option value="1">Verified</option>
-                        </select>
-                    </div>
-                    <div class="cafiles-header-container">
-                        <li class="cafiles-header">
-                            <input type="checkbox" class="text-mid">
-                            <p class="text-mid">CA no.</p>
-                            <p>Teacher</p>
-                            <p class="text-mid">Course Code</p>
-                            <p class="text-mid">Upload Date</p>
-                            <p class="text-mid">CA Date</p>
-                            <p class="text-mid">Actions</p>
-                        </li>
-                    </div>
-                    <div id="cafiles-container">
-                        <!-- dynamic data -->
-                    </div>
-                </div>
-            </div>`;
-            const files_container=document.getElementById("files-container");
-            // fetch all files
-            const allcoursefiles=await fetch(`/get-files`).then(res=>res.json()) ?? [];
-            allcoursefiles.forEach(file=>{
-                files_container.insertAdjacentHTML('beforeEnd',file_list.replaceAll('%FILE_ID%', file.id).replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
-      .replace('%FILE_UPLOADED%',file.uploaded).replaceAll('%FILE_COURSECODE%',file.coursecode)
-        )});
-            if(allcoursefiles.length===0){
-                files_container.insertAdjacentHTML('beforeEnd',noFileFound);
-            }
-
-            // cafiles
-            const selectbox=document.querySelector("#selectboxca");
-            // changing value of select box to 0 (not verified)
-            // ca container
-            const cafiles_container=document.getElementById("cafiles-container");
-
-            // onclick on all files button (bydefault not selected data)
-            // fetch all files
-            const allcafiles=await fetch(`/get-cafiles?q=${selectbox.value}`).then(res=>res.json()) ?? [];
-            cafiles_container.innerHTML='';
-            allcafiles.forEach(file=>{
-                cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaNotVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
-            .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate))
+                // ADD SELECTED CLASS ON UPLOAD FILES BTNS 
+                const uploadFilesBtns=document.getElementsByClassName('upload-file-btn')
+                console.log(uploadFilesBtns)
+                for(var i=0; i<uploadFilesBtns.length; i++){
+                    const nav=uploadFilesBtns[i];
+                    nav.addEventListener('click', function(event){
+                    for(var j=0; j<uploadFilesBtns.length; j++){
+                        const nav=uploadFilesBtns[j];
+                        nav.classList.remove('selected');
+                    }
+                    event.target.classList.add('selected');
+                    })
+                }
+                uploadcoursefilebtn.click()
             });
             
-            // onchange selectbox value
-            selectbox.addEventListener('click', async function(){
+
+            // filter course files
+            function filterCourseFiles() { 
+                let input = document.getElementById('coursefilesearch').value
+                input=input.toLowerCase()  
+                let x = document.getElementsByClassName('files'); 
+                    
+                for (i = 0; i < x.length; i++) {  
+                    const item=!x[i].innerHTML.toLowerCase().includes(input);
+                    if (item) { 
+                        x[i].style.display="none"; 
+                    } 
+                    else { 
+                        x[i].style.display="grid";                  
+                    } 
+                }
+            }
+
+            //filter ca files
+            function filterCaFiles() { 
+                let input = document.getElementById('cafilesearch').value
+                input=input.toLowerCase()  
+                let x = document.getElementsByClassName('cafiles'); 
+                    
+                for (i = 0; i < x.length; i++) {  
+                    const item=!x[i].innerHTML.toLowerCase().includes(input);
+                    if (item) { 
+                        x[i].style.display="none"; 
+                    } 
+                    else { 
+                        x[i].style.display="grid";                  
+                        } 
+                }
+            }
+
+            // all files
+            // files output html format
+            const file_list=`<li class="files">
+                <input type="checkbox" class="coursefilecheckbox text-mid">
+                <p>%FILE_TITLE%</p>
+                <p class="text-mid">%FILE_UNIT%</p>
+                <p class="text-mid">%FILE_COURSECODE%</p>
+                <p class="text-mid">%FILE_UPLOADED%</p>
+                <div class="actions text-mid">
+                    <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <!-- <a href="%URL%" id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a> -->
+                    <a id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                </div>
+                </li>`;
+            const noFileFound=`<p class="nofilefound">No files found.</p>`;
+            // template for not verified files
+            const listItemCaNotVerified=`<li class="cafiles">
+                <input type="checkbox" class="cafilecheckbox text-mid">
+                <p class="text-mid">%CA_NO%</p>
+                <p>%TEACHER%</p>
+                <p class="text-mid">%CAFILE_COURSECODE%</p>
+                <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
+                <p class="text-mid">%CAFILE_DATE%</p>
+                <div class="actions text-mid">
+                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <a id="%CA_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
+                    <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                </div>
+                </li>`;
+
+                // template for verified files
+            const listItemCaVerified=`<li class="cafiles">
+                <input type="checkbox" class="cafilecheckbox text-mid">
+                <p class="text-mid">%CA_NO%</p>
+                <p>%TEACHER%</p>
+                <p class="text-mid">%CAFILE_COURSECODE%</p>
+                <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
+                <p class="text-mid">%CAFILE_DATE%</p>
+                <div class="actions text-mid">
+                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                </div>
+                </li>`;
+
+            const allfilesbtn=document.getElementById("allfiles");
+            allfilesbtn.addEventListener('click', async function(){
+                // set Files text in header
+                selectedNav.innerHTML="FILES"
+                contentdiv.innerHTML=
+                `<div class="allfiles">
+                    <div id="files-content">
+                        <input type="text" placeholder="Search by title, coursecode" id="coursefilesearch" onchange="filterCourseFiles()">
+                        <div class="files-header-container">
+                            <li class="files-header">
+                                <input type="checkbox" class="text-mid">
+                                <p>Title</p>
+                                <p class="text-mid">Unit</p>
+                                <p class="text-mid">Course Code</p>
+                                <p class="text-mid">Upload Date</p>
+                                <p class="text-mid">Actions</p>
+                            </li>
+                        </div>
+                        <div id="files-container">
+                                <!-- dynamic data -->
+                        </div>
+                    </div>
+                    <div id="cafiles-content">
+                        <div id="cafiles-actions">
+                            <input type="text" placeholder="Search by teacher, coursecode" id="cafilesearch" onchange="filterCaFiles()">
+                            <select name="" id="selectboxca" required>
+                                <option value="0" selected>Not Verified</option>
+                                <option value="1">Verified</option>
+                            </select>
+                        </div>
+                        <div class="cafiles-header-container">
+                            <li class="cafiles-header">
+                                <input type="checkbox" class="text-mid">
+                                <p class="text-mid">CA no.</p>
+                                <p>Teacher</p>
+                                <p class="text-mid">Course Code</p>
+                                <p class="text-mid">Upload Date</p>
+                                <p class="text-mid">CA Date</p>
+                                <p class="text-mid">Actions</p>
+                            </li>
+                        </div>
+                        <div id="cafiles-container">
+                            <!-- dynamic data -->
+                        </div>
+                    </div>
+                </div>`;
+                const files_container=document.getElementById("files-container");
+                // fetch all files
+                const allcoursefiles=await fetch(`/get-files`).then(res=>res.json()) ?? [];
+                allcoursefiles.forEach(file=>{
+                    files_container.insertAdjacentHTML('beforeEnd',file_list.replaceAll('%FILE_ID%', file.id).replace('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
+        .replace('%FILE_UPLOADED%',file.uploaded).replaceAll('%FILE_COURSECODE%',file.coursecode)
+            )});
+                if(allcoursefiles.length===0){
+                    files_container.insertAdjacentHTML('beforeEnd',noFileFound);
+                }
+
+                // cafiles
+                const selectbox=document.querySelector("#selectboxca");
+                // changing value of select box to 0 (not verified)
+                // ca container
+                const cafiles_container=document.getElementById("cafiles-container");
+
+                // onclick on all files button (bydefault not selected data)
                 // fetch all files
                 const allcafiles=await fetch(`/get-cafiles?q=${selectbox.value}`).then(res=>res.json()) ?? [];
                 cafiles_container.innerHTML='';
-                if(selectbox.value==1){
-                    allcafiles.forEach(file=>{
-                        cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
-                    .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
-                    });
-                }else{
-                    allcafiles.forEach(file=>{
-                        cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaNotVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
-                    .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
-                    });
-                }
-    
-                if(allcafiles.length===0){
-                    cafiles_container.insertAdjacentHTML('beforeEnd',noFileFound);
-                }
-                // delete post request on course files
-                const filedeletebtns=document.getElementsByClassName("filedeletebtn");
-                for(var i=0; i<filedeletebtns.length; i++){
-                    const btn=filedeletebtns[i];
-                    btn.addEventListener('click',async function(currbtn){
-                    const res=await fetch("delete-file?q="+this.id+"?t=",{method:'POST',headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },}).then(res=>res.json())??[];
-                    // deleted response
-                    if(res[0].result=='success'){
-                        showSuccessSnackbar(res[0].response, res[0].result)
-                        allfilesbtn.click()
+                allcafiles.forEach(file=>{
+                    cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaNotVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
+                .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate))
+                });
+                
+                // onchange selectbox value
+                selectbox.addEventListener('click', async function(){
+                    // fetch all files
+                    const allcafiles=await fetch(`/get-cafiles?q=${selectbox.value}`).then(res=>res.json()) ?? [];
+                    cafiles_container.innerHTML='';
+                    if(selectbox.value==1){
+                        allcafiles.forEach(file=>{
+                            cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
+                        .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
+                        });
                     }else{
-                        showFailSnackbar(res[0].response,res[0].result)
+                        allcafiles.forEach(file=>{
+                            cafiles_container.insertAdjacentHTML('beforeEnd',listItemCaNotVerified.replace('%CA_NO%',file.canumber).replace('%TEACHER%',file.teachername).replaceAll("%CA_ID%", file.id)
+                        .replace('%CAFILE_UPLOAD_DATE%',file.uploaded).replaceAll('%CAFILE_COURSECODE%',file.courseCode).replaceAll('%CAFILE_DATE%',file.cadate).replace("%APPROVEURL%",`approve-cafile?q=${file.id}`))
+                        });
                     }
-                    })
-                }
-                // delete post request on ca files
-                const cafiledeletebtns=document.getElementsByClassName("cadeletebtn");
-                for(var i=0; i<cafiledeletebtns.length; i++){
-                    const btn=cafiledeletebtns[i];
-                    btn.addEventListener('click',async function(currbtn){
-                    const res=await fetch("delete-file?q="+this.id+"?t=ca",{method:'POST',headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },}).then(res=>res.json())??[];
-                    // deleted response
-                    if(res[0].result=='success'){
-                        showSuccessSnackbar(res[0].response, res[0].result)
-                        selectbox.click()
-                    }else{
-                        showFailSnackbar(res[0].response,res[0].result)
-                    }
-                    })
-                }
-
-                // delete post request on ca files
-                const approvebtns=document.getElementsByClassName("approvebtn");
-                for(var i=0; i<approvebtns.length; i++){
-                    const btn=approvebtns[i];
-                    btn.addEventListener('click',async function(currbtn){
-                    const res=await fetch("approve-cafile?q="+this.id,{method:'POST',headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json; charset=UTF-8',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },}).then(res=>res.json())??[];
-                    // deleted response
-                    if(res[0].result=='success'){
-                        showSuccessSnackbar(res[0].response, res[0].result)
-                        selectbox.click()
-                    }else{
-                        showFailSnackbar(res[0].response,res[0].result)
-                    }
-                    })
-                }
-            })
-
-        })
-
-        // all courses
-        const allcoursesbtn=document.getElementById("allcourses");
-        allcoursesbtn.addEventListener('click', async function(){
-            // set Courses text in header
-            selectedNav.innerHTML="COURSES"
-            contentdiv.innerHTML=
-            `<div class="allcourses">
-                <li class="allcourses-header">
-                    <p class="text-mid">S.No.</p><p>Title</p><p class="text-mid">Course Code</p><p class="text-mid">Actions</p>
-                </li>
-                <div id="allcourses-list-container">
-                    <!-- dynamic data -->
-                </div>
-            </div>`;
-            const courselist=
-            `<li class="allcourses-list">
-                <p class="text-mid">%NUMBER%</p><p>%TITLE%</p><p class="text-mid">%COURSE_CODE%</p>
-                <div class="actions text-mid">
-                    <a class="allcoursesdeletebtn delete" id="%COURSE_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-                </div>
-            </li>`;
-            const allcourses = await fetch('/get-courses').then(res=>res.json())??[];
-            const allcourses_container=document.getElementById("allcourses-list-container");
-            var i=1;
-            allcourses.forEach((course)=>{
-                allcourses_container.insertAdjacentHTML('beforeEnd', courselist.replace("%NUMBER%", i++).replace("%TITLE%", course.title)
-                .replace("%COURSE_ID%", course.id).replace('%COURSE_CODE%', course.name));
-            })
-
-            // click on delete for course
-            const deletecoursebtn=document.getElementsByClassName('allcoursesdeletebtn');
-            for(var i=0; i<deletecoursebtn.length; i++){
-                const btn=deletecoursebtn[i];
-                btn.addEventListener('click',async function(event){
-                    const res=await fetch('delete-course?q='+this.id, {method:'POST', headers: {
-                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                    // got responce
-                    console.log(res)
-                    if(res[0].result == "success")
-                        showSuccessSnackbar(res[0].response, res[0].result);
-                    else
-                        showFailSnackbar(res[0].response, res[0].result);
-                    allcoursesbtn.click();
-                })
-            }
-        })
-
-
-        // all subscribers
-        const subscribersbtn=document.getElementById("subscribers");
-        subscribersbtn.addEventListener('click', async function(){
-            // set Subscribers text in header
-            selectedNav.innerHTML="SUBSCRIBERS"
-            contentdiv.innerHTML=
-            `<div class="allsubscribers">
-                <li class="subscriber-header">
-                    <p class="text-mid">S.No.</p><p>Email</p><p class="text-mid">Actions</p>
-                </li>
-                <div id="subscriber-list-container">
-                    <!-- dynamic data -->
-                </div>
-            </div>`;
-            const subscriberlist=
-            `<li class="subscriber-list">
-                <p class="text-mid">%NUMBER%</p><p>%EMAIL%</p>
-                <div class="actions text-mid">
-                    <a class="subscriberdeletebtn delete" id="%SUBSCRIBER_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-                </div>
-            </li>`;
-            const subscribers = await fetch('/get-subscribers').then(res=>res.json())??[];
-            const subscriber_container=document.getElementById("subscriber-list-container");
-            var i=1;
-            subscribers.forEach((subscriber)=>{
-                subscriber_container.insertAdjacentHTML('beforeEnd', subscriberlist.replace("%NUMBER%", i++).replace("%EMAIL%", subscriber.email)
-                .replace("%SUBSCRIBER_ID%", subscriber.id));
-            })
-
-            // click on delete for subscriber
-            const deletesubscriberbtn=document.getElementsByClassName('subscriberdeletebtn');
-            for(var i=0; i<deletesubscriberbtn.length; i++){
-                const btn=deletesubscriberbtn[i];
-                btn.addEventListener('click',async function(event){
-                    const res=await fetch('delete-subscriber?q='+this.id, {method:'POST', headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                    // got responce
-                    console.log(res)
-                    if(res[0].result == "success")
-                        showSuccessSnackbar(res[0].response, res[0].result);
-                    else
-                        showFailSnackbar(res[0].response, res[0].result);
-                    subscribersbtn.click();
-                })
-            }
-        })
         
-        // reports
-        const reportsbtn = document.getElementById('reports');
-        reportsbtn.addEventListener('click', async function(){
-            // set Reports text in header
-            selectedNav.innerHTML="REPORTS"
-            contentdiv.innerHTML=
-            `<div class="allreports">
-                <li class="reports-header">
-                    <p class="text-mid">S.No.</p><p>Name</p><p>Email</p><p class="text-mid">Type</p><p class="text-mid">Actions</p>
-                </li>
-                <div id="reporters-list" class="reporters-list">
-                    <!-- dynamic data -->
-                </div>
-            </div>`;
-            
-            const reportlist=
-            `<li class="reporter-list">
-                <p class="text-mid">%NUMBER%</p><p>%NAME%</p><p>%EMAIL%</p><p class="text-mid">%TYPE%</p><p id="reportcontent%ID%" style="display: none">%CONTENT%</p>
-                <div class="actions text-mid">
-                    <a style="cursor: pointer;" id="%ID%" class="view-report"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
-                    <a id="%REPORT_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
-                    <a class="reportdeletebtn delete" id="%REPORT_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
-                </div>
-            </li>`;
+                    if(allcafiles.length===0){
+                        cafiles_container.insertAdjacentHTML('beforeEnd',noFileFound);
+                    }
+                    // delete post request on course files
+                    const filedeletebtns=document.getElementsByClassName("filedeletebtn");
+                    for(var i=0; i<filedeletebtns.length; i++){
+                        const btn=filedeletebtns[i];
+                        btn.addEventListener('click',async function(currbtn){
+                        const res=await fetch("delete-file?q="+this.id+"?t=",{method:'POST',headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },}).then(res=>res.json())??[];
+                        // deleted response
+                        if(res[0].result=='success'){
+                            showSuccessSnackbar(res[0].response, res[0].result)
+                            allfilesbtn.click()
+                        }else{
+                            showFailSnackbar(res[0].response,res[0].result)
+                        }
+                        })
+                    }
+                    // delete post request on ca files
+                    const cafiledeletebtns=document.getElementsByClassName("cadeletebtn");
+                    for(var i=0; i<cafiledeletebtns.length; i++){
+                        const btn=cafiledeletebtns[i];
+                        btn.addEventListener('click',async function(currbtn){
+                        const res=await fetch("delete-file?q="+this.id+"?t=ca",{method:'POST',headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },}).then(res=>res.json())??[];
+                        // deleted response
+                        if(res[0].result=='success'){
+                            showSuccessSnackbar(res[0].response, res[0].result)
+                            selectbox.click()
+                        }else{
+                            showFailSnackbar(res[0].response,res[0].result)
+                        }
+                        })
+                    }
 
-            // fetch reports
-            const reports=await fetch('/get-reports').then(res=>res.json())??[];
-            const reports_container=document.getElementById('reporters-list');
-            reports_container.innerHTML='';
-            var i=0;
-            reports.forEach((report)=>{
-                reports_container.insertAdjacentHTML('beforeEnd', reportlist.replace('%NAME%', report.name).replace('%NUMBER%', i+1).replace('%EMAIL%', report.email)
-                .replace('%TYPE%', report.type).replaceAll('%REPORT_ID%', report.id).replace('%CONTENT%', report.content).replaceAll('%ID%', i++));
+                    // delete post request on ca files
+                    const approvebtns=document.getElementsByClassName("approvebtn");
+                    for(var i=0; i<approvebtns.length; i++){
+                        const btn=approvebtns[i];
+                        btn.addEventListener('click',async function(currbtn){
+                        const res=await fetch("approve-cafile?q="+this.id,{method:'POST',headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json; charset=UTF-8',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },}).then(res=>res.json())??[];
+                        // deleted response
+                        if(res[0].result=='success'){
+                            showSuccessSnackbar(res[0].response, res[0].result)
+                            selectbox.click()
+                        }else{
+                            showFailSnackbar(res[0].response,res[0].result)
+                        }
+                        })
+                    }
+                })
+
             })
-            if(reports.length == 0){
-                reports_container.innerHTML=noFileFound;
-            }
 
-            // view report content
-            const reportbtns=document.getElementsByClassName('view-report');
-            for(var i=0; i<reportbtns.length; i++){
-                const btn=reportbtns[i];
-                btn.addEventListener('click', function(event){
-                    const id="reportcontent"+this.id;
-                    const content=document.getElementById(id).innerHTML
-                    // show in popup
-                    popupcontent.innerHTML=content;
-                    popup.classList.add("popup-show");
+            // all courses
+            const allcoursesbtn=document.getElementById("allcourses");
+            allcoursesbtn.addEventListener('click', async function(){
+                // set Courses text in header
+                selectedNav.innerHTML="COURSES"
+                contentdiv.innerHTML=
+                `<div class="allcourses">
+                    <li class="allcourses-header">
+                        <p class="text-mid">S.No.</p><p>Title</p><p class="text-mid">Course Code</p><p class="text-mid">Actions</p>
+                    </li>
+                    <div id="allcourses-list-container">
+                        <!-- dynamic data -->
+                    </div>
+                </div>`;
+                const courselist=
+                `<li class="allcourses-list">
+                    <p class="text-mid">%NUMBER%</p><p>%TITLE%</p><p class="text-mid">%COURSE_CODE%</p>
+                    <div class="actions text-mid">
+                        <a class="allcoursesdeletebtn delete" id="%COURSE_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                    </div>
+                </li>`;
+                const allcourses = await fetch('/get-courses').then(res=>res.json())??[];
+                const allcourses_container=document.getElementById("allcourses-list-container");
+                var i=1;
+                allcourses.forEach((course)=>{
+                    allcourses_container.insertAdjacentHTML('beforeEnd', courselist.replace("%NUMBER%", i++).replace("%TITLE%", course.title)
+                    .replace("%COURSE_ID%", course.id).replace('%COURSE_CODE%', course.name));
+                })
+
+                // click on delete for course
+                const deletecoursebtn=document.getElementsByClassName('allcoursesdeletebtn');
+                for(var i=0; i<deletecoursebtn.length; i++){
+                    const btn=deletecoursebtn[i];
+                    btn.addEventListener('click',async function(event){
+                        const res=await fetch('delete-course?q='+this.id, {method:'POST', headers: {
+                        'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                        // got responce
+                        console.log(res)
+                        if(res[0].result == "success")
+                            showSuccessSnackbar(res[0].response, res[0].result);
+                        else
+                            showFailSnackbar(res[0].response, res[0].result);
+                        allcoursesbtn.click();
+                    })
+                }
+            })
+
+
+            // all subscribers
+            const subscribersbtn=document.getElementById("subscribers");
+            subscribersbtn.addEventListener('click', async function(){
+                // set Subscribers text in header
+                selectedNav.innerHTML="SUBSCRIBERS"
+                contentdiv.innerHTML=
+                `<div class="allsubscribers">
+                    <li class="subscriber-header">
+                        <p class="text-mid">S.No.</p><p>Email</p><p class="text-mid">Actions</p>
+                    </li>
+                    <div id="subscriber-list-container">
+                        <!-- dynamic data -->
+                    </div>
+                </div>`;
+                const subscriberlist=
+                `<li class="subscriber-list">
+                    <p class="text-mid">%NUMBER%</p><p>%EMAIL%</p>
+                    <div class="actions text-mid">
+                        <a class="subscriberdeletebtn delete" id="%SUBSCRIBER_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                    </div>
+                </li>`;
+                const subscribers = await fetch('/get-subscribers').then(res=>res.json())??[];
+                const subscriber_container=document.getElementById("subscriber-list-container");
+                var i=1;
+                subscribers.forEach((subscriber)=>{
+                    subscriber_container.insertAdjacentHTML('beforeEnd', subscriberlist.replace("%NUMBER%", i++).replace("%EMAIL%", subscriber.email)
+                    .replace("%SUBSCRIBER_ID%", subscriber.id));
+                })
+
+                // click on delete for subscriber
+                const deletesubscriberbtn=document.getElementsByClassName('subscriberdeletebtn');
+                for(var i=0; i<deletesubscriberbtn.length; i++){
+                    const btn=deletesubscriberbtn[i];
+                    btn.addEventListener('click',async function(event){
+                        const res=await fetch('delete-subscriber?q='+this.id, {method:'POST', headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                        // got responce
+                        console.log(res)
+                        if(res[0].result == "success")
+                            showSuccessSnackbar(res[0].response, res[0].result);
+                        else
+                            showFailSnackbar(res[0].response, res[0].result);
+                        subscribersbtn.click();
+                    })
+                }
+            })
+            
+            // reports
+            const reportsbtn = document.getElementById('reports');
+            reportsbtn.addEventListener('click', async function(){
+                // set Reports text in header
+                selectedNav.innerHTML="REPORTS"
+                contentdiv.innerHTML=
+                `<div class="allreports">
+                    <li class="reports-header">
+                        <p class="text-mid">S.No.</p><p>Name</p><p>Email</p><p class="text-mid">Type</p><p class="text-mid">Actions</p>
+                    </li>
+                    <div id="reporters-list" class="reporters-list">
+                        <!-- dynamic data -->
+                    </div>
+                </div>`;
+                
+                const reportlist=
+                `<li class="reporter-list">
+                    <p class="text-mid">%NUMBER%</p><p>%NAME%</p><p>%EMAIL%</p><p class="text-mid">%TYPE%</p><p id="reportcontent%ID%" style="display: none">%CONTENT%</p>
+                    <div class="actions text-mid">
+                        <a style="cursor: pointer;" id="%ID%" class="view-report"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                        <a id="%REPORT_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
+                        <a class="reportdeletebtn delete" id="%REPORT_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
+                    </div>
+                </li>`;
+
+                // fetch reports
+                const reports=await fetch('/get-reports').then(res=>res.json())??[];
+                const reports_container=document.getElementById('reporters-list');
+                reports_container.innerHTML='';
+                var i=0;
+                reports.forEach((report)=>{
+                    reports_container.insertAdjacentHTML('beforeEnd', reportlist.replace('%NAME%', report.name).replace('%NUMBER%', i+1).replace('%EMAIL%', report.email)
+                    .replace('%TYPE%', report.type).replaceAll('%REPORT_ID%', report.id).replace('%CONTENT%', report.content).replaceAll('%ID%', i++));
+                })
+                if(reports.length == 0){
+                    reports_container.innerHTML=noFileFound;
+                }
+
+                // view report content
+                const reportbtns=document.getElementsByClassName('view-report');
+                for(var i=0; i<reportbtns.length; i++){
+                    const btn=reportbtns[i];
+                    btn.addEventListener('click', function(event){
+                        const id="reportcontent"+this.id;
+                        const content=document.getElementById(id).innerHTML
+                        // show in popup
+                        popupcontent.innerHTML=content;
+                        popup.classList.add("popup-show");
+                    })
+                }
+
+                // delete report
+                const deletereportbtn=document.getElementsByClassName('reportdeletebtn');
+                for(var i=0; i<deletereportbtn.length; i++){
+                    const btn=deletereportbtn[i];
+                    btn.addEventListener('click', async function(event){
+                        const res=await fetch('delete-report?q='+this.id, {method:'POST', headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json; charset=UTF-8',
+                        'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                        // got responce
+                        if(res[0].result == "success")
+                            showSuccessSnackbar(res[0].response, res[0].result);
+                        else
+                            showFailSnackbar(res[0].response, res[0].result);
+                        reportsbtn.click();
+                    })
+                }
+            })
+
+            // LEFT SIDE NAV ONCLICK KEEP SELECTED
+            const subnavs=document.getElementsByClassName('action-btn')
+            for(var i=0; i<subnavs.length; i++){
+                const nav=subnavs[i];
+                nav.addEventListener('click', function(event){
+                for(var j=0; j<subnavs.length; j++){
+                    const nav=subnavs[j];
+                    nav.classList.remove('selected');
+                }
+                event.target.classList.add('selected');
                 })
             }
-
-            // delete report
-            const deletereportbtn=document.getElementsByClassName('reportdeletebtn');
-            for(var i=0; i<deletereportbtn.length; i++){
-                const btn=deletereportbtn[i];
-                btn.addEventListener('click', async function(event){
-                    const res=await fetch('delete-report?q='+this.id, {method:'POST', headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json; charset=UTF-8',
-                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                    // got responce
-                    if(res[0].result == "success")
-                        showSuccessSnackbar(res[0].response, res[0].result);
-                    else
-                        showFailSnackbar(res[0].response, res[0].result);
-                    reportsbtn.click();
-                })
-            }
+            // click dashboard
+            dashboardbtn.click();
 
 
         })
@@ -789,8 +708,9 @@
         
     </script>
 
+
     <!-- temp script -->
-        <script>
+        <!-- <script>
             // check all course files
             const coursefilecontainercheckbox = document.querySelector(".checkallcoursefiles");
             coursefilecontainercheckbox.addEventListener('click', ()=>{
@@ -858,7 +778,7 @@
                 }
             })
 
-        </script>
+        </script> -->
 
     <script>    
         // delete file onclick delete btn (js post request)
@@ -876,9 +796,6 @@
         //                         }).then(res=>res.json()):[];
     </script>
 
-</body>
-</html>
-
 
 <style>
     *{
@@ -894,13 +811,10 @@
         a{
             cursor: pointer;
         }
-        input{
-            color: black;
-        }
         .main-container{
             width: 100%;
             height: 100vh;
-            margin: 0px;
+            margin-top: 72px;
             padding: 0px;
             display: flex;
             /* grid-template-columns: auto auto; */
@@ -946,19 +860,42 @@
             height: 25px; width: 25px;
         }
 
+        .navigation a.selected, .upload-files-top a.selected{
+            background-color: darkorange !important;
+            color: white !important;
+        }
+
+        .upload-files-top a.selected:hover{
+            color: white !important;
+            border-color: white !important;
+        }
+
 
         /* right side */
         .right-aside-bar{
             width: 100%;
             background-color: rgb(46, 46, 57);
         }
+        #selected-nav{
+            position: absolute;
+            left: 50%;
+            background: rgb(46, 46, 57);
+            color: white;
+            width: fit-content;
+            padding: 10px 30px;
+            border-radius: 0px 0px 15px 15px;
+            z-index: 999;
+            transform: translate(-50%, -72px);
+        }
         .analysis-container{
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-evenly;
             padding-top: 50px;
         }
         .analysis-card{
             padding: 20px;
+            margin: 20px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -973,11 +910,13 @@
         .analysis-card span{
             font-size: 24px;
         }
+        .analysis-container img{
+            height: 50px !important;
+        }
 
         /* all users */
         .allusers{
             width: 100%;
-            margin-top: 50px;
             height: 75vh;
             overflow-y: auto;
         }
@@ -1019,6 +958,10 @@
             padding: 3px 5px;
             font-size: 12px;
             box-sizing: border-box;
+            border-bottom :0.1px solid white !important;
+        }
+        input[type="file"]{
+            border: none !important;
         }
         label{
             margin-bottom: 15px;
@@ -1028,7 +971,6 @@
         button, #button{
             background-color: rgba(246,129,33,255);
             color: #fff;
-            padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -1056,10 +998,13 @@
         }
         .upload-files-top{
             text-align: center;
+            padding-top: 10px;
         }
+
         .upload-files-top a{
             font-size: 25px;
-            padding: 10px;
+            border-radius: 15px;
+            padding: 0px 15px;
             display: inline-block;
             border-bottom: 1px solid;
             margin: 0px 15px;
@@ -1128,8 +1073,8 @@
             text-align: center;
         }
         .actions img{
-            height: 15px;
-            width: 15px;
+            height: 15px !important;
+            width: 15px !important;
             background: #f6ca79;
             border: 1px solid #f6ca79;
             border-radius: 3px;
@@ -1143,8 +1088,9 @@
             width: 80%;
             margin: 0px auto;
         }
-        .allfiles{
-            margin-top: 50px;
+        #cafiles-actions{
+            display: flex;
+            justify-content: space-between;
         }
         #coursefilesearch, #cafilesearch{
             width: 20%;
@@ -1160,22 +1106,13 @@
             display: grid;
             grid-template-columns: 10% 60% 15% 15%;
         }
-        .allcourses-header{
-            margin-top: 50px;
-        }
         /* all subscribers */
-        .subscriber-header{
-            margin-top: 50px;
-        }
         .subscriber-header, .subscriber-list{
             display: grid;
             grid-template-columns: 20% 50% 30%;
         }
 
         /* all reports */
-        .reports-header{
-            margin-top: 50px;
-        }
         .reports-header, .reporter-list{
             display: grid;
             grid-template-columns: 5% 25% 35% 15% 10%;
@@ -1184,6 +1121,18 @@
         /* text in center */
         .text-mid{
             text-align: center;
+        }
+
+        label, input, h2{
+            color: white;
+        }
+        input, select{
+            padding: 5px 10px !important;
+            height: fit-content !important;
+            color: white !important;
+        }
+        .allusers, .allcourses-header, .subscriber-header, .reports-header, .allfiles{
+            margin-top: 50px;
         }
 
         /* popup css */
@@ -1239,3 +1188,5 @@
             background: rgba(255, 255, 255, 0.3);
         }
 </style>
+
+{% endblock content %}

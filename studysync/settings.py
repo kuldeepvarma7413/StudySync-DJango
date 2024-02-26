@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.google",
     "mail",
     'cloudinary_storage',
-    'cloudinary'
+    'cloudinary',
+    'rest_framework.authtoken'
 ]
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

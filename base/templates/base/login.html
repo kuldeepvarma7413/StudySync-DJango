@@ -69,30 +69,35 @@
     
            const registerbtn=document.getElementById('login-btn');
            registerbtn.addEventListener('click', async function(){
-               var data = new FormData()
                let email=document.getElementById('email').value
                let password=document.getElementById('password1').value
-               data.append('email', email)
-               data.append('password1', password)
+               data={'email': email, 'password1': password}
+            //    data.append('email', email)
+            //    data.append('password1', password)
                if(email.length==0){
                 showFailSnackbar("please fill in email or username",'fail')
                }
                else if(password.length==0){
                 showFailSnackbar("please fill in password",'fail')
                }else{
+                console.log(data)
                    // send post request
-                   const res=await fetch('/login/',{method:'POST', body: data,headers: {
-                       'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-                       console.log(res)
-   
-                   // got response
-                   if(res[0].result=="success"){
-                       showSuccessSnackbar(res[0].response, res[0].result)
-                       formRef.reset()
-                       window.location.replace(res[0]['redirect'])
-                   }else{
-                       showFailSnackbar(res[0].response, res[0].result)
-                   }
+                   const res=await fetch('/login/',{
+                    method:'POST',
+                    body: JSON.stringify(data),
+                    headers: {
+                       'X-CSRFToken': getCookie('csrftoken')
+                    }}).then(res=>{
+                        console.log(res);
+                        if(!res.ok){
+                            showFailSnackbar("login failed", "fail")
+                        }else{
+                            return res.json()
+                        }
+                    }).then(data=>{
+                        localStorage.setItem("token", data.token);
+                        window.location.href=data.redirect;
+                    });
                }
            })
         })

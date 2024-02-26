@@ -1,5 +1,5 @@
 from asyncio.windows_events import NULL
-from urllib import request
+from urllib import request, response
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.auth.models import User
@@ -44,6 +44,7 @@ import re , os , sys , contextlib , threading , shutil , tempfile
 import json , subprocess
 import cloudinary.api
 import cloudinary
+from rest_framework.authtoken.models import Token
 
 
 
@@ -76,23 +77,27 @@ def checkEmail(emailOrUsername):
     else:
         return False
         
+@csrf_exempt
 def loginPage(request):
     page = 'login'
 
     # all admins
     admins = User.objects.filter(is_staff=True)
 
-    if request.user.is_authenticated:
-        if request.user in admins:
-            return redirect('admin-panel')
-        else:
-            return redirect('home')
-    else:
-        logout(request)
+    # if request.user.is_authenticated:
+    #     if request.user in admins:
+    #         return redirect('admin-panel')
+    #     else:
+    #         return redirect('home')
+    # else:
+    #     logout(request)
 
     if request.method == 'POST':
-        email_or_username = request.POST['email'].lower()
-        password = request.POST['password1']
+        print(request.POST)
+        print("printed")
+        user_data=json.loads(request.body.decode('utf-8'))
+        email_or_username = user_data.get('email').lower()
+        password = user_data.get('password1')
 
         if checkEmail(email_or_username):
             # find username
@@ -104,12 +109,19 @@ def loginPage(request):
         if user is not None:
             user = authenticate(request, username=user.username, password=password)
             profile_obj = Profile.objects.filter(user=user).first()
+            token, created=Token.objects.get_or_create(user=user)
 
             if user is not None:
                 if user in admins:
                     # Admins (staff) don't have profiles, so no need to check is_verified
                     login(request, user)
-                    data=[{'response':"login successful", 'result':'success','redirect':'/admin-panel'}]
+                    print("admin access")
+                    data={
+                        'response':'login successful',
+                        'result':'success',
+                        'redirect':'/admin-panel',
+                        'token': token.key
+                    }
                     return HttpResponse(json.dumps(data), content_type="application/json")
                 # for non-admin users who has deleted their profile and try to reopen their account then ask for email verification
                 if profile_obj is None:
@@ -125,7 +137,12 @@ def loginPage(request):
                     return HttpResponse(json.dumps(data), content_type="application/json")                
                 
                 login(request, user)
-                data=[{'response':"login successful", 'result':'success','redirect':'/home'}]
+                data={
+                    'response':'login successful',
+                    'result':'success',
+                    'redirect':'/home',
+                    'token': token.key
+                }
                 return HttpResponse(json.dumps(data), content_type="application/json")
             else:
                 data=[{'response':"Invalid password please enter correct password.", 'result':'fail'}]

@@ -46,6 +46,7 @@
 
       <nav id="header-nav-wrap">
         <ul class="header-main-nav">
+          {% if not user.is_staff %}
           <li>
             <a href="/discuss" title="discuss" class="subnavbtn" id="discuss-btn">Discuss</a>
           </li>
@@ -62,11 +63,11 @@
           <li>
             <a class="smoothscroll subnavbtn" href="/home#about" title="about">About</a>
           </li>
-          {% comment %} <li>
+          <!-- <li>
             <a class="smoothscroll subnavbtn" href="/home#pricing" title="pricing"
               >Pricing</a
             >
-          </li> {% endcomment %}
+          </li>  -->
           <!-- <li><a class="smoothscroll"  href="#testimonials" title="testimonials">Testimonials</a></li> -->
           <li>
             <a class="smoothscroll subnavbtn" href="/home#download" title="download"
@@ -78,10 +79,11 @@
               >Contact</a
             >
           </li>
+          {% endif %}
           {% if user.is_authenticated %}
           <li style="padding-top: 16px;">
             <p id="username" style="display: flex;">
-              <img class="profile-photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" style="height:40px !important;width:40px !important;border-radius: 50%; border: 1px solid white; background: white; cursor: pointer;">
+              <img class="profile-photo" src="{% static 'images/default-user.png' %}" style="height:40px !important;width:40px !important;border-radius: 50%; border: 1px solid white; background: white; cursor: pointer;">
               <!-- <li class="profile-info" id="profile-info">
                 <ol class="list">
                 </ol>
@@ -90,7 +92,9 @@
             <ol class="list" id="profile-info" style="min-width: 150px;">
               <li><p class="name"></p></li>
               <li><a href="/profile">Settings</a></li>
+              {% if not user.is_staff %}
               <li><a href="/report-bug">Report</a></li>
+              {% endif %}
               <li><a href="/logout">Log out</a></li>
             </ol>
           </li>
@@ -184,6 +188,9 @@
       }
       .header-main-nav li a.selected, .header-main-nav li a:hover{
         color: darkorange !important;
+      }
+      .list li a:hover{
+        color: black !important;
       }
       @media screen and (min-width: 320px) and (max-width:768px) {
         ol{
