@@ -1,0 +1,254 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+*{
+    padding: 0px;
+    margin: 0px;
+}
+body{
+    background-color: white;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.container{
+    width: 350px;
+}
+label, p{
+    color: black !important;
+}
+input{
+    padding: 7px;
+    width: 95%;
+    border-radius: 5px;
+    color: black;
+    border: 1px solid #ed8c0e;
+    color: rgba(246,129,33,255);
+    background-color: transparent;
+    /* border-color: ; */
+}
+.email:focus{
+    border: 2px solid darkorange;
+}
+.login{
+    font-weight: 700; font-size: 20px; margin: 15px auto;
+}
+a{
+    color: rgba(246,129,33,255);
+    text-decoration: none;
+}
+.btn{
+    color: white;
+    font-weight: 700;
+    padding: 8px 30px;
+    margin: 10px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(246,129,33,255);
+    background-color: rgba(246,129,33,255);
+}
+.signup-options{
+    margin: 20px auto;
+    margin-bottom: 30%;
+    border: none;
+    text-align: center;
+    border-radius: 15px;
+    padding: 6px 12px;
+}
+.signup-options a{
+    display: inline-block;
+    margin: 0px 10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+.signup-options a img{
+    height: 20px;
+    width: 20px;
+    margin: auto;
+    display: block;
+    margin-top: 4px;
+}
+.back-box{
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    z-index: -1;
+    box-shadow: 0px 0px 30px;
+    transform: rotate(45deg);
+    overflow: hidden;
+    border-radius: 100px;
+    background-image: linear-gradient(to right, rgba(246,129,33,255),rgba(246,110,33,255));
+}
+.box1{
+    top: 290px;
+    transform: rotate(35deg);
+    left: -120px;
+}
+.box2{
+    top: -50px;
+    transform: rotate(35deg);
+    right: -100px;
+}
+button:hover{
+    cursor: pointer;
+}
+
+.bold-text {
+    font-weight: bold;
+    margin-bottom: 10px;
+    
+}
+.image-container{
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+ul.messages {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* Style for individual messages */
+ul.messages li {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+/* Style for success messages */
+ul.messages li.text-success {
+    background-color: #dff0d8; /* Success message background color */
+    color: #3c763d; /* Success message text color */
+}
+ul.messages li.text-info {
+    background-color: #dff0d8; /* Success message background color */
+    color: rgb(33, 33, 161); /* Success message text color */
+}
+
+/* Style for error messages */
+ul.messages li.text-danger {
+    background-color: #f2dede; /* Error message background color */
+    color: #a94442; /* Error message text color */
+}
+
+.backline{
+    background: linear-gradient(180deg, 
+        rgba(0,0,0,0) calc(50% - 1px), 
+        rgba(192,192,192,1) calc(50%), 
+        rgba(0,0,0,0) calc(50% + 1px));
+}
+
+
+@media (max-width:1200px){
+    .back-box p{ 
+        height:50px; 
+    }
+}
+@media (max-width:767px){
+    .btn input{ 
+        height:40px; 
+    }
+}
+@media screen and (max-width:768px){
+    .container{
+        margin-top: 200px !important;
+    }
+    .box1, .box2{
+        display: none;
+    }
+}
+@media screen and (min-width: 768px){
+    .container{
+        width: 450px;
+    }
+}
+
+
+@keyframes shake {
+    0% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(5px);
+    }
+    50% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Apply the animation to the form on hover */
+.error{
+    animation: shake 0.4s;
+}
+
+input:focus + label {
+    opacity:1;
+    transform: scale(0.75) translateY(-70%) translateX(-14px);
+}
+p {
+    margin:20px 0;
+    position:relative;
+}
+
+label {
+    padding:10px 18px;
+    pointer-events: none;
+    position:absolute;
+    left:0;
+    top:0;
+    transition: 0.2s;
+    transition-timing-function: ease;
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+    opacity:0.5;
+    background: transparent;
+}
+
+input {
+    padding:10px;
+}
+span{
+    background-color: white;
+    padding: 0px 5px;
+    border-radius: 15px;
+}
+
+.particle {
+opacity: 0;
+position: absolute;
+background-color: rgba(246,129,33,255);
+-webkit-animation: particleAnim 3s ease-in-out infinite;
+animation: particleAnim 3s ease-in-out infinite;
+border-radius: 100%;
+}
+
+@-webkit-keyframes particleAnim {
+0% {
+    opacity: 0;
+    transform: translateY(-0%);
+}
+15% {
+    opacity: 1;
+}
+100% {
+    opacity: 0;
+    transform: translateY(-1500%);
+}
+}
+
+@keyframes particleAnim {
+0% {
+    opacity: 0;
+    transform: translateY(-0%);
+}
+25% {
+    opacity: 1;
+}
+100% {
+    opacity: 0;
+    transform: translateY(-1500%);
+}
+}
