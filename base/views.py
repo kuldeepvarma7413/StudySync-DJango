@@ -1,24 +1,19 @@
-from urllib import request, response
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout 
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.forms import UserCreationForm
 from base.models import Courses, files  , subscribers , Profile,Discuss
 from .forms import userForm , PasswordUpdateForm
-from django.contrib.auth.forms import PasswordChangeForm
 from .models import Report , User_Email_verification, cafiles
 from django.urls import reverse
-from allauth.socialaccount import app_settings
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
-import random , smtplib , email.message , uuid
+import random , uuid
 from django.conf import settings
 from platformdirs import user_runtime_dir
-from django.core.mail import EmailMessage , send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
@@ -29,17 +24,15 @@ from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import check_password
 from django.core.files.base import ContentFile
-from django.db import IntegrityError , transaction
-from PyPDF2 import PdfFileMerger , PdfMerger
+from django.db import transaction
+from PyPDF2 import PdfMerger
 from django.core.files.uploadedfile import InMemoryUploadedFile , TemporaryUploadedFile
 from datetime import date, datetime
 from django.forms.models import model_to_dict
 from subprocess import TimeoutExpired
 from io import BytesIO
-from PIL import Image
-from io import StringIO
 import img2pdf
-import re , os , sys , contextlib , threading , shutil , tempfile
+import re , os, shutil , tempfile
 import json , subprocess
 import cloudinary.api
 import cloudinary
@@ -92,8 +85,6 @@ def loginPage(request):
     #     logout(request)
 
     if request.method == 'POST':
-        print(request.POST)
-        print("printed")
         user_data=json.loads(request.body.decode('utf-8'))
         email_or_username = user_data.get('email').lower()
         password = user_data.get('password1')
@@ -114,7 +105,6 @@ def loginPage(request):
                 if user in admins:
                     # Admins (staff) don't have profiles, so no need to check is_verified
                     login(request, user)
-                    print("admin access")
                     data={
                         'response':'login successful',
                         'result':'success',
@@ -1238,7 +1228,6 @@ def allDiscussions(request):
         discussions = Discuss.objects.all()  
         # , 'userimage': "null" if get_profile_photo(request,des.user.username)==False else get_profile_photo(request, des.user.username)   for profile photo  
         data=[{'title':des.title, 'id':des.id, 'uploaded_on':json_serial(des.Time), 'description':des.Description, 'votes': des.votes, 'user': des.user.username, 'profilephoto' : "null" if get_profile_photo(request,des.user)==False else get_profile_photo(request, des.user),'tags': des.tags,'views': des.views,'url': des.Images.url} for des in discussions]
-        print(data)
         return HttpResponse(json.dumps(data), content_type="application/json")
     
     except:

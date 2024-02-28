@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-import cloudinary_storage
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -82,10 +81,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
-    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    # 'base.middleware.AdminHomepageRedirectMiddleware',
-    
-    
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',  
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
