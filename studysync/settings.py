@@ -187,7 +187,7 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "mdzaidtalha6393@gmail.com"
 EMAIL_HOST_PASSWORD = "mgbt ydvh eorn aycg"
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = ['*']
 
 
 # cloudinary storage configration
