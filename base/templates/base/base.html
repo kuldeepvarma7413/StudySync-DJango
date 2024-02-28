@@ -115,11 +115,7 @@
               const photo=document.getElementById('username')
               photo.addEventListener('click', function(){
                 const profile_info=document.getElementById('profile-info');
-                if(profile_info.style.display=="block"){
-                  profile_info.style.display="none"
-                }else{
-                  profile_info.style.display="block"
-                }
+                profile_info.classList.toggle('show')
               })
             })
             
@@ -191,6 +187,9 @@
       }
       .list li a:hover{
         color: black !important;
+      }
+      #profile-info.show{
+        display: block;
       }
       @media screen and (min-width: 320px) and (max-width:768px) {
         ol{
