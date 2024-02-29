@@ -185,7 +185,7 @@ ul.messages li.text-danger {
     animation: shake 0.4s;
 }
 
-input:focus + label {
+input:focus + label, input:not(:placeholder-shown) + label {
     opacity:1;
     transform: scale(0.75) translateY(-70%) translateX(-14px);
 }
