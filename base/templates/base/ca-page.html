@@ -195,52 +195,54 @@
             .replaceAll("%TITLE%", course.title)
         );
       });
-    });
 
-    // ca file cards
-    const fileCard = `<div class="card">
-                  <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;">
-                        <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
-                      <div class="card-inside">
-                        <p>
-                          <h5>CA %CA_NUMBER% | %CA_DATE%</h5>
-                        </p>
-                        <p>Teacher : %CA_TEACHER%</p>
-                        <p>Course Code : %CA_COURSECODE%</p>
-                        <p>Date Uploaded : %CA_UPLOAD_DATE%</p>
-                        <!-- <a href="/media/%CA_UPLOAD_DATE%" download="%CA_NUMBER%" class="downloadFile">Download</a> -->
-                      </div>
-                    </a>
-                </div> `;
+      // ca file cards
+      const fileCard = `<div class="card">
+                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;">
+                          <img src="https://cdn3d.iconscout.com/3d/premium/thumb/pdf-file-5608815-4687430.png?f=webp" alt="" height="100px" width="100px">
+                        <div class="card-inside">
+                          <p>
+                            <h5>CA %CA_NUMBER% | %CA_DATE%</h5>
+                          </p>
+                          <p>Teacher : %CA_TEACHER%</p>
+                          <p>Course Code : %CA_COURSECODE%</p>
+                          <p>Date Uploaded : %CA_UPLOAD_DATE%</p>
+                          <!-- <a href="/media/%CA_UPLOAD_DATE%" download="%CA_NUMBER%" class="downloadFile">Download</a> -->
+                        </div>
+                      </a>
+                  </div> `;
 
-    const noFileFound = `<div style="text-align: center;position: absolute;
-    top: 40%;
-    left: 30%;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
-                    <p>No files Found. Select another one.</p></div>`;
+      const noFileFound = `<div style="text-align: center;position: absolute;
+      top: 40%;
+      left: 30%;"><img src="{% static 'images/hand.png' %}" alt="" width="150px" height="150px">
+                      <p>No files Found. Select another one.</p></div>`;
 
-    const search = document.getElementById("searchCourse");
-    const caView = document.getElementById("ca-view");
-    search.addEventListener("click", async (event) => {
-      const courseId = document.getElementById("allcourses1").value;
-      const res = courseId
-        ? await fetch(`/ca-page?q=${courseId}`).then((res) => res.json())
-        : [];
-      caView.innerHTML = "";
-      res.forEach((file) => {
-        const card = fileCard
-          .replace("%CA_NUMBER%", file.canumber)
-          .replace("%CA_DATE%", file.cadate)
-          .replaceAll("%CA_UPLOAD_DATE%", file.uploaded)
-          .replaceAll("%CA_TEACHER%", file.teachername)
-          .replace("%CA_ID%", file.id)
-          .replace("%CA_COURSECODE%", file.coursecode);
-        caView.insertAdjacentHTML("beforeEnd", card);
+      const search = document.getElementById("searchCourse");
+      const caView = document.getElementById("ca-view");
+      search.addEventListener("click", async (event) => {
+        const courseId = document.getElementById("allcourses1").value;
+        const res = courseId
+          ? await fetch(`/ca-page?q=${courseId}`).then((res) => res.json())
+          : [];
+        caView.innerHTML = "";
+        res.forEach((file) => {
+          const card = fileCard
+            .replace("%CA_NUMBER%", file.canumber)
+            .replace("%CA_DATE%", file.cadate)
+            .replaceAll("%CA_UPLOAD_DATE%", file.uploaded)
+            .replaceAll("%CA_TEACHER%", file.teachername)
+            .replace("%CA_ID%", file.id)
+            .replace("%CA_COURSECODE%", file.coursecode);
+          caView.insertAdjacentHTML("beforeEnd", card);
+        });
+
+        if (res.length === 0) {
+          caView.insertAdjacentHTML("beforeEnd", noFileFound);
+        }
       });
-
-      if (res.length === 0) {
-        caView.insertAdjacentHTML("beforeEnd", noFileFound);
-      }
+      search.click()
     });
+      
 
   </script>
 </div>
