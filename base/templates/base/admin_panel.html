@@ -322,7 +322,7 @@
                 <p class="text-mid">%FILE_COURSECODE%</p>
                 <p class="text-mid">%FILE_UPLOADED%</p>
                 <div class="actions text-mid">
-                    <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <a href="{% url 'pdfview' %}?q=%FILE_ID%?t=" target="_blank" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
                     <!-- <a href="%URL%" id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a> -->
                     <a id="%FILE_ID%" class="filedeletebtn delete"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
                 </div>
@@ -337,7 +337,7 @@
                 <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
                 <p class="text-mid">%CAFILE_DATE%</p>
                 <div class="actions text-mid">
-                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" target="_blank" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
                     <a id="%CA_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
                     <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
                 </div>
@@ -352,7 +352,7 @@
                 <p class="text-mid">%CAFILE_UPLOAD_DATE%</p>
                 <p class="text-mid">%CAFILE_DATE%</p>
                 <div class="actions text-mid">
-                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                    <a href="{% url 'pdfview' %}?q=%CA_ID%?t=ca"  target="_blank" style="cursor: pointer;"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
                     <a class="cadeletebtn delete" id="%CA_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
                 </div>
                 </li>`;
@@ -508,6 +508,7 @@
                         })
                     }
                 })
+                selectbox.click()
 
             })
 
@@ -627,7 +628,7 @@
                 `<li class="reporter-list">
                     <p class="text-mid">%NUMBER%</p><p>%NAME%</p><p>%EMAIL%</p><p class="text-mid">%TYPE%</p><p id="reportcontent%ID%" style="display: none">%CONTENT%</p>
                     <div class="actions text-mid">
-                        <a style="cursor: pointer;" id="%ID%" class="view-report"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
+                        <a style="cursor: pointer;" id="%ID%" target="_blank" class="view-report"><img src="{% static 'images/icons/eye.png' %}" alt=""></a>
                         <a id="%REPORT_ID%" class="approvebtn"><img src="{% static 'images/icons/check-mark.png' %}" alt=""></a>
                         <a class="reportdeletebtn delete" id="%REPORT_ID%"><img src="{% static 'images/icons/trash.png' %}" alt=""></a>
                     </div>
