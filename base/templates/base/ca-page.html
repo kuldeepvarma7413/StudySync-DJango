@@ -144,8 +144,7 @@
 
   <!-- Section Two: Upload CA PDF Files -->
   <div id="upload-section">
-    <form id="upload-form" action="upload-ca" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+    <form id="upload-form" enctype="multipart/form-data">
       <label for="coursecode">Course Code:</label>
       <select id="allcourses2" name="courseCode" required>
         <option value="">Select Course</option>
@@ -153,7 +152,7 @@
       </select>
 
       <label for="teachername">Teacher Name:</label>
-      <input type="text" id="teachername" name="teachername" required />
+      <input type="text" id="teachername" name="teachername" required placeholder="teacher name" />
 
       <label for="date">Date:</label>
       <input type="date" id="date" name="cadate" required />
@@ -168,8 +167,14 @@
         <option value="3">CA 3</option>
       </select>
 
-      <button type="submit">Submit</button>
+      <button type="submit" id="upload-ca-btn">Submit</button>
     </form>
+
+     <!-- snackbar -->
+        <!-- The actual snackbar -->
+        <div id="snackbar">
+          <span id="snackbar-text"></span>
+      </div>
   </div>
   <script>
     // fetching all courses
@@ -195,6 +200,38 @@
             .replaceAll("%TITLE%", course.title)
         );
       });
+
+      // upload ca form handling
+      const uploadbtn=document.getElementById('upload-ca-btn');
+      // prevent refresh on submit
+      var form = document.getElementById("upload-form");
+      function handleForm(event) { event.preventDefault(); } 
+      form.addEventListener('submit', handleForm);
+
+      // onclick event
+      uploadbtn.addEventListener('click', async function(){
+          var data = new FormData()
+          data.append('teachername', document.getElementById('teachername').value)
+          data.append('courseCode', document.getElementById('allcourses2').value)
+          data.append('cadate', document.getElementById('date').value)
+          data.append('ca-no', document.getElementById('ca-no').value)
+          // Append files
+          const files = document.getElementById('files').files;
+          for (let i = 0; i < files.length; i++) {
+            data.append('fileupload', files[i]);
+          }
+          // send post request
+          const res=await fetch('upload-ca',{method:'POST', body: data,headers: {
+              'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+
+          // got response
+          if(res[0].result=="success"){
+              showSuccessSnackbar(res[0].response, res[0].result)
+              form.reset()
+          }else{
+              showFailSnackbar(res[0].response, res[0].result)
+          }
+      })
 
       // ca file cards
       const fileCard = `<div class="card">

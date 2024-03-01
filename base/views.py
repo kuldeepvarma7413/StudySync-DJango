@@ -905,7 +905,7 @@ def uploadCaAsUser(request):
                             existing_record.fileupload.delete()  
                             existing_record.fileupload.save('merged_file.pdf', ContentFile(pdf_content), save=True)
 
-                            data=[{'response':"File Updated", 'result':'success'}]
+                            data=[{'response':"CA File Updated", 'result':'success'}]
                             return HttpResponse(json.dumps(data), content_type="application/json")
                         else:
                             file_data = cafiles(
@@ -918,7 +918,7 @@ def uploadCaAsUser(request):
                             pdf_buffer = BytesIO(pdf_content)
                             file_data.fileupload.save('merged_file.pdf', ContentFile(pdf_buffer.getvalue()), save=True)
 
-                            data=[{'response':"File Added", 'result':'success'}]
+                            data=[{'response':"CA File Added", 'result':'success'}]
                             return HttpResponse(json.dumps(data), content_type="application/json")
 
                 elif file_extension in ('.pdf'):
@@ -1144,7 +1144,9 @@ def editProfile(request):
                 if profilephoto != None:
                     userprofile=Profile.objects.filter(user=request.user).first()
                     if userprofile != None:
-                        if userprofile.profile_photo == "":
+                        if userprofile.profile_photo != "":
+                            # deleting already uploaded profile photo
+                            cloudinary.api.delete_resources(userprofile.profile_photo, resource_type="raw", type="upload")
                             userprofile.profile_photo.delete()
                         userprofile.profile_photo=profilephoto
                         userprofile.save()
