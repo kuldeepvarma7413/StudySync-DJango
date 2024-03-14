@@ -1,0 +1,78 @@
+{% extends "base/base.html" %} {% load static %} {% block content %}
+
+<section class="section-1">
+    <div class="main-container">
+        <div class="cont-1">
+            <div class="left-content">
+                <p>WELCOME TO STUDYSYNC</p>
+                <h1>Unlock Academic Excellence With StudySync's Powerful Resources.</h1>
+                <div class="app-buttons">
+                    <button>Download App</button>
+                    <button>Watch Video</button>
+                </div>
+            </div>
+            <div class="right-content">
+                <img src="{% static 'images/iphone-470.png' %}" alt="">
+            </div>
+        </div>
+        <div class="social-top">
+            <ul class="home-social-list">
+                <li>
+                    <a href="mailto:teamstudysync@gmail.com" target="_blank"><i class="fa fa-envelope"></i></a>
+                </li>
+                <li>
+                    <a href="#"><i class="fa fa-telegram"></i></a>
+                </li>
+                <li>
+                    <a href="https://www.instagram.com/teamstudysync/" target="_blank"><i class="fa fa-instagram"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<style>
+    .section-1{
+        margin-top: 72px;
+        background-color: rgb(101, 67, 24);
+        color: white;
+        height: 600px;
+        padding: 100px;
+    }
+    .cont-1{
+        display: grid;
+        grid-template-columns: 55% 45%;
+    }
+    .left-content p{
+        font-size: 30px;
+    }
+    .left-content h1{
+        color: white;
+        font-size: 50px;
+        font-weight: 700;
+    }
+    .app-buttons{
+        margin-top: 80px;
+    }
+    .app-buttons button{
+        background-color: transparent;
+        color: white;
+        width: 250px;
+    }
+    /* right side */
+    .right-content{
+        display: flex;
+        justify-content: space-around;
+    }
+    .right-content img{
+        height: 600px;
+    }
+</style>
+
+<section class="section-2">
+    <div class="content">
+        
+    </div>
+</section>
+
+{% endblock content %}

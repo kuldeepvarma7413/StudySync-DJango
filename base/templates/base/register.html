@@ -132,7 +132,6 @@ particlesInit();
         function isCommonPassword(password) {
             // List of common passwords
             const commonPasswords = ["password", "123456", "qwerty", "admin", "letmein", "welcome", "123abc"];
-
             // Convert the password to lowercase for case-insensitive comparison
             const lowercasedPassword = password.toLowerCase();
             return commonPasswords.includes(lowercasedPassword);
@@ -140,36 +139,28 @@ particlesInit();
 
         // fetch form reference for animate while error occurs
         let formRef=document.getElementById("userForm");
-        function shakeForm(){
-            pwd1Error.classList.add("error-message");
-            formRef.classList.add("error");
-        }
         
         function validate(password1,password2){
             // password regex
             let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
             
-            if(password1 != password2){
+            if(password1.length==0 || password2.length ==0){
+                showFailSnackbar("Please fill in the password","fail")
+                return false;
+            }
+            else if(password1 != password2){
                 showFailSnackbar("Password doesn't match","fail")
-                shakeForm()
                 return false;
-            }
-            if( password1.length < 8 || password1.length>15){
+            }else if( password1.length < 8 || password1.length>15){
                 showFailSnackbar("Password length must be in between 8-15","fail")
-                shakeForm()
                 return false;
-            }
-            if(isCommonPassword(password1)){
+            }else if(isCommonPassword(password1)){
                 showFailSnackbar("Password should not be common like abc or 123","fail")
-                shakeForm()
                 return false;
-            }
-            if( !(regex.test(password1)) ){
+            }else if( !(regex.test(password1)) ){
                 showFailSnackbar("Password must contain Capital letter, small letter, symbol and number","fail")
-                shakeForm()
                 return false;
             }
-            formRef.classList.remove("error");
             return true;
         }
         
