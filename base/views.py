@@ -120,12 +120,12 @@ def loginPage(request):
                     profile_obj = Profile.objects.create(user = user, auth_token=str(uuid.uuid4()))
                     profile_obj.save()
                     resend_link = reverse('resend_email_verification', args=[user.id])
-                    data=[{'response':"Verify your email to reopen your account <a href="+resend_link+"> Click here</a>", 'result':'fail'}]
+                    data={'response':"Verify your email to reopen your account <a href="+resend_link+"> Click here</a>", 'result':'fail'}
                     return HttpResponse(json.dumps(data), content_type="application/json")                
                 # For non-admin users, check the profile for verification
                 if profile_obj is not None and not profile_obj.is_verified:
                     resend_link = reverse('resend_email_verification', args=[user.id])
-                    data=[{'response':"Profile is not verified check your mail or Click resend to send the verification email. <a href="+resend_link+"> Resend</a>", 'result':'fail'}]
+                    data={'response':"Profile is not verified check your mail or Click resend to send the verification email. <a href="+resend_link+"> Resend</a>", 'result':'fail'}
                     return HttpResponse(json.dumps(data), content_type="application/json")                
                 
                 login(request, user)
@@ -349,7 +349,7 @@ def register(request):
     
 def send_mail_after_registration(email , username, token):
     
-    verification_link = f"http://{server_url}/verify_mail_after_registration/{token}/"  
+    verification_link = f"http://127.0.0.1:8000/verify_mail_after_registration/{token}/"  
     html_template = 'base/Email_verification.html'
     html_message = render_to_string(html_template, {'token': token, 'verification_link': verification_link, 'username': username})  
     text_content = strip_tags(html_message)          
@@ -843,7 +843,7 @@ def homePage(request):
     if request.user.is_authenticated:
         if request.user in admins:
             return redirect('admin-panel')
-    return render(request, "base/landing.html")
+    return render(request, "base/landing2.html")
 
 
 # unavailable-app

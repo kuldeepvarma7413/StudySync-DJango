@@ -89,15 +89,18 @@
                     headers: {
                        'X-CSRFToken': getCookie('csrftoken')
                     }}).then(res=>{
-                        console.log(res);
                         if(!res.ok){
                             showFailSnackbar("login failed", "fail")
                         }else{
                             return res.json()
                         }
                     }).then(data=>{
-                        localStorage.setItem("token", data.token);
-                        window.location.href=data.redirect;
+                        if(data.result == "fail"){
+                            showFailSnackbar(data.response,data.result)
+                        }else{
+                            localStorage.setItem("token", data.token);
+                            window.location.href=data.redirect;
+                        }
                     });
                }
            })
