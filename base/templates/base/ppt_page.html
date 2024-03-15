@@ -95,7 +95,7 @@
 
   // loading
   function showLoading(){
-    filesView.insertAdjacentHTML('beforeEnd',loaderHtml)
+    filesView.innerHTML=loaderHtml
   }
   function hideLoading(){
     filesView.innerHTML="";
@@ -115,7 +115,6 @@
     const searchbar=document.getElementById('searchbar').value="";
     search_course();
     const res= courseId ? await fetch(`/ppt-page?q=${courseId}`).then(res=>res.json()) : [];
-    filesView.innerHTML=''
     hideLoading()
     res.forEach(file=>{
       const card=fileCard.replaceAll('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
