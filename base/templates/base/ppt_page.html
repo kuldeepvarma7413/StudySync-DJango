@@ -82,9 +82,29 @@
       } 
   } 
 
+  // loading animation
+  var loaderHtml=`
+              <div></div>
+              <div class="loadingio-spinner-eclipse-mb4xqdposok loader">
+                  <div class="ldio-q7a1mw80l0f">
+                      <div></div>
+                  </div>
+                  <div class="loader-text">Loading...</div>
+              </div>
+              <div></div>`
+
+  // loading
+  function showLoading(){
+    filesView.insertAdjacentHTML('beforeEnd',loaderHtml)
+  }
+  function hideLoading(){
+    filesView.innerHTML="";
+  }
+
   // 
   
   courseItems.addEventListener('click',async(event)=>{
+    showLoading()
     const courseId=event.target.closest('[data-courseId]')?.dataset['courseid'];
     courseItems.querySelectorAll('li').forEach(li => li.classList.remove('active'));
     const courseItem=event.target.closest('li');
@@ -96,6 +116,7 @@
     search_course();
     const res= courseId ? await fetch(`/ppt-page?q=${courseId}`).then(res=>res.json()) : [];
     filesView.innerHTML=''
+    hideLoading()
     res.forEach(file=>{
       const card=fileCard.replaceAll('%FILE_TITLE%',file.title).replace('%FILE_UNIT%',file.unit)
       .replace('%FILE_UPLOADED%',file.uploaded).replace('%URL%', file.url).replace('%FILE_ID%',file.id).replace('%FILE_COURSECODE%',file.coursecode);
@@ -385,6 +406,54 @@
         }
     }
   </style>
+
+  <!-- loader -->
+  <style>
+    @media only screen and (max-width: 2560px) {
+       
+        .loadingio-spinner-eclipse-mb4xqdposok {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: inline-block;
+            overflow: hidden;
+            background: transparent;
+            margin: auto;
+        }
+        
+        .ldio-q7a1mw80l0f div {
+            position: absolute;
+            animation: spin 1s linear infinite;
+            width: 170px;
+            height: 170px;
+            top: 65px;
+            left: 65px;
+            border-radius: 50%;
+            box-shadow: 0 4px 0 0 rgb(234, 144, 17);
+            transform-origin: 85px 87px;
+        }
+        .loader-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: rgb(234, 144, 17);
+            position: absolute;
+            top: 53%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }        
+    }
+</style>
 
 
 {% endblock content %}
