@@ -79,13 +79,13 @@ def loginPage(request):
     # all admins
     admins = User.objects.filter(is_staff=True)
 
-    # if request.user.is_authenticated:
-    #     if request.user in admins:
-    #         return redirect('admin-panel')
-    #     else:
-    #         return redirect('home')
-    # else:
-    #     logout(request)
+    if request.user.is_authenticated:
+        if request.user in admins:
+            return redirect('admin-panel')
+        else:
+            return redirect('home')
+    else:
+        logout(request)
 
     if request.method == 'POST':
         user_data=json.loads(request.body.decode('utf-8'))
@@ -843,7 +843,7 @@ def homePage(request):
     if request.user.is_authenticated:
         if request.user in admins:
             return redirect('admin-panel')
-    return render(request, "base/landing2.html")
+    return render(request, "base/landing.html")
 
 
 # unavailable-app

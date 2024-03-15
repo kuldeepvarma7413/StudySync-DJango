@@ -24,6 +24,7 @@
     <!-- script
   ================================================== -->
     <script src="{% static 'js/modernizr.js' %}"></script>
+    <script src="{% static 'js/main.js' %}" async defer></script>
     
 
     <!-- jQuery -->
@@ -112,11 +113,21 @@
               for(var i=0; i<image.length; i++){
                 if(res[0].profilephoto!="null"){ image[i].src= res[0].profilephoto}
               }
-              const photo=document.getElementById('username')
+              // when user clicks anywhere outside the profile info ol, close list
+              const photo=document.getElementById('username') // photo icon
+              const profile_info=document.getElementById('profile-info'); // list
+
+              window.addEventListener('click',(event)=>{
+                console.log("clicked window")
+                if(!profile_info.contains(event.target) && !photo.contains(event.target)){
+                      profile_info.classList.remove('show')
+                  }
+              });
+
               photo.addEventListener('click', function(){
-                const profile_info=document.getElementById('profile-info');
-                profile_info.classList.toggle('show')
+                profile_info.classList.add('show')
               })
+
             })
             
           </script>
@@ -143,11 +154,14 @@
         font-size: 16px;
         cursor: pointer;
       }
+      #header-nav-wrap.show{
+        display: block;
+      }
       ol{
         list-style: none;
         position: absolute;
         right: 0px;
-        top: 66px;
+        top: 72px;
         background: black;
         padding: 10px;
         text-align: center;
@@ -165,6 +179,7 @@
         display: inline-block;
         width: 100%;
         font-size: 12px;
+        border-radius: 5px;
         line-height: 15px !important;
       }
       .list a:hover{
@@ -187,6 +202,15 @@
       }
       #profile-info.show{
         display: block;
+      }
+      #profile-info{
+        border-radius: 5px;
+      }
+      #profile-info li{
+        margin: 0px !important;
+      }
+      .name{
+        margin-bottom: 5px !important;
       }
       @media screen and (min-width: 320px) and (max-width:768px) {
         ol{

@@ -2,6 +2,36 @@
 {% load static %}
 {% block content %}
 
+<div class="development-overlay">
+    <p>UNDER DEVELOPMENT</p>
+</div>
+
+<style>
+    .development-overlay{
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: black;
+        color: white;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .development-overlay p{
+        background-color: darkorange;
+        padding: 0px 20px;
+        height: 200px;
+        width: 200px;
+        display: flex;
+        border-radius: 50%;
+        text-align: center;
+        align-items: center;
+    }
+</style>
+
 <div class="template-body">
     <div class="grid-view-1">
         <div class="page-navs">
@@ -9,18 +39,18 @@
                 <img src="{% static 'images/icons/question.png' %}" alt="">
                 Ask Question
             </a>
-            <a id="homebtn">
+            <!-- <a id="homebtn">
                 <img src="{% static 'images/icons/home.png' %}" alt="">
                 Home
-            </a>
+            </a> -->
             <a id="questions">
                 <img src="{% static 'images/icons/questions.png' %}" alt="">
                 Questions
             </a>
-            <a>
+            <!-- <a>
                 <img src="{% static 'images/icons/users.png' %}" alt="">
                 Users
-            </a>
+            </a> -->
         </div>
     </div>
     <div class="grid-view-2">
@@ -105,7 +135,7 @@
         <!-- questions -->
         <div id="questions-div">
             <div class="searchbar-div">
-                <input type="search" id="searchquestion" placeholder="Search..." onkeyup="search_course()">
+                <input type="search" id="searchquestion" placeholder="Search..." oninput="search_course()">
             </div>
             <div class="content-div">
                 <div class="analysis">
@@ -148,6 +178,15 @@
 <!-- fetch content -->
 <script>
 
+    function getTags(tags){
+        tags=tags.split(",")        
+        content=``
+        tags.forEach(tag=>{
+            content+=`<a>${tag.trim()}</a>`
+        })
+        return content
+    }
+
     var quesCard= `<div class="question-card">
                     <div class="question-card-left">
                         <p><span id="vote-count">%VOTE_COUNT%</span> votes</p>
@@ -158,9 +197,7 @@
                         <h4 class="ques-title searchdata">%TITLE%</h4>
                         <p class="description searchdata">%DESCRIPTION%</p>
                         <div class="tags">
-                            <a>HTML</a>
-                            <a>JavaScript</a>
-                            <a>CSS</a>
+                            %TAGS%
                         </div>
                         <a class="asked-by">
                             <img src="%USER_PROFILE_PHOTO%" alt="">
@@ -200,7 +237,8 @@
             discussions.forEach((ques)=>{
                 contentContainer.insertAdjacentHTML('beforeEnd', quesCard.replace("%VOTE_COUNT%", ques.votes).replace("%VIEW_COUNT%", ques.views)
                 .replace("%TITLE%", ques.title).replace('%DESCRIPTION%', ques.description).replace("%ASKED_BY_USER%", ques.user)
-                .replace("%USER_PROFILE_PHOTO%", ques.profilephoto=="null" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" : ques.profilephoto) )    
+                .replace("%USER_PROFILE_PHOTO%", ques.profilephoto=="null" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRypgMMZNtrG9MPif00Vr2YHisnxeZjZrUrWA&usqp=CAU" : ques.profilephoto)
+                .replace("%TAGS%", getTags(ques.tags)) )    
             })
     
     
@@ -276,7 +314,6 @@
 
         // select left container buttons, home, ask question etc.
         var buttonlist=document.querySelectorAll('.page-navs a')
-        console.log(buttonlist)
         for(var i=0; i<buttonlist.length; i++){
                 const nav=buttonlist[i];
                 nav.addEventListener('click', function(event){
@@ -390,6 +427,9 @@
         text-align: right;
         padding-right: 20px;
     }
+    .ques-title{
+        cursor: pointer;
+    }
     .question-card-right h4, .description{
         color: white;
         display: -webkit-box;
@@ -409,6 +449,7 @@
         background-color: #31220f;
         padding: 5px 10px;
         border-radius: 10px;
+        margin: 0px 2px;
         color: darkorange;
     }
     .asked-by{
@@ -725,7 +766,6 @@
             showFailSnackbar("Fill in the mandatory fields",'fail')
         }
 
-        console.log(description)
 
         //send post request            
     })
