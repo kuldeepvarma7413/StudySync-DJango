@@ -162,7 +162,7 @@
                 
                 const uploadcoursefilebtn = document.getElementById("course-file-upload");
                 // click event on upload course files
-                uploadcoursefilebtn.addEventListener('click', function(){
+                uploadcoursefilebtn.addEventListener('click', async function(){
                     // add active class on btn
         
                     uploadfilecontainer.innerHTML=
@@ -175,7 +175,9 @@
                         
                         <div>
                             <label for="courseCode">Course Code:</label>
-                            <input type="text" id="courseCode" name="courseCode" class="form-input" required>
+                            <select id="courseCode" name="courseCode" class="form-input" required>
+                                %OPTION%
+                            </select>
                         </div>
                         
                         <div>
@@ -185,12 +187,23 @@
                         
                         <div>
                             <label for="file">File:</label>
-                            <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc" required>
+                            <input type="file" id="file" name="file" class="form-input" accept=".ppt, .pdf, .doc, .pptx" required>
                         </div>
             
                         <button type="submit" id="upload-course-file">Submit</button>
                     </form>`;
 
+                    // fetch all courses in select
+                    const selectBox=document.getElementById('courseCode')
+                    //  add in select box
+                    const courses =(await fetch("/get-courses").then((res) => res.json())) ?? [];
+                    
+                    const courseLabel1 = `<option value="%OPTION%">%OPTION%</option>`;
+                    courses.forEach((course) => {
+                        selectBox.insertAdjacentHTML("beforeEnd",courseLabel1.replaceAll("%OPTION%", course.name))
+                    });
+
+                    
                     const uploadbtn=document.getElementById('upload-course-file');
                     // prevent refresh on submit
                     var form = document.getElementById("myForm");
@@ -987,6 +1000,10 @@
         #myForm, #myForm2{
             width: 33%;
             margin: 0px auto;
+        }
+        #myForm select{
+            min-height: 50px;
+            border-bottom :0.1px solid white !important;
         }
         #upload-container{
             padding-top: 100px;

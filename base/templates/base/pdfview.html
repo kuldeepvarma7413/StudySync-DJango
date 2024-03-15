@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -210,10 +211,10 @@
         <div class="main-div">
             {% for file in files %}
             <div class="pdf-container embed-container">
-                {% if file.fileupload.name|lower|slice:"-4" == '.ppt' %}
-                {% with pdf_content=file.pdf_content %}
-                <embed class="view-pdf-btn" src="data:application/pdf;base64,{{ pdf_content }}" type="application/pdf"></embed>
-                {% endwith %}
+                {% if file.fileupload.name|lower|slice:"-4" == '.ppt' or file.fileupload.name|lower|slice:"-5" == '.pptx' %}
+                    {% with pdf_content=file.pdf_content %}
+                    <embed class="view-pdf-btn" src="data:application/pdf;base64,{{ pdf_content }}" type="application/pdf"></embed>
+                    {% endwith %}
                 {% else %}
                 <embed class="view-pdf-btn" data-pdf-url="/media/{{ file.fileupload.url }}" data-pdf-id="{{ file.fileupload.id }}"></embed>
                 {% endif %}
@@ -267,7 +268,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="/static/pdfjs/build/pdf.mjs"></script>
     <script src="https://mozilla.github.io/pdf.js/build/pdf.mjs"></script>
-    <script src="/static/js/custom-pdf-viewer.js"></script>
+    <script src="{% static 'js/custom-pdf-viewer.js' %}"></script>
     <script src="https://kit.fontawesome.com/b58839cd3e.js" crossorigin="anonymous"></script>
 </body>
 </html>
