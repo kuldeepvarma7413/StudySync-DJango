@@ -60,7 +60,7 @@ def google_authentication_view(request):
     
         
 def Errorpage(request):
-    return redirect('Error')
+    return render(request, 'base/Error.html')
 
 
 # checking email validation for checking user entered email or username

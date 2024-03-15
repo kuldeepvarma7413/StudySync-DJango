@@ -37,7 +37,7 @@ urlpatterns = [
     path('verify_mail_after_registration/<str:auth_token>/', views.verify_mail_after_registration, name= "verify_mail_after_registration"),
     path('Email_success/', views.email_verification_successful, name= "Email_success"),
     path('resend_email_verification/<int:user_id>/', views.resend_email_verification, name='resend_email_verification'),
-    path('Error/',views.Errorpage, name="Error" ),
+    path('error/',views.Errorpage, name="error" ),
     
     path('ppt-page',views.pptPage, name="ppt-page" ),
     path('ca-page',views.CaPage, name="ca-page" ),
