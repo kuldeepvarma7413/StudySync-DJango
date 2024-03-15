@@ -312,13 +312,6 @@ ul li {
   padding-left: .4rem;
 }
 
-ul ul,
-ul ol,
-ol ol,
-ol ul {
-  margin: .6rem 0 .6rem 1.7rem;
-}
-
 ul.disc li {
   display: list-item;
   list-style: none;
@@ -716,7 +709,7 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   border: none;
-  -webkit-text-fill-color: rgba(246,129,33,255);
+  -webkit-text-fill-color: white;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -1324,7 +1317,7 @@ h1.intro-header::before {
     right: auto;
     left: 0;
     background-color: #111111;
-    padding: 120px 40px 54px;
+    padding: 80px 40px 0px;
   }
   #header-nav-wrap .header-main-nav {
     display: block;

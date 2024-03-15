@@ -172,27 +172,40 @@ particlesInit();
 
        const registerbtn=document.getElementById('register-btn');
        registerbtn.addEventListener('click', async function(){
-           var data = new FormData()
-           data.append('username', document.getElementById('username').value)
-           data.append('email', document.getElementById('email').value)
-           data.append('password1', document.getElementById('password1').value)
-           data.append('password2', document.getElementById('password2').value)
-           if(validate(document.getElementById('password1').value, document.getElementById('password2').value)){
-               // send post request
-               const res=await fetch('/register/',{method:'POST', body: data,headers: {
-                   'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
-       
-               // refresh all fields
-               // got response
-               if(res[0].result=="success"){
-                   showSuccessSnackbar(res[0].response, res[0].result)
-                   formRef.reset()
-                   window.location.replace(res[0]['redirect'])
-               }else{
-                   showFailSnackbar(res[0].response, res[0].result)
-               }
-           }
-       })
+            var data = new FormData()
+            var username=document.getElementById('username').value
+            var email=document.getElementById('email').value
+            var password1=document.getElementById('password1').value
+            var password2=document.getElementById('password2').value
+            data.append('username', username)
+            data.append('email', email)
+            data.append('password1', password1)
+            data.append('password2', password2)
+            if(username.length==0){
+                showFailSnackbar("Please fill in the username","fail")
+                return false;
+            }else if(email.length==0){
+                showFailSnackbar("Please fill in the email","fail")
+                return false;
+            }else if(validate(password1, password2)){
+                // send post request
+                const res=await fetch('/register/',{method:'POST', body: data,headers: {
+                    'X-CSRFToken': getCookie('csrftoken')}}).then(res=>res.json())??[];
+                    
+                // refresh all fields
+                // got response
+                if(res[0].result=="success"){
+                    showSuccessSnackbar(res[0].response, res[0].result)
+                    formRef.reset()
+                    window.location.replace(res[0]['redirect'])
+                }else{
+                    showFailSnackbar(res[0].response, res[0].result)
+                }
+            }else{
+                showFailSnackbar("Error occured, try again","fail")
+                return false;
+            }
+        })
 
     })
 
