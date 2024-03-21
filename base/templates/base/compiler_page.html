@@ -1,13 +1,26 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Code Editor | StudySync</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.js"></script>
     <link rel="stylesheet" href="/static/ace-builds-master/ace-builds-master/css/ace.css">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{% static 'images/favicon.png' %}"
+    />
     <link rel="stylesheet" href="https://unpkg.com/ace-css/css/ace.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.3/ace.min.js"></script>
     <style type="text/css" media="screen">
+        .main-cont{
+            display: grid;
+            grid-template-columns: 60% 40%;
+        }
+        body{
+            overflow: hidden;
+            background-color: #202020;
+        }
         #editor-container {
             display: flex;
             flex-direction: column;
@@ -16,14 +29,18 @@
             height: 100vh;
         }
         #header-bar {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 25% 25% 25% 25%;
             align-items: center;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.705); 
             color: white;
             border-bottom: 1px solid black; 
             width: 100%; 
+        }
+        .btn{
+            width: 150px;
+            border-radius: 5px;
         }
 
         #languageSelect, #themeSelect {
@@ -46,60 +63,79 @@
         #editor {
             width: 100%;
             flex: 1;
+            font-size: 14px;
         }
 
         #output, #input {
-            width: 100%; 
-            height: 100px;
-            border: 0.5px solid rgb(76 74 70); 
+            height: 100%;
+            width: 100%;
+            border: none;
             background-color: black;
             color: white;
             border-radius: 0px; 
             resize: none;
+            padding: 5px;
+            margin-left: 10px;
+            outline: none;
         }
         #input {
             display: none;
+            height: 49.5%;
+            border-bottom: 1px solid rgb(111, 111, 111);
         }
         .btn, .btn:visited, .btn:focus{
             border: none !important;
+        }
+        .left{
+            text-align: start;
+        }
+        .right{
+            text-align: end;
         }
     </style>
 </head>
 <body>
 
 <form id="codeForm" onsubmit="submitForm(); return false;" method="post">
-    <div id="editor-container">
-        <div id="header-bar">
-            <select id="themeSelect" onchange="changeTheme()">
-                <option value="monokai">Monokai</option>
-                <option value="github">Github</option>
-                <option value="solarized_dark">Solarized Dark</option>
-            </select>
-            <select id="languageSelect" onchange="changeLanguage()">
-                <option value="java">Java</option>
-                <option value="python">Python</option>
-                <option value="cpp">C++</option>
-            </select>
-            <button type="button" class="btn btn-info" onclick="toggleStdin()" style="background-color: rgba(246, 129, 33, 1);">
-                <span id="stdinButtonText">Stdin</span>
-            </button>
-
-
-            <button type="button" class="btn" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
-                <span id="buttonText">Run</span>
-                <span id="loading" class="spinner-border spinner-border-sm text-light" role="status" style="display: none;">
-                    <span class="visually-hidden">Loading...</span>
-                </span>
-
-            </button>
+    <div class="main-cont">
+        <div id="editor-container">
+            <div id="header-bar">
+                <div class="left">
+                    <select id="themeSelect" onchange="changeTheme()">
+                        <option value="monokai">Monokai</option>
+                        <option value="github">Github</option>
+                        <option value="solarized_dark">Solarized Dark</option>
+                    </select>
+                </div>
+                <div class="left">
+                    <select id="languageSelect" onchange="changeLanguage()">
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                        <option value="cpp">C++</option>
+                    </select>
+                </div>
+                <div class="right">
+                    <button type="button" class="btn btn-info" onclick="toggleStdin()" style="background-color: rgba(246, 129, 33, 1);">
+                        <span id="stdinButtonText">Stdin</span>
+                    </button>
+                </div>
+                <div class="right">
+                    <button type="button" class="btn" onclick="runCode()" style="background-color: rgba(246, 129, 33, 1);">
+                        <span id="buttonText">Run</span>
+                        <span id="loading" class="spinner-border spinner-border-sm text-light" role="status" style="display: none;">
+                            <span class="visually-hidden">Loading...</span>
+                        </span>
+                    </button>
+                </div>
+    
+            </div>
+            <div id="editor" class=" ace_editor ace_hidpi ace-monokai ace_dark"></div>
+    
         </div>
-
-        <div id="editor" class=" ace_editor ace_hidpi ace-monokai ace_dark"></div>
-
-        
-
-        <textarea id="input" name="input" placeholder="Input" rows="4"></textarea>
-        <textarea id="output" name="output" placeholder="Output" rows="4" readonly></textarea>
+        <div class="consoles">
+            <textarea id="input" name="input" placeholder="Input" rows="4"></textarea>
+            <textarea id="output" name="output" placeholder="Output" rows="4" readonly></textarea>
+        </div>
     </div>
 </form>
 
@@ -121,15 +157,18 @@
     var stdinVisible = false;
 
     var inputTextArea = document.getElementById('input');
+    var outputTextArea = document.getElementById('output');
     function toggleStdin() {
         stdinVisible = !stdinVisible;
         
         if (stdinVisible) {
             inputTextArea.style.display = 'block';
             document.getElementById('stdinButtonText').innerText = 'Close Stdin';
+            outputTextArea.style.height="50%";
         } else {
             inputTextArea.style.display = 'none';
             document.getElementById('stdinButtonText').innerText = 'Stdin';
+            outputTextArea.style.height="100%";
         }
     }
 
@@ -197,7 +236,12 @@
             inputTextArea.style.color="white"
             outputTextArea.style.background="black"
             outputTextArea.style.color="white"
-
+        }else if(selectedTheme=="solarized_dark"){
+            // change input output color
+            inputTextArea.style.background="black"
+            inputTextArea.style.color="white"
+            outputTextArea.style.background="black"
+            outputTextArea.style.color="white"
         }
         editor.setTheme("ace/theme/" + selectedTheme);
     }

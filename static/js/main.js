@@ -198,19 +198,14 @@
 	* ------------------------------------------------------ */
 	(function ssInit() {
 
-		// ssPreloader();
 		ssMobileMenu();
 		ssOwlCarousel();
 		ssWaypoints();
 		ssSmoothScroll();
-		// ssPlaceholder();
+		ssPlaceholder();
 		ssAlertBoxes();
 		ssAOS();
 		ssBackToTop();
-
-		// to use the mailchimp form, uncomment the 
-		// function call ssAjaxChimp() below:
-		// ssAjaxChimp(); 
 
 	})();
  
