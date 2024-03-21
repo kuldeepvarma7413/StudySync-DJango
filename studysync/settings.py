@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['.onrender.com']
 
-CSRF_TRUSTED_ORIGINS = ['https://studysync-96br.onrender.com', 'https://www.your-domain.com']
+CSRF_TRUSTED_ORIGINS = ['https://studysync-96br.onrender.com', 'https://www.studysync.co.in']
 
 
 # Application definition
