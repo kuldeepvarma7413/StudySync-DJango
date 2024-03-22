@@ -147,6 +147,54 @@ def loginPage(request):
     return render(request, 'base/login.html', context)
 
 
+def register(request):
+    form = userForm()  
+    if request.method == 'POST': 
+        username = request.POST.get('username', '').lower()  
+        email = request.POST.get('email', '').lower()  
+        password1 = request.POST.get('password1', '') 
+        password2 = request.POST.get('password2', '') 
+
+        
+        if not username:
+            data=[{'response':"Please fill in the username", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        
+        if not email:
+            data=[{'response':"Please fill in the email", 'result':'fail'}]
+            return HttpResponse(json.dumps(data), content_type="application/json")
+        # pwd validation
+        validation=validate(password1, password2)
+        if validation==True: 
+            form = userForm(request.POST)
+            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+                data=[{'response':"User already exist", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+                
+            if form.is_valid():
+                user = form.save(commit=False)
+                user.username=username
+                user.email = email
+                user.password=password1
+                form.save()
+                auth_token = str(uuid.uuid4())
+                request.session['auth_token']=auth_token
+                profile_obj = Profile.objects.create(user = user, auth_token=auth_token)
+                profile_obj.save()
+                send_mail_after_registration(email , username, auth_token)  
+                data=[{'response':"Registration successful", 'result':'success', 'redirect':'/Email_send'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+
+            else:
+                data=[{'response':"An error occurred during registration", 'result':'fail'}]
+                return HttpResponse(json.dumps(data), content_type="application/json")
+        else:
+            return HttpResponse(json.dumps(validation), content_type="application/json")
+        
+    else:
+        form = userForm()
+        return render(request, 'base/register.html', {'form': form})
+    
 
 
 def logoutUser(request):
@@ -296,56 +344,6 @@ def ApproveCaFileAsAdmin(request):
     
     data=[{'response':"Unauthorized Access", 'result':'fail'}]
     return HttpResponse(json.dumps(data), content_type="application/json")
-
-
-def register(request):
-    form = userForm()  
-    if request.method == 'POST': 
-        username = request.POST.get('username', '').lower()  
-        email = request.POST.get('email', '').lower()  
-        password1 = request.POST.get('password1', '') 
-        password2 = request.POST.get('password2', '') 
-
-        
-        if not username:
-            data=[{'response':"Please fill in the username", 'result':'fail'}]
-            return HttpResponse(json.dumps(data), content_type="application/json")
-        
-        if not email:
-            data=[{'response':"Please fill in the email", 'result':'fail'}]
-            return HttpResponse(json.dumps(data), content_type="application/json")
-        # pwd validation
-        validation=validate(password1, password2)
-        if validation==True: 
-            form = userForm(request.POST)
-            if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
-                data=[{'response':"User already exist", 'result':'fail'}]
-                return HttpResponse(json.dumps(data), content_type="application/json")
-                
-            if form.is_valid():
-                user = form.save(commit=False)
-                user.username=username
-                user.email = email
-                user.password=password1
-                form.save()
-                auth_token = str(uuid.uuid4())
-                request.session['auth_token']=auth_token
-                profile_obj = Profile.objects.create(user = user, auth_token=auth_token)
-                profile_obj.save()
-                send_mail_after_registration(email , username, auth_token)  
-                data=[{'response':"Registration successful", 'result':'success', 'redirect':'/Email_send'}]
-                return HttpResponse(json.dumps(data), content_type="application/json")
-
-            else:
-                data=[{'response':"An error occurred during registration", 'result':'fail'}]
-                return HttpResponse(json.dumps(data), content_type="application/json")
-        else:
-            return HttpResponse(json.dumps(validation), content_type="application/json")
-        
-    else:
-        form = userForm()
-        return render(request, 'base/register.html', {'form': form})
-    
     
 def send_mail_after_registration(email , username, token):
     
@@ -1312,7 +1310,7 @@ def merge_pdf_files(files_list):
 
     
 def validate(pwd1, pwd2):
-    password_regex = r'^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$'
+    password_regex = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&^]+$'
     # validation
     if pwd1!=pwd2:
         data=[{'response':"Password must match", 'result':'fail'}]

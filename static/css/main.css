@@ -1127,8 +1127,10 @@ h1.intro-header::before {
 
 .header-logo {
   position: absolute;
-  left: 55px;
+  left: 40px;
   top: 50%;
+  height: 100%;
+  width: 200px;
   -webkit-transform: translateY(-50%);
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
@@ -1145,9 +1147,9 @@ h1.intro-header::before {
   scale: 1.5;
   border: none;
   width: 97px;
-  height: 22px;
-  background: url("../images/logo.png") no-repeat center;
-  background-size: 97px 22px;
+  height: 80%;
+  background: url("../images/logo.webp") no-repeat center;
+  background-size: 97px 40px;
   font: 0/0 a;
   text-shadow: none;
   color: transparent;
@@ -1305,11 +1307,6 @@ h1.intro-header::before {
 }
 
 @media only screen and (max-width: 768px) {
-  .header-logo a {
-    width: 88px;
-    height: 20px;
-    background-size: 88px 20px;
-  }
   #header-nav-wrap {
     display: none;
     height: auto;
@@ -1918,7 +1915,6 @@ html[data-useragent*='MSIE 10.0'] .home-scrolldown,
   text-align: center;
   border-radius: 50%;
   background-color: rgba(246,129,33,255);
-  box-shadow: 0 0 0 15px #ffffff;
   z-index: 500;
   position: absolute;
   top: -12px;
@@ -2507,11 +2503,11 @@ html[data-useragent*='MSIE 10.0'] .home-scrolldown,
 }
 
 #download .download-badges li a.badge-appstore {
-  background-image: url("../images/appstore.png");
+  background-image: url("../images/appstore.webp");
 }
 
 #download .download-badges li a.badge-googleplay {
-  background-image: url("../images/google-play.png");
+  background-image: url("../images/google-play.webp");
 }
 
 
