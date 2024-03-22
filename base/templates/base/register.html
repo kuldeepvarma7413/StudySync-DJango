@@ -142,7 +142,7 @@ particlesInit();
         
         function validate(password1,password2){
             // password regex
-            let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&]+$/;
+            let regex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@.#$!%*?&^])[A-Za-z\d@.#$!%*?&^]+$/;
             
             if(password1.length==0 || password2.length ==0){
                 showFailSnackbar("Please fill in the password","fail")
@@ -201,9 +201,6 @@ particlesInit();
                 }else{
                     showFailSnackbar(res[0].response, res[0].result)
                 }
-            }else{
-                showFailSnackbar("Error occured, try again","fail")
-                return false;
             }
         })
 

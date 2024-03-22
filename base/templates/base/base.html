@@ -82,8 +82,8 @@
           </li>
           {% endif %}
           {% if user.is_authenticated %}
-          <li style="padding-top: 16px;">
-            <p id="username" style="display: flex;">
+          <li style="padding-top: 16px; max-height: 54.8px;">
+            <p id="username" style="display: flex; width: fit-content;">
               <img class="profile-photo" src="{% static 'images/default-user.png' %}" style="height:40px !important;width:40px !important;border-radius: 50%; border: 1px solid white; background: white; cursor: pointer;">
               <!-- <li class="profile-info" id="profile-info">
                 <ol class="list">

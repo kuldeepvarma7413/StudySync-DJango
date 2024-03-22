@@ -50,6 +50,13 @@
 			nav.slideToggle();
 		});
 
+		$(document).on('click', function(event) {
+			if (!$(event.target).closest('#header-nav-wrap').length && !$(event.target).is('.header-menu-toggle')) {
+				toggleButton.removeClass('is-clicked');
+				nav.slideUp();
+			}
+		});
+
 		if (toggleButton.is(':visible')) nav.addClass('mobile');
 
 		$(window).resize(function() {
