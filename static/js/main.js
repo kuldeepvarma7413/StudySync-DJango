@@ -51,9 +51,9 @@
 		});
 
 		$(document).on('click', function(event) {
-			if (!$(event.target).closest('#header-nav-wrap').length && !$(event.target).is('.header-menu-toggle')) {
+			if (!$(event.target).closest('#header-nav-wrap').length && !$(event.target).is('.header-menu-toggle') && toggleButton.hasClass('is-clicked')) {
 				toggleButton.removeClass('is-clicked');
-				nav.slideUp();
+				nav.slideToggle(); 
 			}
 		});
 
