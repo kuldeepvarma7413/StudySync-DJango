@@ -119,10 +119,12 @@
               const profile_info=document.getElementById('profile-info'); // list
 
               window.addEventListener('click',(event)=>{
-                console.log("clicked window")
-                if(!profile_info.contains(event.target) && !photo.contains(event.target)){
-                      profile_info.classList.remove('show')
-                  }
+                if(profile_info.classList.contains('show')){
+                  console.log("clicked window")
+                  if(!profile_info.contains(event.target) && !photo.contains(event.target)){
+                        profile_info.classList.remove('show')
+                    }
+                }
               });
 
               photo.addEventListener('click', function(){
