@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,14 +26,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wf-=b8n+rhw_xu*5@ztxt@)@61q9nul13*tb(87t+f*2+ebb2$'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['.onrender.com']
 
-CSRF_TRUSTED_ORIGINS = ['https://studysync-96br.onrender.com', 'https://www.studysync.co.in']
+CSRF_TRUSTED_ORIGINS = ['https://studysync-96br.onrender.com']
 
 
 # Application definition
@@ -178,18 +182,17 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "teamstudysync@gmail.com"
-EMAIL_HOST_PASSWORD = "nrjy mtah tirq cmwv"
+EMAIL_HOST_USER = os.environ.get('EMAIL')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 ALLOWED_HOSTS = ['*']
 
 
 # cloudinary storage configration
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dylmvpvn7',
-    'API_KEY': '913441945363269',
-    'API_SECRET': '-bhQOD7EDDRaxLR3Kxq_xnN5LM4'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET')
 }
 
 MEDIA_URL = '/media/'  # or any prefix you choose
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.RawMediaCloudinaryStorage'
-# CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>

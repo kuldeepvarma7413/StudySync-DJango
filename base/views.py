@@ -1,3 +1,4 @@
+from http import server
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
@@ -37,11 +38,15 @@ import json , subprocess
 import cloudinary.api
 import cloudinary
 from rest_framework.authtoken.models import Token
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 
 
-server_url="studysync-96br.onrender.com"
+# server_url="studysync-96br.onrender.com"
+server_url=os.environ.get('SERVER_URL')
 
 # Create your views here.
 @login_required
@@ -137,10 +142,10 @@ def loginPage(request):
                 }
                 return HttpResponse(json.dumps(data), content_type="application/json")
             else:
-                data=[{'response':"Invalid password please enter correct password.", 'result':'fail'}]
+                data={'response':"Invalid password please enter correct password.", 'result':'fail'}
                 return HttpResponse(json.dumps(data), content_type="application/json")
         else:
-            data=[{'response':"User not found", 'result':'fail'}]
+            data={'response':"User not found", 'result':'fail'}
             return HttpResponse(json.dumps(data), content_type="application/json")
 
     context = {'page': page}
@@ -269,6 +274,7 @@ def pptPage(request):
 
     q=request.GET.get('q') if request.GET.get('q')!=None else ''
     Files=files.objects.filter(Q(courseCode__icontains=q))
+    print(Files)
     data=[{'title':file.title, 'id':file.id, 'uploaded':json_serial(file.uploaded), 'coursecode':file.courseCode, 'unit': file.unit, 'url': file.fileupload.url} for file in Files]
     return HttpResponse(json.dumps(data), content_type="application/json")
 
@@ -346,8 +352,7 @@ def ApproveCaFileAsAdmin(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
     
 def send_mail_after_registration(email , username, token):
-    
-    verification_link = f"http://studysync-96br.onrender.com/verify_mail_after_registration/{token}/"  
+    verification_link = f"{server_url}/verify_mail_after_registration/{token}/"  
     html_template = 'base/Email_verification.html'
     html_message = render_to_string(html_template, {'token': token, 'verification_link': verification_link, 'username': username})  
     text_content = strip_tags(html_message)          
